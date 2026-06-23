@@ -80,7 +80,7 @@ Success evidence:
 
 ```bash
 kubectl get nodes -o wide
-kubectl describe node yas-gcp-single-node
+kubectl describe node gcp-ci-cd-agent
 kubectl get pods -A
 kubectl get storageclass,pvc -A
 ```

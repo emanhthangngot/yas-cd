@@ -2,8 +2,8 @@
 
 ## Target Topology
 
-- One Google Cloud Compute Engine VM runs Kubernetes, ArgoCD, ingress, mesh, and YAS workloads.
-- Jenkins may remain on the existing EC2 CI server.
+- One Google Cloud Compute Engine VM (`gcp-ci-cd-agent`) runs Jenkins Agent (CI), Kubernetes (K3s), ArgoCD, ingress, mesh, and YAS workloads.
+- Jenkins Controller (Master) remains on the existing AWS EC2 CI server (`3.27.92.213`).
 - Kubernetes distribution: `k3s` single-node.
 - OS: Ubuntu 24.04 LTS.
 - VM size: 32 GB RAM, recommended 4-8 vCPU, 150 GB+ persistent disk.
@@ -26,7 +26,7 @@ Install K3s:
 
 ```bash
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server \
-  --node-name yas-gcp-single-node \
+  --node-name gcp-ci-cd-agent \
   --tls-san ${GCP_VM_INTERNAL_IP} \
   --tls-san ${GCP_VM_EXTERNAL_IP} \
   --write-kubeconfig-mode 644 \
@@ -85,7 +85,7 @@ curl -H "Host: yas.mesh.local" "http://${GCP_VM_EXTERNAL_IP}:30090/"
 - GCP firewall rules proving admin access is restricted.
 - SSH tunnel command or screenshot for admin UI access.
 - `kubectl get nodes -o wide`
-- `kubectl describe node yas-gcp-single-node`
+- `kubectl describe node gcp-ci-cd-agent`
 - `kubectl get pods -A`
 - `kubectl get storageclass,pvc -A`
 - `systemctl status k3s --no-pager`
