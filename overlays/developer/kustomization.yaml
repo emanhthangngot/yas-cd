@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: developer
+resources:
+  - ../../base
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: yas
+      yas.nashtechglobal.com/environment: developer
+    includeSelectors: true
+
+images:
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-cart
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-customer
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-inventory
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-location
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-media
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-order
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment-paypal
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-product
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-promotion
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-rating
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-search
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-tax
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-webhook
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-sampledata
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-recommendation
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice-bff
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront-bff
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice
+    newTag: main
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront
+    newTag: main

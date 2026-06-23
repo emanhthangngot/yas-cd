@@ -1,0 +1,188 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmGlobals:
+  chartHome: ../charts
+
+resources:
+  - yas-configuration.yaml
+
+helmCharts:
+  - name: backend
+    releaseName: cart
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-cart
+        tag: main
+      nameOverride: cart
+      fullnameOverride: cart
+      databaseName: cart
+  - name: backend
+    releaseName: customer
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-customer
+        tag: main
+      nameOverride: customer
+      fullnameOverride: customer
+      databaseName: customer
+  - name: backend
+    releaseName: inventory
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-inventory
+        tag: main
+      nameOverride: inventory
+      fullnameOverride: inventory
+      databaseName: inventory
+  - name: backend
+    releaseName: location
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-location
+        tag: main
+      nameOverride: location
+      fullnameOverride: location
+      databaseName: location
+  - name: backend
+    releaseName: media
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-media
+        tag: main
+      nameOverride: media
+      fullnameOverride: media
+      databaseName: media
+  - name: backend
+    releaseName: order
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-order
+        tag: main
+      nameOverride: order
+      fullnameOverride: order
+      databaseName: order
+  - name: backend
+    releaseName: payment
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-payment
+        tag: main
+      nameOverride: payment
+      fullnameOverride: payment
+      databaseName: payment
+  - name: backend
+    releaseName: payment-paypal
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-payment-paypal
+        tag: main
+      nameOverride: payment-paypal
+      fullnameOverride: payment-paypal
+      databaseName: payment-paypal
+  - name: backend
+    releaseName: product
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-product
+        tag: main
+      nameOverride: product
+      fullnameOverride: product
+      databaseName: product
+  - name: backend
+    releaseName: promotion
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-promotion
+        tag: main
+      nameOverride: promotion
+      fullnameOverride: promotion
+      databaseName: promotion
+  - name: backend
+    releaseName: rating
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-rating
+        tag: main
+      nameOverride: rating
+      fullnameOverride: rating
+      databaseName: rating
+  - name: backend
+    releaseName: search
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-search
+        tag: main
+      nameOverride: search
+      fullnameOverride: search
+      databaseName: search
+  - name: backend
+    releaseName: tax
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-tax
+        tag: main
+      nameOverride: tax
+      fullnameOverride: tax
+      databaseName: tax
+  - name: backend
+    releaseName: webhook
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-webhook
+        tag: main
+      nameOverride: webhook
+      fullnameOverride: webhook
+      databaseName: webhook
+  - name: backend
+    releaseName: sampledata
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-sampledata
+        tag: main
+      nameOverride: sampledata
+      fullnameOverride: sampledata
+      databaseName: sampledata
+  - name: backend
+    releaseName: recommendation
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-recommendation
+        tag: main
+      nameOverride: recommendation
+      fullnameOverride: recommendation
+      databaseName: recommendation
+  - name: backend
+    releaseName: backoffice-bff
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice-bff
+        tag: main
+      nameOverride: backoffice-bff
+      fullnameOverride: backoffice-bff
+      databaseName: backoffice-bff
+  - name: backend
+    releaseName: storefront-bff
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-storefront-bff
+        tag: main
+      nameOverride: storefront-bff
+      fullnameOverride: storefront-bff
+      databaseName: storefront-bff
+  - name: ui
+    releaseName: backoffice-ui
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice
+        tag: main
+      nameOverride: backoffice-ui
+      fullnameOverride: backoffice-ui
+  - name: ui
+    releaseName: storefront-ui
+    valuesInline:
+      image:
+        repository: docker.io/${DOCKERHUB_USERNAME}/yas-storefront
+        tag: main
+      nameOverride: storefront-ui
+      fullnameOverride: storefront-ui

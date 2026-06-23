@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: staging
+resources:
+  - ../../base
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: yas
+      yas.nashtechglobal.com/environment: staging
+    includeSelectors: true
+
+images:
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-cart
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-customer
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-inventory
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-location
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-media
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-order
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment-paypal
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-product
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-promotion
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-rating
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-search
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-tax
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-webhook
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-sampledata
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-recommendation
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice-bff
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront-bff
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice
+    newTag: v0.0.0
+  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront
+    newTag: v0.0.0
