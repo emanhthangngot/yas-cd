@@ -32,9 +32,6 @@ specs/001-yas-lab2-cd/
 
 ## Remaining Work
 
-- Create the GitHub remote `emanhthangngot/yas-cd` with the correct account.
-- Push this local repo branch `lab2/task/tri-xuan`.
-- Merge into `yas-cd/main` after validation.
 - Update the app repo Jenkinsfile to push GitOps commits to `yas-cd`.
 - Apply ArgoCD apps from `argocd/apps/` on the GCP cluster.
 

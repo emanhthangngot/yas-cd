@@ -9,8 +9,8 @@
 - [x] Move Spec Kit runtime into `.specify/`.
 - [x] Move Spec Kit feature artifacts into `specs/001-yas-lab2-cd/`.
 - [x] Move agent context/playbooks/skills into `.agents/`.
-- [ ] Create remote `git@github.com:emanhthangngot/yas-cd.git`.
-- [ ] Push branch `lab2/task/tri-xuan` to remote.
+- [x] Create remote `git@github.com:emanhthangngot/yas-cd.git`.
+- [x] Push branch `lab2/task/tri-xuan` to remote.
 
 ## Phase 2 - GitOps Validation
 
@@ -42,7 +42,7 @@
 ## Checkpoint
 
 - [x] CD repo contains docs, Spec Kit, and agent skills.
-- [ ] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
+- [x] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
 - [ ] App repo only owns app source and CI.
 - [ ] ArgoCD apps sync from `yas-cd/main`.
 - [ ] Developer deployment includes platform dependencies.
