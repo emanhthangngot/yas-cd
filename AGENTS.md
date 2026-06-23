@@ -12,7 +12,9 @@
 
 ## Target Platform
 
-- One Google Cloud Compute Engine VM with 32 GB RAM.
+- Jenkins Controller (Master) runs on AWS EC2 (`3.27.92.213`).
+- One Google Cloud Compute Engine VM (`gcp-ci-cd-agent`) with 32 GB RAM.
+- This GCP VM acts as Jenkins Agent (CI) with label `gcp-build-agent` AND runs Kubernetes.
 - Kubernetes: `k3s` single-node on Ubuntu 24.04 LTS.
 - Workloads run on the K3s server node; no manual scheduling change is required.
 - No Tailscale.
