@@ -1,7 +1,7 @@
 # Project Version Decision
 
 - App/CI repo: `git@github.com:tzin1401/yas.git`
-- CD/GitOps repo: `git@github.com:tzin1401/yas-cd.git`
+- CD/GitOps repo: `git@github.com:emanhthangngot/yas-cd.git`
 - CD sync branch: `main`
 - Migration branch: `lab2/task/tri-xuan`
 - Java/Spring decision: keep Java 25 and Spring Boot 4.0.2 from the current fork unless the team updates this decision explicitly.

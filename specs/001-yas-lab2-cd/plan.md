@@ -2,7 +2,7 @@
 
 ## Summary
 
-Use a two-repository model. `tzin1401/yas` remains the app and CI repo. `tzin1401/yas-cd` owns GitOps desired state, ArgoCD apps, CD docs, Spec Kit artifacts, and agent context.
+Use a two-repository model. `tzin1401/yas` remains the app and CI repo. `emanhthangngot/yas-cd` owns GitOps desired state, ArgoCD apps, CD docs, Spec Kit artifacts, and agent context.
 
 ## Repository Layout
 
@@ -24,7 +24,7 @@ specs/001-yas-lab2-cd/
 
 ## Implementation Decisions
 
-- ArgoCD source repo is `git@github.com:tzin1401/yas-cd.git`.
+- ArgoCD source repo is `git@github.com:emanhthangngot/yas-cd.git`.
 - ArgoCD target revision is `main`.
 - Jenkins in the app repo clones this repo, updates `overlays/<env>/kustomization.yaml`, commits, and pushes.
 - Chart snapshot under `charts/` allows this repo to render independently.
@@ -32,7 +32,7 @@ specs/001-yas-lab2-cd/
 
 ## Remaining Work
 
-- Create the GitHub remote `tzin1401/yas-cd` with the correct account.
+- Create the GitHub remote `emanhthangngot/yas-cd` with the correct account.
 - Push this local repo branch `lab2/task/tri-xuan`.
 - Merge into `yas-cd/main` after validation.
 - Update the app repo Jenkinsfile to push GitOps commits to `yas-cd`.

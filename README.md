@@ -5,7 +5,7 @@ This repository is the GitOps/CD source of truth for YAS Lab 2.
 ## Repository Boundary
 
 - App and CI repo: `git@github.com:tzin1401/yas.git`
-- CD and GitOps repo: `git@github.com:tzin1401/yas-cd.git`
+- CD and GitOps repo: `git@github.com:emanhthangngot/yas-cd.git`
 
 The app repo owns source code, Jenkins CI, tests, Dockerfiles, and image builds. This repo owns Kubernetes desired state, ArgoCD applications, CD documentation, Spec Kit artifacts, and agent context.
 
@@ -26,10 +26,15 @@ specs/                Spec Kit feature artifacts
 ## Validation
 
 ```bash
-kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/dev
-kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/staging
-kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/developer
-scripts/validate-staging-immutable.sh
+scripts/validate-gitops.sh
+```
+
+Jenkins should update image tags through the repository contract script:
+
+```bash
+scripts/update-image-tag.sh dev cart main
+scripts/update-image-tag.sh developer tax 9f2c4a1
+scripts/update-image-tag.sh staging cart v1.2.3
 ```
 
 Never commit real secrets, kubeconfigs, tokens, SSH keys, Docker Hub credentials, Snyk tokens, SonarQube tokens, ArgoCD tokens, or Google Cloud service account keys.

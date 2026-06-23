@@ -5,7 +5,7 @@ Jenkins runs from the app repo `tzin1401/yas`. It must not treat this CD repo as
 ## Credentials
 
 - `dockerhub-creds`: username/password, where password is a Docker Hub access token.
-- `github-gitops-ssh`: SSH private key or deploy key with push permission to `tzin1401/yas-cd`.
+- `github-gitops-ssh`: SSH private key or deploy key with push permission to `emanhthangngot/yas-cd`.
 - `argocd-token`: secret text for optional `argocd app sync/get`.
 - `kubeconfig-readonly`: secret file for read-only cluster smoke checks.
 - Existing Lab 1 credentials in app repo: `sonarqube-token`, `snyk-token`.
@@ -23,9 +23,32 @@ Do not commit credential material, kubeconfig content, Google Cloud service acco
   - feature branch: commit SHA
   - `main`: commit SHA, `main`, `latest`
   - `vX.Y.Z`: commit SHA, `vX.Y.Z`
-- Clones `git@github.com:tzin1401/yas-cd.git`.
-- Updates `overlays/dev`, `overlays/staging`, or `overlays/developer`.
+- Clones `git@github.com:emanhthangngot/yas-cd.git`.
+- Updates `overlays/dev`, `overlays/staging`, or `overlays/developer` through `scripts/update-image-tag.sh`.
+- Runs `scripts/validate-gitops.sh` before committing.
 - Commits and pushes to `yas-cd/main`.
+
+Required Jenkins environment contract:
+
+```text
+GITOPS_REPO=git@github.com:emanhthangngot/yas-cd.git
+GITOPS_BRANCH=main
+GITOPS_CREDENTIALS_ID=github-gitops-ssh
+```
+
+GitOps push sequence:
+
+```bash
+git clone "$GITOPS_REPO" yas-cd
+cd yas-cd
+git checkout "$GITOPS_BRANCH"
+scripts/update-image-tag.sh "$TARGET_ENV" "$SERVICE_NAME" "$IMAGE_TAG"
+git status --short
+git add services.yaml overlays
+git commit -m "cd(lab2): update ${TARGET_ENV} image tags [skip ci]"
+git pull --rebase origin "$GITOPS_BRANCH"
+git push origin "$GITOPS_BRANCH"
+```
 
 ## CD Actions
 

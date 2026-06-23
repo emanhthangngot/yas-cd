@@ -3,7 +3,7 @@
 ## Source Of Truth
 
 - App/CI repo: `git@github.com:tzin1401/yas.git`
-- CD/GitOps repo: `git@github.com:tzin1401/yas-cd.git`
+- CD/GitOps repo: `git@github.com:emanhthangngot/yas-cd.git`
 - CD branch: `main` for ArgoCD sync; feature work may use `lab2/task/*`
 - Service catalog snapshot: `services.yaml`
 - SDD: `.specify/memory/constitution.md` and `specs/001-yas-lab2-cd/`

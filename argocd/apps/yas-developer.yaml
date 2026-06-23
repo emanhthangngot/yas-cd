@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:tzin1401/yas-cd.git
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
     targetRevision: main
     path: overlays/developer
   destination:

@@ -14,7 +14,7 @@
 ## External Repo Boundary
 
 - App/CI repo: `git@github.com:tzin1401/yas.git`
-- This repo: `git@github.com:tzin1401/yas-cd.git`
+- This repo: `git@github.com:emanhthangngot/yas-cd.git`
 - Jenkins runs in the app repo, builds images, then commits overlay changes here.
 - ArgoCD syncs only from this repo.
 

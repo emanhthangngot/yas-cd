@@ -9,7 +9,7 @@
 - [x] Move Spec Kit runtime into `.specify/`.
 - [x] Move Spec Kit feature artifacts into `specs/001-yas-lab2-cd/`.
 - [x] Move agent context/playbooks/skills into `.agents/`.
-- [ ] Create remote `git@github.com:tzin1401/yas-cd.git`.
+- [ ] Create remote `git@github.com:emanhthangngot/yas-cd.git`.
 - [ ] Push branch `lab2/task/tri-xuan` to remote.
 
 ## Phase 2 - GitOps Validation
@@ -17,6 +17,8 @@
 - [x] Update ArgoCD app manifests to target `yas-cd/main`.
 - [x] Update Kustomize chart path for standalone CD repo render.
 - [x] Update staging immutability script for new overlay path.
+- [x] Add GitOps validation script for catalog, overlays, stale references, and secret-pattern scan.
+- [x] Add Jenkins image-tag update contract script.
 - [x] Render `dev`, `staging`, and `developer` overlays successfully.
 - [x] Confirm no ArgoCD app points back to `tzin1401/yas.git`.
 - [x] Confirm no committed real secrets.
@@ -40,7 +42,7 @@
 ## Checkpoint
 
 - [x] CD repo contains docs, Spec Kit, and agent skills.
-- [ ] CD repo exists on GitHub under `tzin1401/yas-cd`.
+- [ ] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
 - [ ] App repo only owns app source and CI.
 - [ ] ArgoCD apps sync from `yas-cd/main`.
 - [ ] Developer deployment includes platform dependencies.

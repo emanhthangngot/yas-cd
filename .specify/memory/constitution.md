@@ -8,7 +8,7 @@ ArgoCD-managed environments (`dev`, `staging`, `developer`) must be changed thro
 
 ### II. Two-Repository Boundary
 
-`tzin1401/yas` is the app and CI repo. It owns source code, tests, Dockerfiles, Lab 1 CI gates, and image builds. `tzin1401/yas-cd` is the CD/GitOps repo. It owns Kubernetes desired state, ArgoCD apps, CD docs, Spec Kit artifacts, and agent context.
+`tzin1401/yas` is the app and CI repo. It owns source code, tests, Dockerfiles, Lab 1 CI gates, and image builds. `emanhthangngot/yas-cd` is the CD/GitOps repo. It owns Kubernetes desired state, ArgoCD apps, CD docs, Spec Kit artifacts, and agent context.
 
 ### III. Service Catalog First
 
@@ -29,7 +29,7 @@ The Lab 2 runtime target is a single Google Cloud Compute Engine VM with 32 GB R
 ## Technical Constraints
 
 - App/CI repo: `git@github.com:tzin1401/yas.git`
-- CD/GitOps repo: `git@github.com:tzin1401/yas-cd.git`
+- CD/GitOps repo: `git@github.com:emanhthangngot/yas-cd.git`
 - ArgoCD target branch: `main`
 - Container registry: Docker Hub, format `docker.io/$DOCKERHUB_USERNAME/yas-<service>:<tag>`
 - Kubernetes runtime: one GCP Compute Engine VM, Ubuntu 24.04 LTS, `k3s` single-node, default local-path StorageClass
