@@ -27,6 +27,8 @@ data:
       kafka:
         bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
     yas:
+      public:
+        url: http://storefront-ui:3000
       services:
         cart: http://cart/cart
         customer: http://customer/customer
