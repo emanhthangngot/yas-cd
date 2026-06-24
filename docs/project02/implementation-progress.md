@@ -16,7 +16,7 @@ performed on Jenkins, Google Cloud, Docker Hub, and the Kubernetes cluster.
 | GitOps manifests | Done locally | `dev`, `staging`, `developer` overlays render locally |
 | ArgoCD app manifests | Done locally | Apps point to `yas-cd/main` |
 | Staging immutable tag gate | Done locally | `scripts/validate-staging-immutable.sh` passes |
-| Jenkins app-repo integration | Implemented in app repo commit `8001bbd4` | Requires Jenkins runtime verification |
+| Jenkins app-repo integration | Implemented in app repo commit `2a2e918d` | Requires Jenkins runtime verification |
 | GCP VM / K3s / ArgoCD runtime | Not verified from this repo | Requires cloud/cluster evidence |
 | Istio/Kiali mesh | Not verified from this repo | Requires cluster installation and screenshots/logs |
 
@@ -146,7 +146,7 @@ Remaining work:
 
 ## 4. App Repo Jenkins Integration
 
-Status: implemented in app repo commit `8001bbd4`; not yet verified by a real Jenkins run.
+Status: implemented in app repo commit `2a2e918d`; not yet verified by a real Jenkins run.
 
 What was implemented:
 
