@@ -16,7 +16,7 @@ performed on Jenkins, Google Cloud, Docker Hub, and the Kubernetes cluster.
 | GitOps manifests | Done locally | `dev`, `staging`, `developer` overlays render locally |
 | ArgoCD app manifests | Done locally | Apps point to `yas-cd/main` |
 | Staging immutable tag gate | Done locally | `scripts/validate-staging-immutable.sh` passes |
-| Jenkins app-repo integration | Not done in this repo | Requires changes in `tzin1401/yas` |
+| Jenkins app-repo integration | Implemented in app repo commit `8001bbd4` | Requires Jenkins runtime verification |
 | GCP VM / K3s / ArgoCD runtime | Not verified from this repo | Requires cloud/cluster evidence |
 | Istio/Kiali mesh | Not verified from this repo | Requires cluster installation and screenshots/logs |
 
@@ -146,7 +146,27 @@ Remaining work:
 
 ## 4. App Repo Jenkins Integration
 
-Status: not implemented in this CD repo; must be done in `tzin1401/yas`.
+Status: implemented in app repo commit `8001bbd4`; not yet verified by a real Jenkins run.
+
+What was implemented:
+
+- Changed the app repo Jenkins agent label from `yas-build-worker` to `gcp-build-agent`.
+- Added Jenkins parameter `DEPLOY_TO_DEVELOPER` for feature-branch developer overlay updates.
+- Added Docker Hub image build/push stage after the existing Lab 1 gates.
+- Added GitOps update stage that clones `git@github.com:emanhthangngot/yas-cd.git`,
+  runs `scripts/update-image-tag.sh`, runs CD repo validation through that script, commits,
+  rebases, and pushes to `yas-cd/main`.
+- Updated `docs/project02/jenkins-jobs.md` in the app repo to describe the split-repo flow.
+
+What was intentionally preserved:
+
+- Changed-module detection.
+- Gitleaks.
+- Test and JaCoCo report.
+- Coverage gate.
+- Maven build.
+- SonarQube analysis and quality gate wait.
+- Snyk dependency scan.
 
 Required Jenkins controller/agent setup:
 
@@ -201,9 +221,11 @@ Evidence required:
 
 Remaining work:
 
-- Modify the Jenkinsfile in app repo.
 - Create or update Jenkins jobs: `developer_build`, `teardown_developer`, `deploy_dev`,
   `release_staging`, `rollback_environment`, and `cluster_smoke_check`.
+- Run `yas-ci-multibranch` on the real Jenkins controller/agent.
+- Confirm Docker Hub receives commit SHA, `main/latest`, and `vX.Y.Z` tags.
+- Confirm Jenkins can authenticate with `github-gitops-ssh` and push to `yas-cd/main`.
 - Verify GitOps commits do not trigger full app CI.
 
 ## 5. GCP VM And K3s Setup
