@@ -26,7 +26,7 @@
 ## Phase 3 - App Repo Integration
 
 - [x] Update `tzin1401/yas` Jenkinsfile to clone and push `yas-cd`.
-- [ ] Replace active `deploy/gitops/**`, `docs/project02/**`, `.specify/**`, `specs/001-yas-lab2-cd/**`, and `.agents/**` in app repo with pointers or remove them.
+- [x] Replace active `deploy/gitops/**`, `docs/project02/**`, `.specify/**`, `specs/001-yas-lab2-cd/**`, and `.agents/**` in app repo with pointers or remove them.
 - [x] Keep Lab 1 CI gates intact in the app repo.
 - [ ] Verify GitOps commits no longer trigger app repo full CI.
 
@@ -43,6 +43,6 @@
 
 - [x] CD repo contains docs, Spec Kit, and agent skills.
 - [x] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
-- [ ] App repo only owns app source and CI.
+- [x] App repo only owns app source and CI.
 - [ ] ArgoCD apps sync from `yas-cd/main`.
 - [ ] Developer deployment includes platform dependencies.

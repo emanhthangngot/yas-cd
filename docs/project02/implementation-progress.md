@@ -16,7 +16,7 @@ performed on Jenkins, Google Cloud, Docker Hub, and the Kubernetes cluster.
 | GitOps manifests | Done locally | `dev`, `staging`, `developer` overlays render locally |
 | ArgoCD app manifests | Done locally | Apps point to `yas-cd/main` |
 | Staging immutable tag gate | Done locally | `scripts/validate-staging-immutable.sh` passes |
-| Jenkins app-repo integration | Implemented in app repo commit `2a2e918d` | Requires Jenkins runtime verification |
+| Jenkins app-repo integration | Implemented in app repo commits `2a2e918d`, `4719f8ad` | Requires Jenkins runtime verification |
 | GCP VM / K3s / ArgoCD runtime | Not verified from this repo | Requires cloud/cluster evidence |
 | Istio/Kiali mesh | Not verified from this repo | Requires cluster installation and screenshots/logs |
 
@@ -146,7 +146,7 @@ Remaining work:
 
 ## 4. App Repo Jenkins Integration
 
-Status: implemented in app repo commit `2a2e918d`; not yet verified by a real Jenkins run.
+Status: implemented in app repo commits `2a2e918d` and `4719f8ad`; not yet verified by a real Jenkins run.
 
 What was implemented:
 
@@ -157,6 +157,10 @@ What was implemented:
   runs `scripts/update-image-tag.sh`, runs CD repo validation through that script, commits,
   rebases, and pushes to `yas-cd/main`.
 - Updated `docs/project02/jenkins-jobs.md` in the app repo to describe the split-repo flow.
+- Replaced active app-repo copies of `deploy/gitops/**`, `docs/project02/**`, and
+  `specs/001-yas-lab2-cd/**` with README pointers to the CD repo.
+- Updated the app-repo skip-CI detector so `specs/**` pointer-only changes do not trigger full
+  Maven/image CI.
 
 What was intentionally preserved:
 
