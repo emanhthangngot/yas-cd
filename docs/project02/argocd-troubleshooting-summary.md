@@ -43,3 +43,7 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
   git add .
   git commit -m "cd(lab2): replace DOCKERHUB_USERNAME placeholder in manifests"
   ```
+
+## 6. Lỗi thiếu runtime config `yas.public.url`
+- **Vấn đề**: Sau khi image `payment-paypal` chạy được dưới dạng Spring Boot app, service fail khi khởi động vì thiếu placeholder `${yas.public.url}` cho PayPal capture/cancel URL.
+- **Giải pháp**: Bổ sung `yas.public.url` vào `base/yas-configuration.yaml` để ConfigMap chung cấp giá trị runtime cho các service.
