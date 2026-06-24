@@ -8,6 +8,7 @@ kubectl apply -f argocd/apps/
 
 The applications track `git@github.com:emanhthangngot/yas-cd.git`, branch `main`, and sync these paths:
 
+- `platform/base`
 - `overlays/dev`
 - `overlays/staging`
 - `overlays/developer`

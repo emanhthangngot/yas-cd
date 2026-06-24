@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-platform
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
+    targetRevision: main
+    path: platform/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

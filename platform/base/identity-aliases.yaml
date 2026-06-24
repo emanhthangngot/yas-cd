@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity
+  namespace: dev
+spec:
+  type: ExternalName
+  externalName: identity.keycloak.svc.cluster.local
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity
+  namespace: staging
+spec:
+  type: ExternalName
+  externalName: identity.keycloak.svc.cluster.local
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity
+  namespace: developer
+spec:
+  type: ExternalName
+  externalName: identity.keycloak.svc.cluster.local
+  ports:
+    - name: http
+      port: 80

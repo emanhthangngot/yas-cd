@@ -26,6 +26,18 @@ helmCharts:
       nameOverride: customer
       fullnameOverride: customer
       databaseName: customer
+      extraEnvFroms:
+        - secretRef:
+            name: yas-keycloak-credentials-secret
+      extraVolumes:
+        - name: customer-application
+          configMap:
+            name: customer-application-configmap
+      extraVolumeMounts:
+        - name: customer-application
+          mountPath: /opt/yas/customer
+      extraApplicationConfigPaths:
+        - /opt/yas/customer/customer-application.yaml
   - name: backend
     releaseName: inventory
     valuesInline:
@@ -53,6 +65,15 @@ helmCharts:
       nameOverride: media
       fullnameOverride: media
       databaseName: media
+      extraVolumes:
+        - name: media-application
+          configMap:
+            name: media-application-configmap
+      extraVolumeMounts:
+        - name: media-application
+          mountPath: /opt/yas/media
+      extraApplicationConfigPaths:
+        - /opt/yas/media/media-application.yaml
   - name: backend
     releaseName: order
     valuesInline:
@@ -80,6 +101,15 @@ helmCharts:
       nameOverride: payment-paypal
       fullnameOverride: payment-paypal
       databaseName: payment-paypal
+      extraVolumes:
+        - name: payment-paypal-application-config
+          configMap:
+            name: payment-paypal-application-configmap
+      extraVolumeMounts:
+        - name: payment-paypal-application-config
+          mountPath: /opt/yas/payment-paypal
+      extraApplicationConfigPaths:
+        - /opt/yas/payment-paypal/payment-paypal-application.yaml
   - name: backend
     releaseName: product
     valuesInline:
@@ -116,6 +146,18 @@ helmCharts:
       nameOverride: search
       fullnameOverride: search
       databaseName: search
+      extraEnvFroms:
+        - secretRef:
+            name: yas-elasticsearch-credentials-secret
+      extraVolumes:
+        - name: search-application
+          configMap:
+            name: search-application-configmap
+      extraVolumeMounts:
+        - name: search-application
+          mountPath: /opt/yas/search
+      extraApplicationConfigPaths:
+        - /opt/yas/search/search-application.yaml
   - name: backend
     releaseName: tax
     valuesInline:
@@ -152,6 +194,18 @@ helmCharts:
       nameOverride: recommendation
       fullnameOverride: recommendation
       databaseName: recommendation
+      extraEnvFroms:
+        - secretRef:
+            name: yas-openai-api-key-secret
+      extraVolumes:
+        - name: recommendation-application
+          configMap:
+            name: recommendation-application-configmap
+      extraVolumeMounts:
+        - name: recommendation-application
+          mountPath: /opt/yas/recommendation
+      extraApplicationConfigPaths:
+        - /opt/yas/recommendation/recommendation-application.yaml
   - name: backend
     releaseName: backoffice-bff
     valuesInline:
@@ -161,6 +215,31 @@ helmCharts:
       nameOverride: backoffice-bff
       fullnameOverride: backoffice-bff
       databaseName: backoffice-bff
+      extraEnvs:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        - name: UI_HOST
+          value: http://backoffice-ui:3000
+      extraEnvFroms:
+        - secretRef:
+            name: yas-keycloak-credentials-secret
+        - secretRef:
+            name: yas-redis-credentials-secret
+      extraVolumes:
+        - name: yas-gateway-routes-config
+          configMap:
+            name: yas-gateway-routes-config-configmap
+        - name: backoffice-bff-extra-config
+          configMap:
+            name: backoffice-bff-extra-configmap
+      extraVolumeMounts:
+        - name: yas-gateway-routes-config
+          mountPath: /opt/yas/gateway-routes-config
+        - name: backoffice-bff-extra-config
+          mountPath: /opt/yas/extra-config
+      extraApplicationConfigPaths:
+        - /opt/yas/gateway-routes-config/gateway-routes-config.yaml
+        - /opt/yas/extra-config/backoffice-bff-extra-config.yaml
   - name: backend
     releaseName: storefront-bff
     valuesInline:
@@ -170,6 +249,31 @@ helmCharts:
       nameOverride: storefront-bff
       fullnameOverride: storefront-bff
       databaseName: storefront-bff
+      extraEnvs:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        - name: UI_HOST
+          value: http://storefront-ui:3000
+      extraEnvFroms:
+        - secretRef:
+            name: yas-keycloak-credentials-secret
+        - secretRef:
+            name: yas-redis-credentials-secret
+      extraVolumes:
+        - name: yas-gateway-routes-config
+          configMap:
+            name: yas-gateway-routes-config-configmap
+        - name: storefront-bff-extra-config
+          configMap:
+            name: storefront-bff-extra-configmap
+      extraVolumeMounts:
+        - name: yas-gateway-routes-config
+          mountPath: /opt/yas/gateway-routes-config
+        - name: storefront-bff-extra-config
+          mountPath: /opt/yas/extra-config
+      extraApplicationConfigPaths:
+        - /opt/yas/gateway-routes-config/gateway-routes-config.yaml
+        - /opt/yas/extra-config/storefront-bff-extra-config.yaml
   - name: ui
     releaseName: backoffice-ui
     valuesInline:

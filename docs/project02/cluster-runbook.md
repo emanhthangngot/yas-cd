@@ -43,10 +43,12 @@ Verify K3s, the node, bundled Flannel networking, and bundled local-path storage
 ## GitOps Readiness
 
 ArgoCD owns the `dev`, `staging`, and `developer` namespaces. Jenkins updates this repo; ArgoCD reconciles the cluster.
+Platform dependencies are also GitOps-managed by the `yas-platform` ArgoCD app from `platform/base`. It creates lab-local PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, and the in-namespace `identity` aliases required by the YAS workloads.
 
 Render desired state before syncing:
 
 ```bash
+kustomize build platform/base
 kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/dev
 kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/staging
 kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/developer
@@ -58,6 +60,7 @@ Install ArgoCD apps from this repo:
 ```bash
 kubectl apply -f argocd/apps/
 argocd app list
+argocd app wait yas-platform --health --sync --timeout 900
 argocd app wait yas-dev --health --sync --timeout 600
 argocd app wait yas-staging --health --sync --timeout 600
 argocd app wait yas-developer --health --sync --timeout 600

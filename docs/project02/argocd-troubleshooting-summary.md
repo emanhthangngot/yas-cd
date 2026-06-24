@@ -47,3 +47,7 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
 ## 6. Lỗi thiếu runtime config `yas.public.url`
 - **Vấn đề**: Sau khi image `payment-paypal` chạy được dưới dạng Spring Boot app, service fail khi khởi động vì thiếu placeholder `${yas.public.url}` cho PayPal capture/cancel URL.
 - **Giải pháp**: Bổ sung `yas.public.url` vào `base/yas-configuration.yaml` để ConfigMap chung cấp giá trị runtime cho các service.
+
+## 7. Thiếu platform dependencies cho runtime
+- **Vấn đề**: Sau khi image pull và Spring Boot packaging đã được xử lý, nhiều backend vẫn `CrashLoopBackOff` vì cluster chưa có PostgreSQL, Redis, Kafka, Elasticsearch và Keycloak/identity. Ví dụ: `cart` không kết nối được `postgresql.postgres:5432`, BFF không resolve được `identity`.
+- **Giải pháp**: Bổ sung ArgoCD app `yas-platform` trỏ tới `platform/base`. App này tạo dependency stack lab-local và các service DNS đúng với cấu hình YAS: `postgresql.postgres`, `redis-master.redis`, `kafka-cluster-kafka-brokers.kafka`, `elasticsearch-es-http.elasticsearch`, và `identity`.
