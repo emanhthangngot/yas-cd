@@ -1,5 +1,11 @@
 # Evidence Checklist
 
+Progress report:
+
+- `docs/project02/implementation-progress.md` records what has been implemented locally,
+  what still requires Jenkins/GCP/Kubernetes runtime execution, and which evidence is needed
+  before marking each milestone complete.
+
 - [ ] Tool gate output: `yq --version`
 - [ ] Tool gate output: `helm version --short`
 - [ ] Tool gate output: `kustomize version`
