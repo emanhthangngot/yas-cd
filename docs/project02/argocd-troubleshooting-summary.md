@@ -51,3 +51,7 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
 ## 7. Thiếu platform dependencies cho runtime
 - **Vấn đề**: Sau khi image pull và Spring Boot packaging đã được xử lý, nhiều backend vẫn `CrashLoopBackOff` vì cluster chưa có PostgreSQL, Redis, Kafka, Elasticsearch và Keycloak/identity. Ví dụ: `cart` không kết nối được `postgresql.postgres:5432`, BFF không resolve được `identity`.
 - **Giải pháp**: Bổ sung ArgoCD app `yas-platform` trỏ tới `platform/base`. App này tạo dependency stack lab-local và các service DNS đúng với cấu hình YAS: `postgresql.postgres`, `redis-master.redis`, `kafka-cluster-kafka-brokers.kafka`, `elasticsearch-es-http.elasticsearch`, và `identity`.
+
+## 8. Backend khởi động chậm bị liveness probe restart
+- **Vấn đề**: Trên single-node K3s lab, nhiều Spring Boot backend khởi động song song rất chậm vì cùng lúc chạy Liquibase, JPA và kết nối dependency. Pod bị kubelet restart với `Exit Code 137` trước khi actuator metric port sẵn sàng, dù log không có exception ứng dụng.
+- **Giải pháp**: Bổ sung `startupProbe` cho backend chart. Startup probe cho service thêm thời gian mở `/actuator/health/liveness` lần đầu, sau đó liveness/readiness mới được dùng để giám sát bình thường.
