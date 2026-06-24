@@ -21,11 +21,20 @@ data:
           probes:
             enabled: true
     spring:
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: http://identity/realms/Yas
       datasource:
         username: ${POSTGRESQL_USERNAME}
         password: ${POSTGRESQL_PASSWORD}
       kafka:
         bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
+    springdoc:
+      oauthflow:
+        authorization-url: http://identity/realms/Yas/protocol/openid-connect/auth
+        token-url: http://identity/realms/Yas/protocol/openid-connect/token
     yas:
       public:
         url: http://storefront-ui:3000
@@ -67,3 +76,201 @@ type: Opaque
 stringData:
   POSTGRESQL_USERNAME: lab-postgres-user
   POSTGRESQL_PASSWORD: lab-postgres-password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yas-elasticsearch-credentials-secret
+  annotations:
+    reloader.stakater.com/match: "true"
+type: Opaque
+stringData:
+  ELASTICSEARCH_USERNAME: lab-elasticsearch-user
+  ELASTICSEARCH_PASSWORD: lab-elasticsearch-password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yas-keycloak-credentials-secret
+  annotations:
+    reloader.stakater.com/match: "true"
+type: Opaque
+stringData:
+  KEYCLOAK_BACKOFFICE_BFF_CLIENT_SECRET: lab-backoffice-bff-client-secret
+  KEYCLOAK_STOREFRONT_BFF_CLIENT_SECRET: lab-storefront-bff-client-secret
+  KEYCLOAK_CUSTOMER_MANAGEMENT_CLIENT_SECRET: lab-customer-management-client-secret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yas-redis-credentials-secret
+  annotations:
+    reloader.stakater.com/match: "true"
+type: Opaque
+stringData:
+  REDIS_PASSWORD: lab-redis-password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yas-openai-api-key-secret
+  annotations:
+    reloader.stakater.com/match: "true"
+type: Opaque
+stringData:
+  OPENAI_API_KEY: lab-openai-placeholder
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: customer-application-configmap
+data:
+  customer-application.yaml: |
+    keycloak:
+      auth-server-url: http://identity
+      realm: Yas
+      resource: customer-management
+      credentials:
+        secret: ${KEYCLOAK_CUSTOMER_MANAGEMENT_CLIENT_SECRET}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: media-application-configmap
+data:
+  media-application.yaml: |
+    server:
+      servlet:
+        context-path: /media
+    yas:
+      publicUrl: http://media/media
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-paypal-application-configmap
+data:
+  payment-paypal-application.yaml: |
+    yas:
+      public:
+        url: http://storefront-ui:3000/complete-payment
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: search-application-configmap
+data:
+  search-application.yaml: |
+    elasticsearch:
+      url: elasticsearch-es-http.elasticsearch
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recommendation-application-configmap
+data:
+  recommendation-application.yaml: |
+    spring:
+      ai:
+        azure:
+          openai:
+            api-key: ${OPENAI_API_KEY}
+            endpoint: https://product-recommendation.openai.azure.com
+            embedding:
+              options:
+                model: text-embedding-3-small
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yas-gateway-routes-config-configmap
+data:
+  gateway-routes-config.yaml: |
+    spring:
+      cloud:
+        gateway:
+          routes:
+            - id: product_api
+              uri: http://product
+              predicates:
+                - Path=/api/product/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: cart_api
+              uri: http://cart
+              predicates:
+                - Path=/api/cart/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: customer_api
+              uri: http://customer
+              predicates:
+                - Path=/api/customer/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: order_api
+              uri: http://order
+              predicates:
+                - Path=/api/order/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: ui
+              uri: ${UI_HOST}
+              predicates:
+                - Path=/**
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backoffice-bff-extra-configmap
+data:
+  backoffice-bff-extra-config.yaml: |
+    spring:
+      data:
+        redis:
+          host: redis-master.redis
+          password: ${REDIS_PASSWORD}
+          port: 6379
+      security:
+        oauth2:
+          client:
+            provider:
+              keycloak:
+                issuer-uri: http://identity/realms/Yas
+            registration:
+              api-client:
+                provider: keycloak
+                client-id: backoffice-bff
+                client-secret: ${KEYCLOAK_BACKOFFICE_BFF_CLIENT_SECRET}
+                scope: openid, profile, email, roles
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storefront-bff-extra-configmap
+data:
+  storefront-bff-extra-config.yaml: |
+    spring:
+      data:
+        redis:
+          host: redis-master.redis
+          password: ${REDIS_PASSWORD}
+          port: 6379
+      security:
+        oauth2:
+          client:
+            provider:
+              keycloak:
+                issuer-uri: http://identity/realms/Yas
+            registration:
+              api-client:
+                provider: keycloak
+                client-id: storefront-bff
+                client-secret: ${KEYCLOAK_STOREFRONT_BFF_CLIENT_SECRET}
+                scope: openid, profile, email, roles

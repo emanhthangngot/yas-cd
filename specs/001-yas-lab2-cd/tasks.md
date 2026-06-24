@@ -45,4 +45,4 @@
 - [x] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
 - [x] App repo only owns app source and CI.
 - [ ] ArgoCD apps sync from `yas-cd/main`.
-- [ ] Developer deployment includes platform dependencies.
+- [x] Developer deployment includes platform dependencies.
