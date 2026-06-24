@@ -12,7 +12,7 @@ helmCharts:
     releaseName: cart
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-cart
+        repository: docker.io/emanhthangngot/yas-cart
         tag: main
       nameOverride: cart
       fullnameOverride: cart
@@ -21,7 +21,7 @@ helmCharts:
     releaseName: customer
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-customer
+        repository: docker.io/emanhthangngot/yas-customer
         tag: main
       nameOverride: customer
       fullnameOverride: customer
@@ -30,7 +30,7 @@ helmCharts:
     releaseName: inventory
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-inventory
+        repository: docker.io/emanhthangngot/yas-inventory
         tag: main
       nameOverride: inventory
       fullnameOverride: inventory
@@ -39,7 +39,7 @@ helmCharts:
     releaseName: location
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-location
+        repository: docker.io/emanhthangngot/yas-location
         tag: main
       nameOverride: location
       fullnameOverride: location
@@ -48,7 +48,7 @@ helmCharts:
     releaseName: media
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-media
+        repository: docker.io/emanhthangngot/yas-media
         tag: main
       nameOverride: media
       fullnameOverride: media
@@ -57,7 +57,7 @@ helmCharts:
     releaseName: order
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-order
+        repository: docker.io/emanhthangngot/yas-order
         tag: main
       nameOverride: order
       fullnameOverride: order
@@ -66,7 +66,7 @@ helmCharts:
     releaseName: payment
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-payment
+        repository: docker.io/emanhthangngot/yas-payment
         tag: main
       nameOverride: payment
       fullnameOverride: payment
@@ -75,7 +75,7 @@ helmCharts:
     releaseName: payment-paypal
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-payment-paypal
+        repository: docker.io/emanhthangngot/yas-payment-paypal
         tag: main
       nameOverride: payment-paypal
       fullnameOverride: payment-paypal
@@ -84,7 +84,7 @@ helmCharts:
     releaseName: product
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-product
+        repository: docker.io/emanhthangngot/yas-product
         tag: main
       nameOverride: product
       fullnameOverride: product
@@ -93,7 +93,7 @@ helmCharts:
     releaseName: promotion
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-promotion
+        repository: docker.io/emanhthangngot/yas-promotion
         tag: main
       nameOverride: promotion
       fullnameOverride: promotion
@@ -102,7 +102,7 @@ helmCharts:
     releaseName: rating
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-rating
+        repository: docker.io/emanhthangngot/yas-rating
         tag: main
       nameOverride: rating
       fullnameOverride: rating
@@ -111,7 +111,7 @@ helmCharts:
     releaseName: search
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-search
+        repository: docker.io/emanhthangngot/yas-search
         tag: main
       nameOverride: search
       fullnameOverride: search
@@ -120,7 +120,7 @@ helmCharts:
     releaseName: tax
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-tax
+        repository: docker.io/emanhthangngot/yas-tax
         tag: main
       nameOverride: tax
       fullnameOverride: tax
@@ -129,7 +129,7 @@ helmCharts:
     releaseName: webhook
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-webhook
+        repository: docker.io/emanhthangngot/yas-webhook
         tag: main
       nameOverride: webhook
       fullnameOverride: webhook
@@ -138,7 +138,7 @@ helmCharts:
     releaseName: sampledata
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-sampledata
+        repository: docker.io/emanhthangngot/yas-sampledata
         tag: main
       nameOverride: sampledata
       fullnameOverride: sampledata
@@ -147,7 +147,7 @@ helmCharts:
     releaseName: recommendation
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-recommendation
+        repository: docker.io/emanhthangngot/yas-recommendation
         tag: main
       nameOverride: recommendation
       fullnameOverride: recommendation
@@ -156,7 +156,7 @@ helmCharts:
     releaseName: backoffice-bff
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice-bff
+        repository: docker.io/emanhthangngot/yas-backoffice-bff
         tag: main
       nameOverride: backoffice-bff
       fullnameOverride: backoffice-bff
@@ -165,7 +165,7 @@ helmCharts:
     releaseName: storefront-bff
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-storefront-bff
+        repository: docker.io/emanhthangngot/yas-storefront-bff
         tag: main
       nameOverride: storefront-bff
       fullnameOverride: storefront-bff
@@ -174,7 +174,7 @@ helmCharts:
     releaseName: backoffice-ui
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice
+        repository: docker.io/emanhthangngot/yas-backoffice
         tag: main
       nameOverride: backoffice-ui
       fullnameOverride: backoffice-ui
@@ -182,7 +182,7 @@ helmCharts:
     releaseName: storefront-ui
     valuesInline:
       image:
-        repository: docker.io/${DOCKERHUB_USERNAME}/yas-storefront
+        repository: docker.io/emanhthangngot/yas-storefront
         tag: main
       nameOverride: storefront-ui
       fullnameOverride: storefront-ui

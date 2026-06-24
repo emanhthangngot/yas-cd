@@ -11,43 +11,43 @@ labels:
     includeSelectors: true
 
 images:
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-cart
+  - name: docker.io/emanhthangngot/yas-cart
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-customer
+  - name: docker.io/emanhthangngot/yas-customer
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-inventory
+  - name: docker.io/emanhthangngot/yas-inventory
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-location
+  - name: docker.io/emanhthangngot/yas-location
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-media
+  - name: docker.io/emanhthangngot/yas-media
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-order
+  - name: docker.io/emanhthangngot/yas-order
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment
+  - name: docker.io/emanhthangngot/yas-payment
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-payment-paypal
+  - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-product
+  - name: docker.io/emanhthangngot/yas-product
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-promotion
+  - name: docker.io/emanhthangngot/yas-promotion
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-rating
+  - name: docker.io/emanhthangngot/yas-rating
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-search
+  - name: docker.io/emanhthangngot/yas-search
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-tax
+  - name: docker.io/emanhthangngot/yas-tax
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-webhook
+  - name: docker.io/emanhthangngot/yas-webhook
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-sampledata
+  - name: docker.io/emanhthangngot/yas-sampledata
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-recommendation
+  - name: docker.io/emanhthangngot/yas-recommendation
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice-bff
+  - name: docker.io/emanhthangngot/yas-backoffice-bff
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront-bff
+  - name: docker.io/emanhthangngot/yas-storefront-bff
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-backoffice
+  - name: docker.io/emanhthangngot/yas-backoffice
     newTag: main
-  - name: docker.io/${DOCKERHUB_USERNAME}/yas-storefront
+  - name: docker.io/emanhthangngot/yas-storefront
     newTag: main
