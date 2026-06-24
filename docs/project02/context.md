@@ -65,7 +65,7 @@ tĩnh `50000`.
 ## Kiến trúc Lab 2 (đã CHỐT)
 
 - **Cluster: K3s single-node** trên chính GCP VM `gcp-ci-cd-agent` (gộp control-plane +
-  worker). ✅ Đã chốt **K3s** (KHÔNG dùng kubeadm — dù docs cũ viết theo kubeadm).
+  worker). Đã chốt **K3s**; không dùng hướng bootstrap control-plane/worker cũ.
 - **GitOps split-repo:** tạo **GitOps Repo** riêng chứa YAML manifests, tách khỏi Source Repo.
 - **Luồng CD:** code đổi ở Source Repo → Jenkins Master (AWS) điều phối xuống GCP Agent
   (`gcp-build-agent`) chạy CI → build image → push **Docker Hub** (tag = commit-id) →
@@ -103,32 +103,33 @@ pipeline {
 
 ## Hiện trạng repo
 
-**Đã có (scaffold/docs):**
+**Đã có trong CD repo (scaffold/docs/validation):**
 - `services.yaml` — catalog service deployable (loại `common-library`, `delivery`);
   template image `docker.io/${DOCKERHUB_USERNAME}/yas-${service}:${tag}`; tag
   commit-sha / main+latest / vX.Y.Z.
-- `k8s/charts/` — 27 Helm charts + platform deps trong `k8s/deploy/`.
-- `deploy/gitops/` — skeleton base + overlays dev/staging/developer (đang RỖNG
-  `resources: []`) + 3 ArgoCD App `argocd/apps/yas-{dev,staging,developer}.yaml`
-  (auto-sync + prune, trỏ `lab2/cd-platform`).
-- `Jenkinsfile` — CI Lab 1 (8 stage) + skip-CI cho commit docs/gitops/spec.
+- `charts/` — chart snapshot để CD repo render độc lập.
+- `base/`, `overlays/dev`, `overlays/staging`, `overlays/developer` — Kustomize desired state
+  đã render được bằng `kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone`.
+- `argocd/apps/yas-{dev,staging,developer}.yaml` — auto-sync + prune, trỏ
+  `git@github.com:emanhthangngot/yas-cd.git`, branch `main`.
+- `scripts/update-image-tag.sh` — contract để Jenkins cập nhật image tag qua GitOps.
+- `scripts/validate-gitops.sh` và `scripts/validate-staging-immutable.sh` — kiểm tra catalog,
+  overlays, source cũ, tag staging immutable và secret-like pattern.
 - Docs: `docs/project02/{jenkins-jobs,cluster-runbook,mesh-runbook,
   development-roadmap-fixed}.md`; spec/plan/tasks trong `specs/001-yas-lab2-cd/`.
-- GitHub Actions hiện push image lên `ghcr.io:latest` (KHÁC yêu cầu: phải Docker Hub
-  + tag commit-id).
 
 **Còn thiếu (phần triển khai thực):**
-- Jenkins CD stages: build+push Docker Hub theo tag commit-id; script update tag vào GitOps repo.
+- Jenkins CD stages trong app repo: build+push Docker Hub theo tag commit-id; clone/push GitOps repo.
 - Jenkins jobs: `developer_build`, `teardown_developer`, `deploy_dev`, `release_staging`,
   rollback, cluster smoke-check.
-- Populate overlays (render charts + image override theo tag).
-- Cài K3s + ArgoCD + ingress + storage trên VM `gcp-ci-cd-agent`.
-- Triển khai Istio/Kiali + policies (mới có runbook).
+- Cài và verify K3s + ArgoCD + ingress + storage trên VM `gcp-ci-cd-agent`.
+- Apply ArgoCD apps vào cluster thật và chụp evidence `Synced/Healthy`.
+- Triển khai Istio/Kiali + policies và chụp evidence mesh.
 
 ## ⚠️ Lưu ý khi bắt đầu triển khai
 
-- Docs `docs/project02/cluster-runbook.md` & liên quan hiện viết theo **kubeadm**
-  (commit `190eb0a2`). Đã chốt **K3s** → cần cập nhật lại cho khớp.
+- Docs `docs/project02/cluster-runbook.md` đã đi theo hướng **K3s**. Khi cập nhật thêm,
+  không đưa lại hướng bootstrap control-plane/worker cũ.
 - Label Jenkins agent: thống nhất `gcp-build-agent` (xem mục Quy ước Jenkinsfile).
 
 ## Roadmap milestone (development-roadmap-fixed.md)
