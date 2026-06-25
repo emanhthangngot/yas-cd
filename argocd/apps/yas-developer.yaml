@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:emanhthangngot/yas-cd.git
-    targetRevision: lab2/task/integrate-service-mesh
+    targetRevision: main
     path: overlays/developer
   destination:
     server: https://kubernetes.default.svc

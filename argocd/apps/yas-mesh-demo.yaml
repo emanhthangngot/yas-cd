@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: 'git@github.com:emanhthangngot/yas-cd.git'
     path: overlays/mesh-demo
-    targetRevision: lab2/task/integrate-service-mesh
+    targetRevision: main
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: mesh-demo
