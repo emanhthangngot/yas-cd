@@ -1,0 +1,9 @@
+*.secret.yaml
+secrets/
+.kube/
+kubeconfig*
+*.key
+*.crt
+.DS_Store
+*.tmp
+*.swp

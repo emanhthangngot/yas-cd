@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-mesh-demo
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:emanhthangngot/yas-cd.git'
+    path: overlays/mesh-demo
+    targetRevision: main
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: mesh-demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mesh-demo
+
+resources:
+  - namespace.yaml
+
+helmGlobals:
+  chartHome: ../../charts
+
+helmCharts:
+  - name: backend
+    releaseName: location
+    valuesInline:
+      image:
+        repository: docker.io/emanhthangngot/yas-location
+        tag: main
+      nameOverride: location
+      fullnameOverride: location
+      databaseName: location
+  - name: backend
+    releaseName: tax
+    valuesInline:
+      image:
+        repository: docker.io/emanhthangngot/yas-tax
+        tag: main
+      nameOverride: tax
+      fullnameOverride: tax
+      databaseName: tax
