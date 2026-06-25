@@ -62,4 +62,4 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
 
 ## 10. PostgreSQL hết connection khi nhiều backend khởi động cùng lúc
 - **Vấn đề**: Trên lab single-node, nhiều Spring Boot service cùng chạy Liquibase/JPA và Hikari pool mặc định làm PostgreSQL báo `FATAL: sorry, too many clients already`.
-- **Giải pháp**: Giới hạn Hikari pool trong ConfigMap chung ở mức lab-safe (`maximum-pool-size: 2`, `minimum-idle: 0`) để giảm số connection giữ đồng thời.
+- **Giải pháp**: Giới hạn Hikari pool trong ConfigMap chung ở mức lab-safe (`maximum-pool-size: 2`, `minimum-idle: 0`) để giảm số connection giữ đồng thời. Đồng thời tăng PostgreSQL `max_connections` lên 500 cho lab single-node để chịu được lúc nhiều môi trường cùng khởi động.
