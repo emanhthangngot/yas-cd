@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
         - name: postgresql
-          image: postgres:15-alpine
+          image: pgvector/pgvector:pg15
           imagePullPolicy: IfNotPresent
           args:
             - -c
