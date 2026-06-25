@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: kube-system
+  annotations:
+    meta.helm.sh/release-name: traefik
+    meta.helm.sh/release-namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: traefik-kube-system
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik
+spec:
+  type: LoadBalancer
+  allocateLoadBalancerNodePorts: true
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilyPolicy: PreferDualStack
+  selector:
+    app.kubernetes.io/instance: traefik-kube-system
+    app.kubernetes.io/name: traefik
+  ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: web
+      nodePort: 30080
+    - name: websecure
+      port: 443
+      protocol: TCP
+      targetPort: websecure
+      nodePort: 30081

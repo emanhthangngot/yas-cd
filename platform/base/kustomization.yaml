@@ -10,3 +10,4 @@ resources:
   - keycloak-realm.configmap.yaml
   - keycloak.yaml
   - identity-aliases.yaml
+  - traefik-nodeport.yaml

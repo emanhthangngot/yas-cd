@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: developer
 resources:
   - ../../base
+  - ingress.yaml
 
 labels:
   - pairs:

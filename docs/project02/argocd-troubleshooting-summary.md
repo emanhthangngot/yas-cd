@@ -55,3 +55,7 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
 ## 8. Backend khởi động chậm bị liveness probe restart
 - **Vấn đề**: Trên single-node K3s lab, nhiều Spring Boot backend khởi động song song rất chậm vì cùng lúc chạy Liquibase, JPA và kết nối dependency. Pod bị kubelet restart với `Exit Code 137` trước khi actuator metric port sẵn sàng, dù log không có exception ứng dụng.
 - **Giải pháp**: Bổ sung `startupProbe` cho backend chart. Startup probe cho service thêm thời gian mở `/actuator/health/liveness` lần đầu, sau đó liveness/readiness mới được dùng để giám sát bình thường.
+
+## 9. Cluster reset làm mất app access NodePort
+- **Vấn đề**: Sau khi GCP VM đổi IP/khởi động lại cluster, K3s Traefik tạo NodePort ngẫu nhiên thay vì port demo cố định `30080/30081`, và YAS chưa có Ingress route để truy cập bằng host lab.
+- **Giải pháp**: Quản lý Traefik service NodePort qua GitOps trong `yas-platform`, đồng thời thêm Ingress route cho `yas.dev.local`, `yas.staging.local`, và `yas.developer.local` tới `storefront-ui`.
