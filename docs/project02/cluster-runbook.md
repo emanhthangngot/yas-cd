@@ -12,7 +12,7 @@
 ## Access Model
 
 - Public/demo access:
-  - Nginx Ingress HTTP/HTTPS: `30080/30081`
+  - Traefik Ingress HTTP/HTTPS: `30080/30081`
   - Istio IngressGateway HTTP/HTTPS: `30090/30490`
 - Admin access:
   - ArgoCD and Kiali must use SSH tunnel or GCP firewall allowlisting for the admin IP.
