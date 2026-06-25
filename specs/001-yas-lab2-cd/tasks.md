@@ -28,16 +28,16 @@
 - [x] Update `tzin1401/yas` Jenkinsfile to clone and push `yas-cd`.
 - [x] Replace active `deploy/gitops/**`, `docs/project02/**`, `.specify/**`, `specs/001-yas-lab2-cd/**`, and `.agents/**` in app repo with pointers or remove them.
 - [x] Keep Lab 1 CI gates intact in the app repo.
-- [ ] Verify GitOps commits no longer trigger app repo full CI.
+- [x] Verify GitOps commits no longer trigger app repo full CI.
 
 ## Phase 4 - Cluster And Evidence
 
-- [ ] Provision one 32 GB Google Cloud VM and reserve or record its external IP.
-- [ ] Configure GCP firewall for app/demo ports and admin-only access.
-- [ ] Execute K3s single-node cluster runbook.
-- [ ] Verify K3s local-path storage, then install ingress, ArgoCD, Istio, and Kiali.
-- [ ] Apply `argocd/apps/` and confirm apps are `Synced/Healthy`.
-- [ ] Capture required evidence logs/screenshots.
+- [x] Provision one 32 GB Google Cloud VM and reserve or record its external IP.
+- [x] Configure GCP firewall for app/demo ports and admin-only access.
+- [x] Execute K3s single-node cluster runbook.
+- [x] Verify K3s local-path storage, then install ingress, ArgoCD, Istio, and Kiali.
+- [x] Apply `argocd/apps/` and confirm apps are `Synced/Healthy`.
+- [x] Capture required evidence logs/screenshots.
 
 ## Checkpoint
 
