@@ -165,7 +165,7 @@ metadata:
 data:
   search-application.yaml: |
     elasticsearch:
-      url: elasticsearch-es-http.elasticsearch:9200
+      url: https://elasticsearch-es-http.elasticsearch:9200
       username: ${ELASTICSEARCH_USERNAME}
       password: ${ELASTICSEARCH_PASSWORD}
 ---
