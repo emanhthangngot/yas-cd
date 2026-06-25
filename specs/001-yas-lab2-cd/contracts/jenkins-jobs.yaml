@@ -1,0 +1,97 @@
+jobs:
+  developer_build:
+    target_environment: developer
+    purpose: Deploy a branch-preview slice for one or more selected services.
+    parameters:
+      selected_services:
+        type: list[string]
+        required: true
+      branch_map:
+        type: map[string,string]
+        required: true
+      default_tag_policy:
+        type: enum
+        allowed: [main, commit-sha]
+        default: main
+    preconditions:
+      - yas-platform is healthy
+      - staging is dormant unless explicitly approved otherwise
+    gitops_side_effects:
+      - update overlays/developer image tags
+      - update developer replica policy to active
+      - validate with scripts/validate-gitops.sh
+    postconditions:
+      - yas-developer syncs from yas-cd/main
+      - developer namespace becomes active only for the preview window
+
+  teardown_developer:
+    target_environment: developer
+    purpose: Return developer preview resources to dormant state through GitOps.
+    parameters: {}
+    preconditions:
+      - developer overlay exists
+    gitops_side_effects:
+      - set developer replica policy to dormant
+      - let ArgoCD prune or reconcile
+    postconditions:
+      - developer namespace is dormant
+
+  deploy_dev:
+    target_environment: dev
+    purpose: Promote validated mainline images into the default active environment.
+    parameters:
+      image_tag:
+        type: string
+        required: true
+    preconditions:
+      - image tag exists in Docker Hub
+    gitops_side_effects:
+      - update overlays/dev image tags
+      - ensure dev replica policy is active
+    postconditions:
+      - yas-dev becomes the active full environment
+
+  release_staging:
+    target_environment: staging
+    purpose: Promote immutable release tags to the staging overlay.
+    parameters:
+      release_tag:
+        type: string
+        required: true
+        pattern: "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+    preconditions:
+      - release_tag exists in Docker Hub
+      - staging immutability validation passes
+    gitops_side_effects:
+      - update overlays/staging image tags
+      - activate staging when validation is required
+    postconditions:
+      - staging uses immutable tags only
+
+  rollback_environment:
+    target_environment: any
+    purpose: Revert an environment to a previous GitOps state or image tag.
+    parameters:
+      environment:
+        type: enum
+        allowed: [dev, staging, developer]
+        required: true
+      rollback_ref:
+        type: string
+        required: true
+    preconditions:
+      - rollback target exists in git history or approved tag history
+    gitops_side_effects:
+      - revert overlay state in yas-cd
+    postconditions:
+      - selected environment reconciles to the chosen prior state
+
+  cluster_smoke_check:
+    target_environment: cluster
+    purpose: Collect cluster health, ArgoCD status, and ingress reachability.
+    parameters: {}
+    preconditions:
+      - readonly kube access is available
+    gitops_side_effects: []
+    postconditions:
+      - report includes active environment, app health, node pressure, and demo endpoint status

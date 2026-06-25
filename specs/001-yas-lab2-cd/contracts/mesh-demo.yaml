@@ -1,0 +1,37 @@
+mesh_demo:
+  namespace: mesh-demo
+  service_slice:
+    source_service: tax
+    target_service: location
+    supporting_dependencies:
+      - postgres
+  injection:
+    mode: istio-sidecar
+    namespace_label:
+      istio-injection: enabled
+  policies:
+    peerauthentication:
+      mtls_mode: STRICT
+    destinationrule:
+      tls_mode: ISTIO_MUTUAL
+    virtualservice:
+      retry:
+        attempts: 3
+        retryOn: "5xx,connect-failure,refused-stream"
+        perTryTimeout: 2s
+    authorizationpolicy:
+      required_evidence:
+        - allowed_source_can_reach_target
+        - denied_source_is_blocked
+  observability:
+    kiali_required: true
+    expected_evidence:
+      - topology_screenshot
+      - security_badge_or_lock_indicator
+      - traffic_edge_between_tax_and_location
+  validation:
+    commands:
+      - "kubectl get pods -n mesh-demo"
+      - "kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n mesh-demo"
+      - "kubectl exec -n mesh-demo <allowed-client-pod> -- curl -sv http://location.mesh-demo:<port>"
+      - "kubectl exec -n mesh-demo <denied-client-pod> -- curl -sv http://location.mesh-demo:<port>"

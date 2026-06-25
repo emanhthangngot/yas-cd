@@ -1,0 +1,56 @@
+runtime_governance:
+  platform:
+    namespace_mode: always_on
+    required_apps:
+      - postgres
+      - redis
+      - kafka
+      - elasticsearch
+      - keycloak
+      - argocd
+
+  full_stack_environments:
+    active_limit: 1
+    default_active: dev
+    optional_environments:
+      - staging
+      - developer
+    dormant_behavior:
+      app_deployments_replicas: 0
+      namespaces_retained: true
+      argocd_management_retained: true
+
+  chart_defaults:
+    backend:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    ui:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+  namespace_guardrails:
+    required:
+      - LimitRange
+    optional:
+      - ResourceQuota
+
+  secret_policy:
+    committed_form: sealed-secret
+    plaintext_real_secrets_allowed_in_git: false
+    manual_cluster_bootstrap_allowed_for_admin_only: true
+
+  access_policy:
+    app_entrypoint:
+      mode: ingress-nodeport
+      ports:
+        - 30080
+        - 30081
+    admin_surfaces_public: false
