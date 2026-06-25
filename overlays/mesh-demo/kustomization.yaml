@@ -4,6 +4,7 @@ namespace: mesh-demo
 
 resources:
   - namespace.yaml
+  - istio.yaml
 
 helmGlobals:
   chartHome: ../../charts

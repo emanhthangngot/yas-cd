@@ -1,0 +1,37 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: mesh-demo
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: tax
+  namespace: mesh-demo
+spec:
+  host: tax.mesh-demo.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tax
+  namespace: mesh-demo
+spec:
+  hosts:
+  - tax.mesh-demo.svc.cluster.local
+  http:
+  - fault:
+      abort:
+        httpStatus: 503
+        percentage:
+          value: 50
+    route:
+    - destination:
+        host: tax.mesh-demo.svc.cluster.local
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
