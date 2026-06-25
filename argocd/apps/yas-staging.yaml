@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:emanhthangngot/yas-cd.git
-    targetRevision: main
+    repoURL: 'git@github.com:emanhthangngot/yas-cd.git'
+    targetRevision: lab2/task/integrate-service-mesh
     path: overlays/staging
   destination:
     server: https://kubernetes.default.svc
