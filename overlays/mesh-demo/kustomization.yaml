@@ -5,6 +5,7 @@ namespace: mesh-demo
 resources:
   - namespace.yaml
   - istio.yaml
+  - ../../base/yas-configuration.yaml
 
 helmGlobals:
   chartHome: ../../charts
