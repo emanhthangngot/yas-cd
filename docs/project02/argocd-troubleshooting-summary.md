@@ -59,3 +59,7 @@ Tài liệu này tóm tắt các vấn đề kỹ thuật phát sinh trong quá 
 ## 9. Cluster reset làm mất app access NodePort
 - **Vấn đề**: Sau khi GCP VM đổi IP/khởi động lại cluster, K3s Traefik tạo NodePort ngẫu nhiên thay vì port demo cố định `30080/30081`, và YAS chưa có Ingress route để truy cập bằng host lab.
 - **Giải pháp**: Quản lý Traefik service NodePort qua GitOps trong `yas-platform`, đồng thời thêm Ingress route cho `yas.dev.local`, `yas.staging.local`, và `yas.developer.local` tới `storefront-ui`.
+
+## 10. PostgreSQL hết connection khi nhiều backend khởi động cùng lúc
+- **Vấn đề**: Trên lab single-node, nhiều Spring Boot service cùng chạy Liquibase/JPA và Hikari pool mặc định làm PostgreSQL báo `FATAL: sorry, too many clients already`.
+- **Giải pháp**: Giới hạn Hikari pool trong ConfigMap chung ở mức lab-safe (`maximum-pool-size: 2`, `minimum-idle: 0`) để giảm số connection giữ đồng thời.
