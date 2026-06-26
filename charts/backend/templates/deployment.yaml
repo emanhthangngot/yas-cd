@@ -80,12 +80,24 @@ spec:
               containerPort: {{ .Values.metricPort }}
           lifecycle:
             {{ toYaml .Values.lifecycle | nindent 12 }}
+          {{- $startupProbe := deepCopy .Values.startupProbe }}
+          {{- if hasKey $startupProbe "tcpSocket" }}
+          {{- $_ := unset $startupProbe "httpGet" }}
+          {{- end }}
           startupProbe:
-            {{- toYaml .Values.startupProbe | nindent 12 }}
+            {{- toYaml $startupProbe | nindent 12 }}
+          {{- $livenessProbe := deepCopy .Values.livenessProbe }}
+          {{- if hasKey $livenessProbe "tcpSocket" }}
+          {{- $_ := unset $livenessProbe "httpGet" }}
+          {{- end }}
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            {{- toYaml $livenessProbe | nindent 12 }}
+          {{- $readinessProbe := deepCopy .Values.readinessProbe }}
+          {{- if hasKey $readinessProbe "tcpSocket" }}
+          {{- $_ := unset $readinessProbe "httpGet" }}
+          {{- end }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            {{- toYaml $readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
