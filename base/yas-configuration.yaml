@@ -168,6 +168,12 @@ data:
       url: elasticsearch-es-http.elasticsearch:9200
       username: ${ELASTICSEARCH_USERNAME}
       password: ${ELASTICSEARCH_PASSWORD}
+    spring:
+      kafka:
+        consumer:
+          bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
+        producer:
+          bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -184,6 +190,11 @@ data:
             embedding:
               options:
                 model: text-embedding-3-small
+      kafka:
+        consumer:
+          bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
+        producer:
+          bootstrap-servers: kafka-cluster-kafka-brokers.kafka:9092
 ---
 apiVersion: v1
 kind: ConfigMap

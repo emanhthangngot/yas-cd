@@ -110,6 +110,30 @@ helmCharts:
           mountPath: /opt/yas/payment-paypal
       extraApplicationConfigPaths:
         - /opt/yas/payment-paypal/payment-paypal-application.yaml
+      startupProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 180
+        successThreshold: 1
+        tcpSocket:
+          port: metric
+      livenessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 60
+        successThreshold: 1
+        tcpSocket:
+          port: metric
+      readinessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 60
+        successThreshold: 1
+        tcpSocket:
+          port: metric
   - name: backend
     releaseName: product
     valuesInline:
