@@ -49,11 +49,11 @@ if [ "$deploy_enabled" != "true" ]; then
 fi
 
 image_name="$(SERVICE="$SERVICE" yq -r '.services[] | select(.name == env(SERVICE)) | .imageName' services.yaml)"
-image_ref="docker.io/\${DOCKERHUB_USERNAME}/${image_name}"
 overlay="overlays/${ENVIRONMENT}/kustomization.yaml"
+image_ref="$(IMAGE_NAME="$image_name" yq -r '.images[] | select(.name | split("/")[-1] == env(IMAGE_NAME)) | .name' "$overlay" | head -n 1)"
 
-if ! IMAGE_REF="$image_ref" yq -e '.images[] | select(.name == env(IMAGE_REF))' "$overlay" >/dev/null; then
-  echo "image not found in ${overlay}: ${image_ref}" >&2
+if [ -z "$image_ref" ]; then
+  echo "image not found in ${overlay}: ${image_name}" >&2
   exit 1
 fi
 
