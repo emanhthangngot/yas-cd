@@ -4,13 +4,11 @@ namespace: dev
 resources:
   - ../../base
   - ingress.yaml
-
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas
       yas.nashtechglobal.com/environment: dev
     includeSelectors: true
-
 images:
   - name: docker.io/emanhthangngot/yas-cart
     newTag: main
