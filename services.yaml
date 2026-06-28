@@ -73,7 +73,7 @@ services:
     imageName: yas-payment
     type: backend
     deploy: true
-    dependencies: [postgres]
+    dependencies: [postgres, payment-paypal]
   - name: payment-paypal
     path: payment-paypal
     dockerfile: payment-paypal/Dockerfile
@@ -81,7 +81,7 @@ services:
     imageName: yas-payment-paypal
     type: backend
     deploy: true
-    dependencies: [postgres, payment]
+    dependencies: [postgres]
   - name: product
     path: product
     dockerfile: product/Dockerfile

@@ -23,7 +23,7 @@ images:
   - name: docker.io/emanhthangngot/yas-order
     newTag: main
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: 4036da6bda21
+    newTag: main
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: main
   - name: docker.io/emanhthangngot/yas-product
