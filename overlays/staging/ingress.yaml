@@ -1,6 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: yas-storefront-media
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /media/$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: yas.staging.local
+      http:
+        paths:
+          - path: /api/media(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: media
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
   name: yas-storefront
 spec:
   ingressClassName: nginx
