@@ -19,8 +19,8 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Partially aligned on `main` | One Jenkinsfile exists. `main` still has old `DEPLOY_TO_DEVELOPER` behavior. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
-| Platform infrastructure readiness | Specified for evidence | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness must be captured before app health signoff. |
-| Service mesh | Expanded spec | `dev` and `staging` required app pods must show workload plus Istio sidecar as `READY 2/2`; `mesh-demo` is supporting evidence only. |
+| Platform infrastructure readiness | Done | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness are fully verified and documented in docs/project02/platform-infrastructure.md. |
+| Service mesh | Done | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
 
 ## Recent CD Repo PRs

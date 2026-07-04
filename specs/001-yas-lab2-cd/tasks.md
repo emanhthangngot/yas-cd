@@ -56,44 +56,44 @@
 
 ## Phase 5 - Platform Infrastructure And Istio Sidecar Readiness
 
-- [ ] Document platform infrastructure contract for active `dev` and `staging`
+- [x] Document platform infrastructure contract for active `dev` and `staging`
   workloads: PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity
   aliases, ingress NodePorts, and K3s local-path PVCs.
-- [ ] Verify `yas-platform` is `Synced/Healthy` before accepting `yas-dev` or
+- [x] Verify `yas-platform` is `Synced/Healthy` before accepting `yas-dev` or
   `yas-staging` health.
-- [ ] Verify required platform namespaces exist: `postgres`, `redis`, `kafka`,
+- [x] Verify required platform namespaces exist: `postgres`, `redis`, `kafka`,
   `elasticsearch`, and `keycloak`.
-- [ ] Verify platform pods are ready: PostgreSQL, Redis, Kafka,
+- [x] Verify platform pods are ready: PostgreSQL, Redis, Kafka,
   Elasticsearch, and Keycloak.
-- [ ] Verify stateful infrastructure PVCs are `Bound` for PostgreSQL, Kafka,
+- [x] Verify stateful infrastructure PVCs are `Bound` for PostgreSQL, Kafka,
   and Elasticsearch.
-- [ ] Verify required PostgreSQL databases exist for CQ services and runtime
+- [x] Verify required PostgreSQL databases exist for CQ services and runtime
   dependencies.
-- [ ] Verify internal service names used by app pods exist and route to the
+- [x] Verify internal service names used by app pods exist and route to the
   correct infrastructure endpoints.
-- [ ] Add GitOps-managed Istio injection policy for required `dev` workloads.
-- [ ] Add GitOps-managed Istio injection policy for required `staging`
+- [x] Add GitOps-managed Istio injection policy for required `dev` workloads.
+- [x] Add GitOps-managed Istio injection policy for required `staging`
   workloads.
-- [ ] Add or update `PeerAuthentication`, `DestinationRule`, `VirtualService`,
+- [x] Add or update `PeerAuthentication`, `DestinationRule`, `VirtualService`,
   and `AuthorizationPolicy` resources for `dev`.
-- [ ] Add or update `PeerAuthentication`, `DestinationRule`, `VirtualService`,
+- [x] Add or update `PeerAuthentication`, `DestinationRule`, `VirtualService`,
   and `AuthorizationPolicy` resources for `staging`.
-- [ ] Render `overlays/dev` and confirm required workload pod templates opt in
+- [x] Render `overlays/dev` and confirm required workload pod templates opt in
   to sidecar injection.
-- [ ] Render `overlays/staging` and confirm required workload pod templates
+- [x] Render `overlays/staging` and confirm required workload pod templates
   opt in to sidecar injection while preserving CPU throttle and `maxSurge: 0`.
-- [ ] Reconcile or restart affected `dev` workloads after sidecar injection is
+- [x] Reconcile or restart affected `dev` workloads after sidecar injection is
   enabled.
-- [ ] Reconcile or restart affected `staging` workloads after sidecar
+- [x] Reconcile or restart affected `staging` workloads after sidecar
   injection is enabled.
-- [ ] Capture `kubectl get pods -n dev` evidence showing all required running
+- [x] Capture `kubectl get pods -n dev` evidence showing all required running
   app pods as `READY 2/2`.
-- [ ] Capture `kubectl get pods -n staging` evidence showing all required
+- [x] Capture `kubectl get pods -n staging` evidence showing all required
   running app pods as `READY 2/2`.
-- [ ] Capture representative container-name evidence showing `istio-proxy`
+- [x] Capture representative container-name evidence showing `istio-proxy`
   exists beside the application container in `dev` and `staging`.
-- [ ] Capture mTLS, retry, authorization allow/deny, and Kiali topology
+- [x] Capture mTLS, retry, authorization allow/deny, and Kiali topology
   evidence from `dev` and `staging`; treat `mesh-demo` as supporting evidence
   only.
-- [ ] Document any approved sidecar exception with service name, reason,
+- [x] Document any approved sidecar exception with service name, reason,
   compensating evidence, and approval note.
