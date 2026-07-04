@@ -24,7 +24,7 @@
 - K3s server node schedules YAS workloads by default for this lab.
 - Do not use Tailscale.
 - Use K3s bundled local-path dynamic storage for lab PVCs only.
-- Keep app/demo NodePorts stable: Nginx `30080/30081`, Istio `30090/30490`.
+- Keep app/demo NodePorts stable: app/auth `30846`, Istio `30090/30490`; treat `30080/30081` as Traefik fallback unless re-verified.
 - Keep ArgoCD `30444` and Kiali `30201` admin-only through SSH tunnel or GCP firewall allowlist.
 
 ## Evidence

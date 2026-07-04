@@ -66,8 +66,8 @@ kubectl get storageclass,pvc -A
 Install Nginx Ingress:
 
 ```text
-HTTP  30080
-HTTPS 30081
+HTTP app/auth demo 30846
+Traefik fallback   30080/30081
 ```
 
 Install ArgoCD:
@@ -122,18 +122,18 @@ Developer:
 - Current policy keeps developer dormant.
 - Confirm ArgoCD `yas-developer` is `Synced/Healthy`.
 - Confirm developer deployments are `0/0`.
-- Review or disable the app repo `DEPLOY_TO_DEVELOPER` behavior before treating this as permanent end-to-end policy.
+- Use the separate `developer_build` job for preview; the main app pipeline should not deploy developer overlays.
 
 Dev:
 
 - Push/merge `main`.
 - Confirm `yas-dev` sync.
-- Curl app through `yas.dev.local:30080`.
+- Curl app through `yas.dev.local:30846`.
 
 Staging:
 
 - Push `vX.Y.Z`.
-- Confirm `yas-staging` sync.
+- Confirm staging GitOps diff, then manually approve with `argocd app sync yas-staging`.
 - Confirm immutable tag in GitOps diff.
 - Confirm staging is active beside dev with CPU throttle and `maxSurge: 0`.
 

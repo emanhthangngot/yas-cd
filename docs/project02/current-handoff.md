@@ -62,14 +62,13 @@ Observed on app repo `main`:
 - GitOps target selection is inside the one Jenkinsfile:
   - release tag -> `staging`
   - `main` -> `dev`
-  - feature branch with `DEPLOY_TO_DEVELOPER=true` -> `developer`
-  - feature branch with `DEPLOY_TO_DEVELOPER=false` -> skip GitOps update
+  - feature branch -> build/push image only; GitOps developer preview is skipped
 
 Important mismatch:
 
-- CD repo policy now keeps `developer` dormant.
-- App repo `main` still has the old `DEPLOY_TO_DEVELOPER` behavior.
-- The branch/PR that disables developer preview GitOps is not merged into app repo `main` yet.
+- CD repo policy keeps `developer` dormant by default.
+- App repo working tree removes the old `DEPLOY_TO_DEVELOPER` parameter from the main Jenkinsfile.
+- The required course `developer_build` path is implemented as a separate Jenkinsfile that calls this repo's `scripts/prepare-developer-preview.sh`.
 
 ## Staging Release Case
 
@@ -82,7 +81,7 @@ Expected release flow:
 3. Jenkins builds/pushes Docker Hub images with `:v1.2.3`.
 4. Jenkins updates `overlays/staging/kustomization.yaml` through `scripts/promote-staging-release.sh v1.2.3`.
 5. Jenkins commits and pushes the GitOps change to `yas-cd/main`.
-6. ArgoCD syncs `yas-staging`.
+6. An operator approves the release with `argocd app sync yas-staging`.
 
 Risk to verify:
 
@@ -139,3 +138,4 @@ sudo k3s kubectl top pods -A --sort-by=cpu 2>/dev/null | head -30 || true
 2. Confirm Jenkins tag discovery for `vX.Y.Z` release jobs.
 3. Re-check ArgoCD after PR #14 to confirm staging rollout cap is applied.
 4. Collect final evidence for `dev`, `staging`, ArgoCD, Docker Hub tags, and service mesh.
+5. Keep app runtime access examples on NodePort `30846`; older `30080` examples are legacy Traefik references unless re-verified.

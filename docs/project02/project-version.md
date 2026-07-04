@@ -10,4 +10,4 @@
 - Network: no Tailscale; use VM external IP, GCP firewall, hosts-file DNS for demo names, and SSH tunnels or admin-IP allowlisting for admin UIs.
 - Active environments: `dev` and `staging` run in parallel; `developer` stays dormant to keep the single-node VM usable.
 - Staging release policy: immutable `vX.Y.Z` tags only.
-- App repo `main` currently has one Jenkinsfile; release/dev/developer behavior is selected by `TAG_NAME`, `BRANCH_NAME`, and `DEPLOY_TO_DEVELOPER`.
+- App repo main pipeline selects release/dev behavior by `TAG_NAME` and `BRANCH_NAME`; developer preview is separated into `Jenkinsfile.developer-build`.

@@ -12,7 +12,8 @@
 ## Access Model
 
 - Public/demo access:
-  - Traefik Ingress HTTP/HTTPS: `30080/30081`
+  - Current YAS app/auth ingress NodePort: `30846`
+  - Traefik Ingress HTTP/HTTPS legacy fallback: `30080/30081`
   - Istio IngressGateway HTTP/HTTPS: `30090/30490`
 - Admin access:
   - ArgoCD and Kiali must use SSH tunnel or GCP firewall allowlisting for the admin IP.
@@ -78,7 +79,7 @@ argocd app wait yas-developer --health --sync --timeout 600
 Example checks:
 
 ```bash
-curl -H "Host: yas.dev.local" "http://${GCP_VM_EXTERNAL_IP}:30080/"
+curl -H "Host: yas.dev.local" "http://${GCP_VM_EXTERNAL_IP}:30846/"
 curl -H "Host: yas.mesh.local" "http://${GCP_VM_EXTERNAL_IP}:30090/"
 ```
 

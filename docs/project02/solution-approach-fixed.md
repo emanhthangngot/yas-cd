@@ -45,7 +45,8 @@ Firewall:
 
 ```text
 22/tcp      allow ADMIN_SOURCE_CIDR
-30080/tcp   allow demo audience for Nginx HTTP
+30846/tcp   allow demo audience for current YAS app/auth ingress
+30080/tcp   allow demo audience only if the Traefik legacy fallback is used
 30081/tcp   allow demo audience if HTTPS demo is needed
 30090/tcp   allow demo audience for Istio HTTP
 30490/tcp   allow demo audience if Istio HTTPS demo is needed
@@ -99,7 +100,7 @@ For app demo without real DNS, edit hosts on client machine:
 Basic mode:
 
 ```bash
-curl -H "Host: yas.dev.local" "http://${GCP_VM_EXTERNAL_IP}:30080/"
+curl -H "Host: yas.dev.local" "http://${GCP_VM_EXTERNAL_IP}:30846/"
 ```
 
 Mesh mode:
@@ -151,7 +152,7 @@ No secret content belongs in Git, docs screenshots, or build logs.
 
 ## 7. Service Mesh
 
-Basic demo uses Nginx Ingress `30080`. Mesh demo uses Istio IngressGateway `30090`.
+Basic app/auth demo uses NodePort `30846`. Mesh demo uses Istio IngressGateway `30090`.
 
 Mesh acceptance:
 

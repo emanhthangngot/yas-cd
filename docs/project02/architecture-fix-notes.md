@@ -73,7 +73,7 @@ Manual developer_build
   -> chọn tax_branch=dev_tax_service
   -> Jenkins update overlays/developer
   -> ArgoCD sync
-  -> browser/curl truy cập qua http://yas.developer.local:30080
+  -> browser/curl truy cập qua http://yas.developer.local:30846
 ```
 
 ### Dev flow

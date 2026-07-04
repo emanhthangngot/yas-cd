@@ -23,6 +23,7 @@ if [ "$service_count" -le 0 ]; then
 fi
 
 active_environments=""
+expected_active_environments="${YAS_CD_EXPECTED_ACTIVE:-dev staging}"
 deployable_images="$(mktemp)"
 expected_gateway_services="$(mktemp)"
 trap 'rm -f "$deployable_images" "$expected_gateway_services"' EXIT
@@ -83,8 +84,8 @@ for overlay in dev staging developer; do
 done
 
 active_environments="$(echo "$active_environments" | xargs)"
-if [ "$active_environments" != "dev staging" ]; then
-  echo "dev and staging must be active together, developer must stay dormant; active environments: ${active_environments:-none}" >&2
+if [ "$active_environments" != "$expected_active_environments" ]; then
+  echo "active environment policy mismatch; expected: ${expected_active_environments}, actual: ${active_environments:-none}" >&2
   exit 1
 fi
 

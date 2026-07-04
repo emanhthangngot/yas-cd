@@ -17,7 +17,7 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | Runtime policy | Done in CD repo | Merged through CD PR #12; `dev` and `staging` active, `developer` dormant. |
 | Staging resource control | Done in CD repo | PR #13 sets staging CPU throttle; PR #14 sets `maxSurge: 0` rollouts. |
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
-| App repo Jenkinsfile | Partially aligned on `main` | One Jenkinsfile exists. `main` still has old `DEPLOY_TO_DEVELOPER` behavior. |
+| App repo Jenkinsfile | Aligned in working tree | Main Jenkinsfile handles `dev`/`staging`; developer preview is separated into `Jenkinsfile.developer-build`. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
 | Storefront login/register config | Runtime verified | `storefront-bff` uses OAuth registration id `keycloak`; authorization, login page, and registration page render through same-host Keycloak URLs on NodePort `30846` for `dev` and `staging`. |
 | API gateway routing | Fixed in CD desired state | BFF route table now maps `/api/<service>/**` directly for product, location, inventory, cart, customer, media, rating, payment, payment-paypal, tax, promotion, search, order, recommendation, webhook, and sampledata; generic `/api/**` self-route was removed. |
@@ -27,6 +27,12 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | Platform infrastructure readiness | Done | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness are fully verified and documented in docs/project02/platform-infrastructure.md. |
 | Service mesh | Done | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
+
+Current ArgoCD policy update:
+
+- `yas-dev`: automated sync/self-heal.
+- `yas-staging`: manual sync approval gate; Jenkins updates GitOps release tags, then an operator runs `argocd app sync yas-staging`.
+- `yas-developer`: automated GitOps-managed namespace, dormant by default and active only during the explicit developer-preview mode.
 
 ## Recent CD Repo PRs
 
@@ -60,7 +66,7 @@ Image tag policy:
 
 - `dev`: mutable `main` image tags.
 - `staging`: immutable release tags only, such as `v1.2.3`.
-- `developer`: dormant; app repo `main` can still update it if `DEPLOY_TO_DEVELOPER=true`, so merge or revise that app-side behavior before relying on the dormant policy end-to-end.
+- `developer`: dormant by default; feature branches in the main app Jenkinsfile build/push images only and skip GitOps updates. `Jenkinsfile.developer-build` handles the course-required preview path.
 
 ## App Repo Jenkins State
 
@@ -68,19 +74,18 @@ Checked after returning local app repo to `main`:
 
 - Only one Jenkinsfile exists.
 - No separate dev/staging/developer Jenkinsfiles exist.
-- One Jenkinsfile selects behavior using `TAG_NAME`, `BRANCH_NAME`, and `DEPLOY_TO_DEVELOPER`.
+- Main Jenkinsfile selects behavior using `TAG_NAME` and `BRANCH_NAME`; developer preview is separated into `Jenkinsfile.developer-build`.
 - Feature branch image tag: short commit id.
 - `main` image tags: short commit id, `main`, and `latest`.
 - Release tag image tags: short commit id and `vX.Y.Z`.
 - GitOps target:
   - `TAG_NAME=vX.Y.Z` -> `staging`
   - `BRANCH_NAME=main` -> `dev`
-  - feature branch with `DEPLOY_TO_DEVELOPER=true` -> `developer`
-  - feature branch with `DEPLOY_TO_DEVELOPER=false` -> no GitOps update
+  - feature branch -> no GitOps update
 
 Important follow-up:
 
-- The app repo branch/PR that disables developer preview GitOps is not merged into app repo `main` yet.
+- Create/configure the Jenkins job `developer_build` from `Jenkinsfile.developer-build`.
 - Jenkins multibranch tag discovery for `vX.Y.Z` release jobs still needs verification.
 
 ## Last Runtime Observation
@@ -128,10 +133,10 @@ kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/st
 
 1. Decide whether to merge the app repo PR/branch that disables developer preview GitOps.
 2. Confirm Jenkins multibranch is configured to discover/build Git tags.
-3. Trigger or simulate a `vX.Y.Z` release and confirm staging GitOps update.
+3. Trigger or simulate a `vX.Y.Z` release, confirm staging GitOps update, then manually sync `yas-staging`.
 4. Re-check ArgoCD health display if the UI still reports `Progressing` despite all pods being `2/2`.
 5. Capture platform infrastructure evidence for PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVCs.
-6. Run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=<nodeport> scripts/smoke-runtime-storefront.sh dev staging` from a network path that can reach the NodePort, or run the equivalent `curl --resolve ...:127.0.0.1` checks on the GCP VM.
+6. Run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=30846 scripts/smoke-runtime-storefront.sh dev staging` from a network path that can reach the NodePort, or run the equivalent `curl --resolve ...:127.0.0.1` checks on the GCP VM.
 7. Runtime-verify additional backoffice UI/API paths if a public backoffice ingress is added.
 8. Keep gateway routes synchronized through `scripts/sync-gateway-routes.sh` whenever backend services are added or removed from `services.yaml`.
 9. Capture final evidence for Docker Hub tags, ArgoCD UI screenshots, external access, and mesh.

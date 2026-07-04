@@ -17,8 +17,7 @@ Do not commit credential material, kubeconfig content, Google Cloud service acco
 `yas-ci-multibranch` in `tzin1401/yas`:
 
 - Current app repo `main` has one `Jenkinsfile`, not three separate Jenkinsfiles.
-- The one Jenkinsfile selects the CD path by `TAG_NAME`, `BRANCH_NAME`, and
-  `DEPLOY_TO_DEVELOPER`.
+- The main Jenkinsfile selects the CD path by `TAG_NAME` and `BRANCH_NAME`.
 - Keeps Lab 1 gates.
 - Validates `services.yaml`.
 - Builds and pushes Docker Hub images for changed deployable services.
@@ -27,8 +26,8 @@ Do not commit credential material, kubeconfig content, Google Cloud service acco
   - `main`: commit SHA, `main`, `latest`
   - `vX.Y.Z`: commit SHA, `vX.Y.Z`
 - Clones `git@github.com:emanhthangngot/yas-cd.git`.
-- Updates `overlays/dev`, `overlays/staging`, or `overlays/developer` through
-  `scripts/update-image-tag.sh`.
+- Updates `overlays/dev` through `scripts/update-image-tag.sh` and
+  `overlays/staging` through `scripts/promote-staging-release.sh`.
 - Runs `scripts/validate-gitops.sh` before committing.
 - Commits and pushes to `yas-cd/main`.
 
@@ -36,8 +35,7 @@ Current target selection on app repo `main`:
 
 - `TAG_NAME=vX.Y.Z`: target `staging`, image tag `vX.Y.Z`.
 - `BRANCH_NAME=main`: target `dev`, image tag `main`.
-- Feature branch with `DEPLOY_TO_DEVELOPER=true`: target `developer`, image tag commit SHA.
-- Feature branch with `DEPLOY_TO_DEVELOPER=false`: image is pushed, GitOps update is skipped.
+- Feature branch: image is pushed with commit SHA, GitOps update is skipped.
 
 Current CD repo runtime policy:
 
@@ -46,9 +44,7 @@ Current CD repo runtime policy:
 
 Important mismatch to resolve:
 
-- App repo `main` can still update `developer` if `DEPLOY_TO_DEVELOPER=true`.
-- The app repo branch/PR that disables developer preview GitOps must be merged or the Jenkinsfile
-  must be adjusted if the team wants developer to remain permanently dormant.
+- Developer preview belongs in the separate `Jenkinsfile.developer-build` job that updates this CD repo via GitOps.
 - The Jenkinsfile contains release-tag logic, but Jenkins multibranch must be configured to
   discover/build Git tags for the staging release flow to run automatically.
 
@@ -76,10 +72,10 @@ git push origin "$GITOPS_BRANCH"
 
 ## CD Actions
 
-- `developer_build`: legacy/optional only. Current runtime policy keeps `developer` dormant.
+- `developer_build`: separate parameterized job for the course-required developer preview. It commits `overlays/developer` through GitOps, activates preview mode (`dev + developer`), and does not run `kubectl apply`.
 - `teardown_developer`: restore the baseline where `developer` is dormant and `dev`/`staging` are active.
 - `deploy_dev`: update `overlays/dev` from successful `main` images.
-- `release_staging`: update `overlays/staging` only with `vX.Y.Z` image tags.
+- `release_staging`: update `overlays/staging` only with `vX.Y.Z` image tags, then require explicit `argocd app sync yas-staging` approval.
 - `rollback_environment`: revert overlay to a previous tag or GitOps commit.
 - `cluster_smoke_check`: run read-only `kubectl`, `argocd`, and curl checks.
 

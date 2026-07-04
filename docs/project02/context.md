@@ -149,13 +149,13 @@ File handoff ngắn cho chat mới: `docs/project02/current-handoff.md`.
 **App repo `main` hiện tại:**
 
 - Chỉ có 1 `Jenkinsfile`, không có 3 Jenkinsfile riêng.
-- Jenkinsfile dùng `TAG_NAME`, `BRANCH_NAME`, và `DEPLOY_TO_DEVELOPER` để chọn luồng.
+- Jenkinsfile dùng `TAG_NAME` và `BRANCH_NAME` để chọn luồng `dev`/`staging`.
 - Push feature branch build/push image tag commit-id.
 - Merge/push `main` build/push commit-id, `main`, `latest`, rồi update `dev`.
 - Push tag `vX.Y.Z` là case riêng cho `staging`, nhưng Jenkins multibranch phải bật
   discover/build tags thì mới tự chạy.
-- App `main` vẫn còn behavior `DEPLOY_TO_DEVELOPER=true` update developer; branch/PR disable
-  developer GitOps chưa merge vào app `main`.
+- Feature branch hiện skip GitOps update; developer preview đi qua job riêng
+  `developer_build` gọi GitOps script của `yas-cd`.
 
 **Runtime cần kiểm tra lại:**
 

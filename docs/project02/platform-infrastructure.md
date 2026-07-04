@@ -40,7 +40,10 @@ To make Keycloak reachable via a uniform name across all application namespaces,
 
 ## 4. Ingress NodePorts
 
-Fixed NodePorts are allocated on the Traefik service in `kube-system` to allow external entrypoints:
+Current app/auth runtime evidence uses the Nginx ingress NodePort:
+*   `30846` (HTTP app/auth demo)
+
+Legacy Traefik NodePorts are still documented for fallback/platform compatibility:
 *   `30080` (HTTP)
 *   `30081` (HTTPS)
 
