@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 <dev|staging|developer>" >&2
+  echo "usage: $0 <baseline>" >&2
 }
 
 if [ "$#" -ne 1 ]; then
@@ -10,12 +10,12 @@ if [ "$#" -ne 1 ]; then
   exit 2
 fi
 
-TARGET_ENVIRONMENT="$1"
+TARGET_MODE="$1"
 
-case "$TARGET_ENVIRONMENT" in
-  dev|staging|developer) ;;
+case "$TARGET_MODE" in
+  baseline) ;;
   *)
-    echo "invalid environment: $TARGET_ENVIRONMENT" >&2
+    echo "invalid mode: $TARGET_MODE" >&2
     usage
     exit 2
     ;;
@@ -24,14 +24,14 @@ esac
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-for environment in dev staging developer; do
-  if [ "$environment" = "$TARGET_ENVIRONMENT" ]; then
-    YAS_CD_SKIP_VALIDATE=1 scripts/set-environment-state.sh "$environment" active
-  else
-    YAS_CD_SKIP_VALIDATE=1 scripts/set-environment-state.sh "$environment" dormant
-  fi
-done
+case "$TARGET_MODE" in
+  baseline)
+    YAS_CD_SKIP_VALIDATE=1 scripts/set-environment-state.sh dev active
+    YAS_CD_SKIP_VALIDATE=1 scripts/set-environment-state.sh staging active
+    YAS_CD_SKIP_VALIDATE=1 scripts/set-environment-state.sh developer dormant
+    ;;
+esac
 
 scripts/validate-gitops.sh
 
-echo "activated ${TARGET_ENVIRONMENT}; other full-stack environments are dormant"
+echo "activated runtime mode: ${TARGET_MODE}"

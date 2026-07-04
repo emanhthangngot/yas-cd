@@ -5,8 +5,8 @@ Staging represents immutable release deployments.
 - Namespace: `staging`
 - Tags must be release tags such as `v1.2.3`.
 - Do not deploy `latest`, `main`, or branch names.
-- Default state is dormant through `replicas-dormant.yaml`.
-- Jenkins must activate staging with `scripts/promote-staging-release.sh <release-tag>`.
+- Default state is active through `replicas-active.yaml`.
+- Jenkins must promote immutable release tags with `scripts/promote-staging-release.sh <release-tag>`.
 
 Promote and activate staging:
 
@@ -14,10 +14,10 @@ Promote and activate staging:
 scripts/promote-staging-release.sh v1.2.3
 ```
 
-Return to the default active `dev` environment after validation:
+Restore the baseline runtime after validation:
 
 ```bash
-scripts/activate-environment.sh dev
+scripts/activate-environment.sh baseline
 ```
 
 Validate:
