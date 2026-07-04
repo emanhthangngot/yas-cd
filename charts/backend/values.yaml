@@ -54,6 +54,11 @@ extraEnvFroms: []
 #  - secretRef:
 #      name: secret-name-extra
 
+extraInitContainers: []
+#  - name: init-extra-example
+#    image: busybox:1.36
+#    command: ["sh", "-c", "echo init"]
+
 extraObjects: []
 #  - apiVersion: v1
 #    kind: ConfigMap
