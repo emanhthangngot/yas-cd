@@ -109,3 +109,32 @@ yas-staging     Synced        Healthy
     x-envoy-decorator-operation: storefront-ui.staging.svc.cluster.local:3000/*
     ```
 
+- [x] **Storefront API Gateway and BFF Resolution Verification**:
+  - Since the legacy `storefront-bff` jar contains bundled routes that direct all `/api/**` traffic (stripped of `/api` prefix) to `http://nginx`, we deployed a lightweight NGINX API Gateway pod matching this interface.
+  - Due to Istio Service Mesh requirements, this NGINX Gateway is configured to use `proxy_http_version 1.1` and preserve `proxy_host` header to prevent Envoy sidecar connection drops.
+  - Testing connection to **staging** product catalog API:
+    ```bash
+    $ curl -si -H "Host: yas.staging.local" http://34.124.212.254:30846/api/product/storefront/products
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    x-envoy-decorator-operation: storefront-bff.staging.svc.cluster.local:80/*
+    {"productContent":[],"pageNo":0,"pageSize":5,"totalElements":0,"totalPages":0,"isLast":true}
+    ```
+  - Testing connection to **staging** cart items API (requiring auth):
+    ```bash
+    $ curl -si -H "Host: yas.staging.local" http://34.124.212.254:30846/api/cart/storefront/cart/items
+    HTTP/1.1 403 Forbidden
+    Content-Type: application/json
+    x-envoy-decorator-operation: storefront-bff.staging.svc.cluster.local:80/*
+    {"statusCode":"403 FORBIDDEN","title":"Forbidden","detail":"ACCESS_DENIED","fieldErrors":null}
+    ```
+  - Testing connection to **dev** product catalog API:
+    ```bash
+    $ curl -si -H "Host: yas.dev.local" http://34.124.212.254:30846/api/product/storefront/products
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    x-envoy-decorator-operation: storefront-bff.dev.svc.cluster.local:80/*
+    {"productContent":[],"pageNo":0,"pageSize":5,"totalElements":0,"totalPages":0,"isLast":true}
+    ```
+
+
