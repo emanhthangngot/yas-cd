@@ -11,3 +11,4 @@ resources:
   - keycloak.yaml
   - identity-aliases.yaml
   - traefik-nodeport.yaml
+  - keycloak-ingress.yaml
