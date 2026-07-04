@@ -19,11 +19,11 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Partially aligned on `main` | One Jenkinsfile exists. `main` still has old `DEPLOY_TO_DEVELOPER` behavior. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
-| Storefront login config | Fixed in CD desired state | `storefront-bff` now uses OAuth registration id `keycloak`, matching `/oauth2/authorization/keycloak`; needs runtime login verification. |
+| Storefront login/register config | Runtime verified | `storefront-bff` uses OAuth registration id `keycloak`; authorization, login page, and registration page render through same-host Keycloak URLs on NodePort `30846` for `dev` and `staging`. |
 | API gateway routing | Fixed in CD desired state | BFF route table now maps `/api/<service>/**` directly for product, location, inventory, cart, customer, media, rating, payment, payment-paypal, tax, promotion, search, order, recommendation, webhook, and sampledata; generic `/api/**` self-route was removed. |
 | Gateway route generation | Implemented in CD repo | `scripts/sync-gateway-routes.sh` now derives backend gateway routes from `services.yaml`; `scripts/validate-gitops.sh` fails if rendered route YAML drifts from the service catalog. |
-| Media image routing | Fixed in CD desired state | Media URLs now resolve through same-origin `/api/media`, and both Spring Gateway and compat NGINX route media; needs browser/runtime verification. |
-| Storefront runtime smoke check | Implemented in CD repo | `scripts/smoke-runtime-storefront.sh` verifies Keycloak login redirect, product API routing, and same-origin `/api/media/**` assets for `dev` and `staging` after ArgoCD sync. |
+| Media image routing | Runtime verified | Product APIs now return same-origin `/api/media/...` thumbnail URLs, and the first seeded thumbnail returns `200 OK image/jpeg` in both `dev` and `staging`. |
+| Storefront runtime smoke check | Implemented in CD repo | `scripts/smoke-runtime-storefront.sh` verifies Keycloak login redirect, Keycloak login page, registration page, product API routing, and same-origin `/api/media/**` assets for `dev` and `staging` after ArgoCD sync. |
 | Platform infrastructure readiness | Done | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness are fully verified and documented in docs/project02/platform-infrastructure.md. |
 | Service mesh | Done | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
@@ -85,14 +85,16 @@ Important follow-up:
 
 ## Last Runtime Observation
 
-Last observed before the final runtime refresh was interrupted:
+Last observed on 2026-07-04 after commit `c40848e`:
 
-- `yas-dev`: `Synced/Healthy`.
-- `yas-staging`: `Synced/Progressing`, but all staging deployments were observed `1/1`.
-- `yas-developer`: `Synced/Healthy`, all deployments `0/0`.
-- Node CPU was high because staging rollout and Jenkins jobs were running at the same time.
+- `yas-platform`, `yas-dev`, and `yas-staging` were `Synced` at revision `c40848e7ccdbafa4f8cca6d219aac656da98b684`.
+- ArgoCD health still reported `Progressing`, but every required app pod in `dev` and `staging` reported both app container and Istio sidecar as `true,true Running`.
+- `storefront-bff` OAuth redirect in `dev` and `staging` points at `http://yas.<env>.local:30846/realms/Yas/...` and returns to `http://yas.<env>.local:30846/login/oauth2/code/keycloak`.
+- Keycloak `storefront-bff` and `backoffice-bff` clients were updated to allow `http://yas.dev.local:30846/*` and `http://yas.staging.local:30846/*`; the same redirect URIs are now present in the GitOps realm config for new bootstraps.
+- Keycloak login page returned `status=200 title=Sign in to Yas`; registration page returned `status=200 marker=Register,Username,Email,` in both `dev` and `staging`.
+- Product API returned same-origin thumbnail URLs (`/api/media/...`) and the first thumbnail returned `200 OK` with `Content-Type: image/jpeg` in both `dev` and `staging`.
 
-Required re-check after CD PR #14:
+Useful runtime refresh command:
 
 ```bash
 ssh -i ~/.ssh/gcp_key_member -F /dev/null -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new xuantri@34.124.212.254 '
@@ -127,12 +129,9 @@ kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/st
 1. Decide whether to merge the app repo PR/branch that disables developer preview GitOps.
 2. Confirm Jenkins multibranch is configured to discover/build Git tags.
 3. Trigger or simulate a `vX.Y.Z` release and confirm staging GitOps update.
-4. Re-check ArgoCD and cluster health after CD PR #14.
+4. Re-check ArgoCD health display if the UI still reports `Progressing` despite all pods being `2/2`.
 5. Capture platform infrastructure evidence for PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVCs.
-6. Runtime-verify storefront login/registration through Keycloak using the `keycloak` registration path.
-7. Run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=<nodeport> scripts/smoke-runtime-storefront.sh dev staging` after ArgoCD sync.
-8. Runtime-verify gateway routes for required storefront/backoffice API paths.
-9. Runtime-verify product/media images load through `/api/media/**`.
-10. Keep gateway routes synchronized through `scripts/sync-gateway-routes.sh` whenever backend services are added or removed from `services.yaml`.
-11. Refresh/finalize Istio sidecar evidence for required `dev` and `staging` app pods as `READY 2/2`.
-12. Capture evidence for dev, staging, Docker Hub tags, ArgoCD sync, external access, and mesh.
+6. Run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=<nodeport> scripts/smoke-runtime-storefront.sh dev staging` from a network path that can reach the NodePort, or run the equivalent `curl --resolve ...:127.0.0.1` checks on the GCP VM.
+7. Runtime-verify additional backoffice UI/API paths if a public backoffice ingress is added.
+8. Keep gateway routes synchronized through `scripts/sync-gateway-routes.sh` whenever backend services are added or removed from `services.yaml`.
+9. Capture final evidence for Docker Hub tags, ArgoCD UI screenshots, external access, and mesh.

@@ -109,15 +109,37 @@ for env_name in "${environments[@]}"; do
 
   auth_location="$(awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/\r$/, "", $0); sub(/^location:[[:space:]]*/, "", $0); print; exit}' "$auth_headers")"
   keycloak_body="$tmpdir/${env_name}-keycloak-login.html"
+  keycloak_cookies="$tmpdir/${env_name}-keycloak.cookies"
   keycloak_status="$(curl -sS \
     --max-time "$CURL_TIMEOUT" \
     --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    -c "$keycloak_cookies" \
     -o "$keycloak_body" \
     -w "%{http_code}" \
     "$auth_location")"
   expect_status "$keycloak_status" '^2[0-9][0-9]$' "${env_name} keycloak login page"
   if ! grep -q 'Sign in to Yas' "$keycloak_body"; then
     echo "${env_name} keycloak login page did not render the Yas realm login form" >&2
+    exit 1
+  fi
+
+  registration_path="$(grep -Eo '/realms/Yas/login-actions/registration[^"[:space:]]+' "$keycloak_body" | head -n 1 | sed 's/&amp;/\&/g' || true)"
+  if [ -z "$registration_path" ]; then
+    echo "${env_name} keycloak login page did not expose a registration link" >&2
+    exit 1
+  fi
+  registration_body="$tmpdir/${env_name}-keycloak-registration.html"
+  registration_status="$(curl -sS \
+    --max-time "$CURL_TIMEOUT" \
+    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    -b "$keycloak_cookies" \
+    -c "$keycloak_cookies" \
+    -o "$registration_body" \
+    -w "%{http_code}" \
+    "http://yas.${env_name}.local:${APP_NODEPORT}${registration_path}")"
+  expect_status "$registration_status" '^2[0-9][0-9]$' "${env_name} keycloak registration page"
+  if ! grep -q 'Register' "$registration_body" || ! grep -q 'Username' "$registration_body" || ! grep -q 'Email' "$registration_body"; then
+    echo "${env_name} keycloak registration page did not render the expected registration form" >&2
     exit 1
   fi
 
