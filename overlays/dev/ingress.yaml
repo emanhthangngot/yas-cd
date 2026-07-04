@@ -22,6 +22,20 @@ spec:
                 name: storefront-bff
                 port:
                   number: 80
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
