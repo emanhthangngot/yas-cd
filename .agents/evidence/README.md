@@ -73,7 +73,7 @@ yas-staging     Synced        Healthy
 - [x] **Staging CPU Throttling and maxSurge: 0**:
   Successfully applied. Limits are set to `250m` CPU, and rollouts use `maxSurge: 0` to prevent CPU startup storm.
 - [x] **mTLS & STRICT Mode**:
-  `PeerAuthentication` is configured with `STRICT` mTLS.
+  `PeerAuthentication` is configured with `STRICT` mTLS for backend APIs, while `PERMISSIVE` mTLS is set for UI ports (3000 and 8080) to allow HTTP traffic from NGINX Ingress controller.
 - [x] **AuthorizationPolicy (Allow/Deny Verification)**:
   - Testing connection from **allowed service** (`tax` to `location`):
     ```bash
@@ -88,3 +88,24 @@ yas-staging     Synced        Healthy
     wget: server returned error: HTTP/1.1 403 Forbidden
     ```
     *Note: HTTP 403 Forbidden proves that the request was intercepted and blocked by the Istio AuthorizationPolicy at the mesh layer.*
+
+- [x] **Storefront UI Access Verification**:
+  - Testing connection to **dev** storefront UI via Ingress NodePort 30846:
+    ```bash
+    $ curl -sI -H "Host: yas.dev.local" http://34.124.212.254:30846/
+    HTTP/1.1 200 OK
+    Content-Type: text/html; charset=utf-8
+    x-powered-by: Next.js
+    x-envoy-upstream-service-time: 6
+    x-envoy-decorator-operation: storefront-ui.dev.svc.cluster.local:3000/*
+    ```
+  - Testing connection to **staging** storefront UI via Ingress NodePort 30846:
+    ```bash
+    $ curl -sI -H "Host: yas.staging.local" http://34.124.212.254:30846/
+    HTTP/1.1 200 OK
+    Content-Type: text/html; charset=utf-8
+    x-powered-by: Next.js
+    x-envoy-upstream-service-time: 10
+    x-envoy-decorator-operation: storefront-ui.staging.svc.cluster.local:3000/*
+    ```
+
