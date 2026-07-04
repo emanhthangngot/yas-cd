@@ -153,6 +153,10 @@ spec:
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgresql.postgres:5432/dev_sampledata
+            - name: SPRING_DATASOURCE_PRODUCT_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/dev_product
+            - name: SPRING_DATASOURCE_MEDIA_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/dev_media
 ---
 apiVersion: apps/v1
 kind: Deployment
