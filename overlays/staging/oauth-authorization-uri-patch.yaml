@@ -8,8 +8,16 @@ spec:
       containers:
         - name: backoffice-bff
           env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
+              value: http://yas.staging.local:30846/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.staging.local:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/token
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/certs
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
               value: http://yas.staging.local:30846/login/oauth2/code/api-client
 ---
@@ -23,7 +31,15 @@ spec:
       containers:
         - name: storefront-bff
           env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
+              value: http://yas.staging.local:30846/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.staging.local:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/token
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/certs
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
+              value: http://identity/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
               value: http://yas.staging.local:30846/login/oauth2/code/keycloak
