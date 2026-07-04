@@ -65,7 +65,7 @@ spec:
             - name: KC_HTTP_ENABLED
               value: "true"
             - name: KC_PROXY_HEADERS
-              value: xforwarded
+              value: forwarded
           readinessProbe:
             httpGet:
               path: /realms/Yas/.well-known/openid-configuration
