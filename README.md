@@ -37,4 +37,14 @@ scripts/update-image-tag.sh developer tax 9f2c4a1
 scripts/update-image-tag.sh staging cart v1.2.3
 ```
 
+For environment-level CD flows, use the higher-level scripts so only one
+full-stack namespace is active on the single-node cluster:
+
+```bash
+scripts/promote-staging-release.sh v1.2.3
+scripts/prepare-developer-preview.sh tax=9f2c4a1
+scripts/teardown-developer.sh
+scripts/activate-environment.sh dev
+```
+
 Never commit real secrets, kubeconfigs, tokens, SSH keys, Docker Hub credentials, Snyk tokens, SonarQube tokens, ArgoCD tokens, or Google Cloud service account keys.

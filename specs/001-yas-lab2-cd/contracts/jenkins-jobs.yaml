@@ -17,8 +17,10 @@ jobs:
       - yas-platform is healthy
       - staging is dormant unless explicitly approved otherwise
     gitops_side_effects:
+      - run scripts/prepare-developer-preview.sh with service=commit-sha assignments
       - update overlays/developer image tags
       - update developer replica policy to active
+      - set dev and staging replica policies to dormant
       - validate with scripts/validate-gitops.sh
     postconditions:
       - yas-developer syncs from yas-cd/main
@@ -31,7 +33,10 @@ jobs:
     preconditions:
       - developer overlay exists
     gitops_side_effects:
+      - run scripts/teardown-developer.sh
       - set developer replica policy to dormant
+      - reset developer image tags to main
+      - restore dev as the active environment
       - let ArgoCD prune or reconcile
     postconditions:
       - developer namespace is dormant
@@ -47,6 +52,7 @@ jobs:
       - image tag exists in Docker Hub
     gitops_side_effects:
       - update overlays/dev image tags
+      - run scripts/activate-environment.sh dev
       - ensure dev replica policy is active
     postconditions:
       - yas-dev becomes the active full environment
@@ -63,8 +69,10 @@ jobs:
       - release_tag exists in Docker Hub
       - staging immutability validation passes
     gitops_side_effects:
+      - run scripts/promote-staging-release.sh release_tag
       - update overlays/staging image tags
       - activate staging when validation is required
+      - set dev and developer replica policies to dormant
     postconditions:
       - staging uses immutable tags only
 

@@ -20,6 +20,7 @@ if [ "$service_count" -le 0 ]; then
   exit 1
 fi
 
+active_environment_count=0
 deployable_images="$(mktemp)"
 trap 'rm -f "$deployable_images"' EXIT
 
@@ -39,7 +40,23 @@ for overlay in dev staging developer; do
   rm -f "$overlay_images"
 
   kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone "overlays/${overlay}" >/dev/null
+
+  replica_patch_count="$(yq -r '[.patches[]? | select(.target.kind == "Deployment" and (.path == "replicas-active.yaml" or .path == "replicas-dormant.yaml"))] | length' "overlays/${overlay}/kustomization.yaml")"
+  if [ "$replica_patch_count" != "1" ]; then
+    echo "overlay ${overlay} must contain exactly one deployment replica state patch, found: ${replica_patch_count}" >&2
+    exit 1
+  fi
+
+  replica_patch="$(yq -r '.patches[]? | select(.target.kind == "Deployment" and (.path == "replicas-active.yaml" or .path == "replicas-dormant.yaml")) | .path' "overlays/${overlay}/kustomization.yaml")"
+  if [ "$replica_patch" = "replicas-active.yaml" ]; then
+    active_environment_count=$((active_environment_count + 1))
+  fi
 done
+
+if [ "$active_environment_count" -ne 1 ]; then
+  echo "exactly one full-stack environment must be active, found: ${active_environment_count}" >&2
+  exit 1
+fi
 
 scripts/validate-staging-immutable.sh
 

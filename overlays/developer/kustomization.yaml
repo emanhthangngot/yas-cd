@@ -4,13 +4,11 @@ namespace: developer
 resources:
   - ../../base
   - ingress.yaml
-
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas
       yas.nashtechglobal.com/environment: developer
     includeSelectors: true
-
 images:
   - name: docker.io/emanhthangngot/yas-cart
     newTag: main
@@ -52,12 +50,7 @@ images:
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront
     newTag: main
-
 patches:
   - target:
       kind: Deployment
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 0
-
+    path: replicas-dormant.yaml
