@@ -144,24 +144,6 @@ helmCharts:
       fullnameOverride: product
       databaseName: product
   - name: backend
-    releaseName: promotion
-    valuesInline:
-      image:
-        repository: docker.io/emanhthangngot/yas-promotion
-        tag: main
-      nameOverride: promotion
-      fullnameOverride: promotion
-      databaseName: promotion
-  - name: backend
-    releaseName: rating
-    valuesInline:
-      image:
-        repository: docker.io/emanhthangngot/yas-rating
-        tag: main
-      nameOverride: rating
-      fullnameOverride: rating
-      databaseName: rating
-  - name: backend
     releaseName: search
     valuesInline:
       image:
@@ -192,15 +174,6 @@ helmCharts:
       fullnameOverride: tax
       databaseName: tax
   - name: backend
-    releaseName: webhook
-    valuesInline:
-      image:
-        repository: docker.io/emanhthangngot/yas-webhook
-        tag: main
-      nameOverride: webhook
-      fullnameOverride: webhook
-      databaseName: webhook
-  - name: backend
     releaseName: sampledata
     valuesInline:
       image:
@@ -209,27 +182,6 @@ helmCharts:
       nameOverride: sampledata
       fullnameOverride: sampledata
       databaseName: sampledata
-  - name: backend
-    releaseName: recommendation
-    valuesInline:
-      image:
-        repository: docker.io/emanhthangngot/yas-recommendation
-        tag: main
-      nameOverride: recommendation
-      fullnameOverride: recommendation
-      databaseName: recommendation
-      extraEnvFroms:
-        - secretRef:
-            name: yas-openai-api-key-secret
-      extraVolumes:
-        - name: recommendation-application
-          configMap:
-            name: recommendation-application-configmap
-      extraVolumeMounts:
-        - name: recommendation-application
-          mountPath: /opt/yas/recommendation
-      extraApplicationConfigPaths:
-        - /opt/yas/recommendation/recommendation-application.yaml
   - name: backend
     releaseName: backoffice-bff
     valuesInline:
@@ -314,3 +266,15 @@ helmCharts:
         tag: main
       nameOverride: storefront-ui
       fullnameOverride: storefront-ui
+  - name: swagger-ui
+    releaseName: swagger-ui
+    valuesInline:
+      ingress:
+        enabled: false
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi
