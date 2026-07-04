@@ -4,6 +4,7 @@ metadata:
   name: nodeport-forward-headers
   namespace: ingress-nginx
 data:
+  X-Forwarded-Host: $http_host
   X-Forwarded-Port: "30846"
 ---
 apiVersion: v1
