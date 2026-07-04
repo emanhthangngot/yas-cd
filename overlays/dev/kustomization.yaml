@@ -21,6 +21,7 @@ patches:
   - path: istio-resources-patch.yaml
     target:
       kind: Deployment
+  - path: oauth-authorization-uri-patch.yaml
   - path: db-url-patch.yaml
   - path: redis-patch.yaml
 labels:

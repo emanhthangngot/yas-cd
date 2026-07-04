@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice-bff
+spec:
+  template:
+    spec:
+      containers:
+        - name: backoffice-bff
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
+              value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefront-bff
+spec:
+  template:
+    spec:
+      containers:
+        - name: storefront-bff
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
+              value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
