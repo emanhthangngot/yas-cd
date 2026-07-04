@@ -6,6 +6,7 @@ helmGlobals:
 
 resources:
   - yas-configuration.yaml
+  - compat-services.yaml
 
 helmCharts:
   - name: backend
