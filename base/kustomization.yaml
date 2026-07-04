@@ -230,6 +230,9 @@ helmCharts:
           value: prod
         - name: UI_HOST
           value: http://storefront-ui:3000
+        - name: SPRING_APPLICATION_JSON
+          value: >-
+            {"spring":{"cloud":{"gateway":{"routes":[{"id":"product_api","uri":"http://product","order":-100,"predicates":["Path=/api/product/**"],"filters":["RewritePath=/api/(?<segment>.*), /${segment}","TokenRelay="]},{"id":"cart_api","uri":"http://cart","order":-100,"predicates":["Path=/api/cart/**"],"filters":["RewritePath=/api/(?<segment>.*), /${segment}","TokenRelay="]},{"id":"customer_api","uri":"http://customer","order":-100,"predicates":["Path=/api/customer/**"],"filters":["RewritePath=/api/(?<segment>.*), /${segment}","TokenRelay="]},{"id":"order_api","uri":"http://order","order":-100,"predicates":["Path=/api/order/**"],"filters":["RewritePath=/api/(?<segment>.*), /${segment}","TokenRelay="]},{"id":"api","uri":"http://storefront-bff","order":-100,"predicates":["Path=/api/**"],"filters":["TokenRelay="]},{"id":"nextjs","uri":"http://storefront-ui:3000","order":-100,"predicates":["Path=/**"]}]}}}}
       extraEnvFroms:
         - secretRef:
             name: yas-keycloak-credentials-secret
