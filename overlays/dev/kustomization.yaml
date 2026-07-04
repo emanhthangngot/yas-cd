@@ -5,6 +5,7 @@ resources:
   - ../../base
   - ingress.yaml
   - istio.yaml
+  - limitrange.yaml
 patches:
   - path: payment-liquibase-clear-checksums-patch.yaml
     target:
@@ -17,6 +18,9 @@ patches:
     target:
       kind: Deployment
       name: sampledata
+  - path: istio-resources-patch.yaml
+    target:
+      kind: Deployment
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas

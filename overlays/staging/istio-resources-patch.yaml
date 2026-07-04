@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ignored
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/proxyCPU: "25m"
+        sidecar.istio.io/proxyMemory: "64Mi"
+        sidecar.istio.io/proxyCPULimit: "250m"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
