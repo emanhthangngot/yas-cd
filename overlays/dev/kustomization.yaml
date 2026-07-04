@@ -21,6 +21,8 @@ patches:
   - path: istio-resources-patch.yaml
     target:
       kind: Deployment
+  - path: db-url-patch.yaml
+  - path: redis-patch.yaml
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas

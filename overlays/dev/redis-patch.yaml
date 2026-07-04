@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backoffice-bff-extra-configmap
+data:
+  backoffice-bff-extra-config.yaml: |
+    spring:
+      data:
+        redis:
+          host: redis-master.redis
+          password: ${REDIS_PASSWORD}
+          port: 6379
+          database: 0
+      security:
+        oauth2:
+          client:
+            provider:
+              keycloak:
+                issuer-uri: http://identity/realms/Yas
+            registration:
+              api-client:
+                provider: keycloak
+                client-id: backoffice-bff
+                client-secret: ${KEYCLOAK_BACKOFFICE_BFF_CLIENT_SECRET}
+                scope: openid, profile, email, roles
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storefront-bff-extra-configmap
+data:
+  storefront-bff-extra-config.yaml: |
+    spring:
+      data:
+        redis:
+          host: redis-master.redis
+          password: ${REDIS_PASSWORD}
+          port: 6379
+          database: 0
+      security:
+        oauth2:
+          client:
+            provider:
+              keycloak:
+                issuer-uri: http://identity/realms/Yas
+            registration:
+              api-client:
+                provider: keycloak
+                client-id: storefront-bff
+                client-secret: ${KEYCLOAK_STOREFRONT_BFF_CLIENT_SECRET}
+                scope: openid, profile, email, roles
