@@ -5,11 +5,15 @@ metadata:
 spec:
   template:
     spec:
+      hostAliases:
+        - ip: "10.43.97.201"
+          hostnames:
+            - "yas.dev.local"
       containers:
         - name: backoffice-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://identity/realms/Yas
+              value: http://yas.dev.local:30846/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
@@ -28,11 +32,15 @@ metadata:
 spec:
   template:
     spec:
+      hostAliases:
+        - ip: "10.43.97.201"
+          hostnames:
+            - "yas.dev.local"
       containers:
         - name: storefront-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://identity/realms/Yas
+              value: http://yas.dev.local:30846/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
