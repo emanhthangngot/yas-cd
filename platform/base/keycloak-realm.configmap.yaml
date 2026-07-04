@@ -580,7 +580,10 @@ data:
           "redirectUris": [
             "http://backoffice.yas.local.com/*",
             "http://localhost:3000/*",
-            "http://localhost:8087/*"
+            "http://localhost:8087/*",
+            "http://yas.dev.local/*",
+            "http://yas.staging.local/*",
+            "http://yas.developer.local/*"
           ],
           "webOrigins": [],
           "notBefore": 0,
@@ -921,7 +924,10 @@ data:
           "secret": "lab-storefront-bff-client-secret",
           "redirectUris": [
             "http://storefront.yas.local.com/*",
-            "http://localhost:8087/*"
+            "http://localhost:8087/*",
+            "http://yas.dev.local/*",
+            "http://yas.staging.local/*",
+            "http://yas.developer.local/*"
           ],
           "webOrigins": [],
           "notBefore": 0,
