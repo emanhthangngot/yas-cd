@@ -18,7 +18,7 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | Staging resource control | Done in CD repo | PR #13 sets staging CPU throttle; PR #14 sets `maxSurge: 0` rollouts. |
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Aligned in working tree | Main Jenkinsfile handles `dev`/`staging`; developer preview is separated into `Jenkinsfile.developer-build`. |
-| Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
+| Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Release tags promote existing commit-SHA images with `docker buildx imagetools create`; needs Jenkins tag-discovery verification. |
 | Storefront login/register config | Runtime verified | `storefront-bff` uses OAuth registration id `keycloak`; authorization, login page, and registration page render through same-host Keycloak URLs on NodePort `30846` for `dev` and `staging`. |
 | API gateway routing | Fixed in CD desired state | BFF route table now maps `/api/<service>/**` directly for product, location, inventory, cart, customer, media, rating, payment, payment-paypal, tax, promotion, search, order, recommendation, webhook, and sampledata; generic `/api/**` self-route was removed. |
 | Gateway route generation | Implemented in CD repo | `scripts/sync-gateway-routes.sh` now derives backend gateway routes from `services.yaml`; `scripts/validate-gitops.sh` fails if rendered route YAML drifts from the service catalog. |
@@ -77,7 +77,7 @@ Checked after returning local app repo to `main`:
 - Main Jenkinsfile selects behavior using `TAG_NAME` and `BRANCH_NAME`; developer preview is separated into `Jenkinsfile.developer-build`.
 - Feature branch image tag: short commit id.
 - `main` image tags: short commit id, `main`, and `latest`.
-- Release tag image tags: short commit id and `vX.Y.Z`.
+- Release tag image tags: existing short commit id promoted to `vX.Y.Z`; release jobs fail instead of rebuilding if the commit image is missing.
 - GitOps target:
   - `TAG_NAME=vX.Y.Z` -> `staging`
   - `BRANCH_NAME=main` -> `dev`

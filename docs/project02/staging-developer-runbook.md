@@ -20,9 +20,10 @@ The overlay state is controlled by these patch files:
 ## Staging Release Flow
 
 Use this for the Jenkins `release_staging` job after Docker Hub contains the
-release images. `yas-staging` is intentionally a manual-sync ArgoCD app, so a
-GitOps release commit does not change cluster runtime until an operator approves
-the sync.
+commit-SHA images. The release path promotes those existing images to the
+immutable `vX.Y.Z` tag; it must not rebuild source code for a release tag.
+`yas-staging` is intentionally a manual-sync ArgoCD app, so a GitOps release
+commit does not change cluster runtime until an operator approves the sync.
 
 ```bash
 scripts/promote-staging-release.sh v1.2.3
@@ -36,6 +37,8 @@ git push origin main
 Expected result:
 
 - all `overlays/staging` images use `v1.2.3`
+- Docker Hub `v1.2.3` images point at images that already existed for the
+  release commit SHA
 - `dev` and `staging` are active
 - `developer` is dormant
 - `scripts/validate-gitops.sh` passes

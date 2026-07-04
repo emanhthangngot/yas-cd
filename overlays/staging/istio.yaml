@@ -152,7 +152,60 @@ spec:
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: location-policy
+  name: allow-cart-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cart
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/order
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-customer-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: customer
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/order
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-inventory-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inventory
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-location-callers
   namespace: staging
 spec:
   selector:
@@ -162,4 +215,131 @@ spec:
   rules:
   - from:
     - source:
-        principals: ["cluster.local/ns/staging/sa/tax"]
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/tax
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-media-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: media
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/product
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-order-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: order
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-payment-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: payment
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/order
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-payment-paypal-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: payment-paypal
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/payment
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-product-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: product
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/order
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-search-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: search
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-tax-callers
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tax
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/staging/sa/backoffice-bff
+        - cluster.local/ns/staging/sa/storefront-bff
+        - cluster.local/ns/staging/sa/order

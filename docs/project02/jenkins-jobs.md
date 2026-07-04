@@ -24,7 +24,7 @@ Do not commit credential material, kubeconfig content, Google Cloud service acco
 - Tags images:
   - feature branch: commit SHA
   - `main`: commit SHA, `main`, `latest`
-  - `vX.Y.Z`: commit SHA, `vX.Y.Z`
+  - `vX.Y.Z`: promote existing commit SHA images to `vX.Y.Z`
 - Clones `git@github.com:emanhthangngot/yas-cd.git`.
 - Updates `overlays/dev` through `scripts/update-image-tag.sh` and
   `overlays/staging` through `scripts/promote-staging-release.sh`.
@@ -36,6 +36,11 @@ Current target selection on app repo `main`:
 - `TAG_NAME=vX.Y.Z`: target `staging`, image tag `vX.Y.Z`.
 - `BRANCH_NAME=main`: target `dev`, image tag `main`.
 - Feature branch: image is pushed with commit SHA, GitOps update is skipped.
+
+Release tags follow build-once/promote-many. The tag job verifies the
+corresponding commit-SHA image exists in Docker Hub and creates the release tag
+with `docker buildx imagetools create`; it fails instead of rebuilding if the
+source image is missing.
 
 Current CD repo runtime policy:
 
