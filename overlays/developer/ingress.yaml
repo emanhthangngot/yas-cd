@@ -15,6 +15,13 @@ spec:
                 name: swagger-ui
                 port:
                   number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
