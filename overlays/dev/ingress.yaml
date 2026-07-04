@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: yas-storefront
 spec:
-  ingressClassName: traefik
+  ingressClassName: nginx
   rules:
     - host: yas.dev.local
       http:
