@@ -9,7 +9,7 @@ spec:
         - name: backoffice-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://yas.dev.local:30846/realms/Yas
+              value: http://identity/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
@@ -32,7 +32,7 @@ spec:
         - name: storefront-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://yas.dev.local:30846/realms/Yas
+              value: http://identity/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
