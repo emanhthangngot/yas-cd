@@ -10,5 +10,6 @@ resources:
   - keycloak-realm.configmap.yaml
   - keycloak.yaml
   - identity-aliases.yaml
+  - ingress-nginx-forwarded-headers.yaml
   - traefik-nodeport.yaml
   - keycloak-ingress.yaml

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodeport-forward-headers
+  namespace: ingress-nginx
+data:
+  X-Forwarded-Port: "30846"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  allow-snippet-annotations: "false"
+  proxy-set-headers: ingress-nginx/nodeport-forward-headers
