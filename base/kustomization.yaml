@@ -66,6 +66,8 @@ helmCharts:
       nameOverride: media
       fullnameOverride: media
       databaseName: media
+      podAnnotations:
+        yas.devops/config-revision: media-public-url-v2
       extraVolumes:
         - name: media-application
           configMap:
