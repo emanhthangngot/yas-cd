@@ -3,6 +3,7 @@ kind: PeerAuthentication
 metadata:
   name: default
   namespace: staging
+spec:
   mtls:
     mode: STRICT
 ---
