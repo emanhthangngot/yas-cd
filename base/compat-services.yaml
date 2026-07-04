@@ -1,34 +1,128 @@
-# Compatibility ClusterIP Services for legacy BFF jar gateway routes.
-# The storefront-bff jar bundles an application.yaml with routes pointing to
-# "nginx" (API gateway) and "storefront-nextjs" (UI) hostnames from the original
-# docker-compose dev environment. These Services make those names resolvable
-# within the namespace, redirecting DNS to the correct pods.
+# Nginx reverse proxy to replicate the original docker-compose "nginx" API gateway.
+# The storefront-bff jar routes all /api/** calls to http://nginx after stripping /api prefix.
+# This nginx receives bare paths like /cart/..., /product/..., /customer/... and proxies
+# them to the correct backend microservices within the namespace.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-api-gateway-configmap
+  labels:
+    app.kubernetes.io/part-of: yas
+    app.kubernetes.io/name: nginx-api-gateway
+data:
+  nginx.conf: |
+    worker_processes 1;
+    events { worker_connections 1024; }
+    http {
+      resolver kube-dns.kube-system.svc.cluster.local valid=5s;
+      server {
+        listen 80;
+        location /cart {
+          proxy_pass http://cart;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+        location /product {
+          proxy_pass http://product;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /customer {
+          proxy_pass http://customer;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /order {
+          proxy_pass http://order;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /inventory {
+          proxy_pass http://inventory;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /media {
+          proxy_pass http://media;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /payment {
+          proxy_pass http://payment;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /tax {
+          proxy_pass http://tax;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /search {
+          proxy_pass http://search;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /location {
+          proxy_pass http://location;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location / {
+          return 404;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-api-gateway
+  labels:
+    app.kubernetes.io/part-of: yas
+    app.kubernetes.io/name: nginx-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx-api-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx-api-gateway
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-api-gateway-configmap
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx
   labels:
     app.kubernetes.io/part-of: yas
-    yas.nashtechglobal.com/component: compat-alias
+    app.kubernetes.io/name: nginx-api-gateway
 spec:
   selector:
-    app.kubernetes.io/name: storefront-bff
+    app.kubernetes.io/name: nginx-api-gateway
   ports:
     - name: http
       port: 80
       targetPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: storefront-nextjs
-  labels:
-    app.kubernetes.io/part-of: yas
-    yas.nashtechglobal.com/component: compat-alias
-spec:
-  selector:
-    app.kubernetes.io/name: storefront-ui
-  ports:
-    - name: http
-      port: 3000
-      targetPort: 3000
