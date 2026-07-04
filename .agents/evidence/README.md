@@ -112,13 +112,13 @@ yas-staging     Synced        Healthy
 - [x] **Storefront API Gateway and BFF Resolution Verification**:
   - Since the legacy `storefront-bff` jar contains bundled routes that direct all `/api/**` traffic (stripped of `/api` prefix) to `http://nginx`, we deployed a lightweight NGINX API Gateway pod matching this interface.
   - Due to Istio Service Mesh requirements, this NGINX Gateway is configured to use `proxy_http_version 1.1` and preserve `proxy_host` header to prevent Envoy sidecar connection drops.
-  - Testing connection to **staging** product catalog API:
+  - Testing connection to **staging** product catalog API (showing seeded iPhones):
     ```bash
     $ curl -si -H "Host: yas.staging.local" http://34.124.212.254:30846/api/product/storefront/products
     HTTP/1.1 200 OK
     Content-Type: application/json
     x-envoy-decorator-operation: storefront-bff.staging.svc.cluster.local:80/*
-    {"productContent":[],"pageNo":0,"pageSize":5,"totalElements":0,"totalPages":0,"isLast":true}
+    {"productContent":[{"id":1,"name":"iPhone 15","slug":"iphone-15","thumbnailUrl":"http://media/media/medias/7/file/iphone15_thumbnail.jpg","price":799.0},{"id":2,"name":"iPhone 15 Pro","slug":"iphone-15-pro","thumbnailUrl":"http://media/media/medias/12/file/15pro_thumbnail.jpg","price":899.0},{"id":3,"name":"iPhone 15 Plus","slug":"iphone-15-plus","thumbnailUrl":"http://media/media/medias/17/file/iphone15_Plus_thumbnail.jpg","price":859.0}],"pageNo":0,"pageSize":5,"totalElements":3,"totalPages":1,"isLast":true}
     ```
   - Testing connection to **staging** cart items API (requiring auth):
     ```bash
@@ -134,7 +134,27 @@ yas-staging     Synced        Healthy
     HTTP/1.1 200 OK
     Content-Type: application/json
     x-envoy-decorator-operation: storefront-bff.dev.svc.cluster.local:80/*
-    {"productContent":[],"pageNo":0,"pageSize":5,"totalElements":0,"totalPages":0,"isLast":true}
+    {"productContent":[{"id":1,"name":"iPhone 15","slug":"iphone-15","thumbnailUrl":"http://media/media/medias/7/file/iphone15_thumbnail.jpg","price":799.0},{"id":2,"name":"iPhone 15 Pro","slug":"iphone-15-pro","thumbnailUrl":"http://media/media/medias/12/file/15pro_thumbnail.jpg","price":899.0},{"id":3,"name":"iPhone 15 Plus","slug":"iphone-15-plus","thumbnailUrl":"http://media/media/medias/17/file/iphone15_Plus_thumbnail.jpg","price":859.0}],"pageNo":0,"pageSize":5,"totalElements":3,"totalPages":1,"isLast":true}
     ```
+
+- [x] **Storefront OAuth2 Login Flow Verification**:
+  - The Ingress config was updated to route `/oauth2` and `/login` prefixes to `storefront-bff` (the Spring Security OAuth2 client handler).
+  - Testing connection to **staging** Keycloak authorization redirect:
+    ```bash
+    $ curl -sI -H "Host: yas.staging.local" http://34.124.212.254:30846/oauth2/authorization/keycloak
+    HTTP/1.1 302 Found
+    Location: http://identity/realms/Yas/protocol/openid-connect/auth?response_type=code&client_id=storefront-bff&scope=openid%20profile%20email%20roles&state=...&redirect_uri=http://yas.staging.local/login/oauth2/code/keycloak
+    set-cookie: SESSION=...; Path=/; HTTPOnly
+    x-envoy-decorator-operation: storefront-bff.staging.svc.cluster.local:80/*
+    ```
+  - Testing connection to **dev** Keycloak authorization redirect:
+    ```bash
+    $ curl -sI -H "Host: yas.dev.local" http://34.124.212.254:30846/oauth2/authorization/keycloak
+    HTTP/1.1 302 Found
+    Location: http://identity/realms/Yas/protocol/openid-connect/auth?response_type=code&client_id=storefront-bff&scope=openid%20profile%20email%20roles&state=...&redirect_uri=http://yas.dev.local/login/oauth2/code/keycloak
+    set-cookie: SESSION=...; Path=/; HTTPOnly
+    x-envoy-decorator-operation: storefront-bff.dev.svc.cluster.local:80/*
+    ```
+
 
 
