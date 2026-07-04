@@ -53,6 +53,18 @@ spec:
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
+  name: nginx-api-gateway-permissive
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx-api-gateway
+  mtls:
+    mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
   name: media-permissive
   namespace: dev
 spec:

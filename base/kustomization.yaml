@@ -91,7 +91,9 @@ helmCharts:
               while IFS= read -r path; do
                 path="$(echo "${path}" | sed 's/^[[:space:]]*//')"
                 mkdir -p "$(dirname "${path}")"
+                mkdir -p /images/by-name
                 cp "${placeholder_jpeg}" "${path}"
+                cp "${placeholder_jpeg}" "/images/by-name/$(basename "${path}")"
               done <<'PATHS'
               /images/sample/category/DELL_category.jpg
               /images/sample/category/Samsung_category.jpg

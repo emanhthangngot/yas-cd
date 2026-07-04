@@ -53,6 +53,10 @@ data:
           proxy_set_header Host $proxy_host;
           proxy_set_header X-Real-IP $remote_addr;
         }
+        location ~ ^/media/medias/[0-9]+/file/([^/]+)$ {
+          alias /images/by-name/$1;
+          add_header Cache-Control "public, max-age=3600";
+        }
         location /media {
           proxy_pass http://media;
           proxy_http_version 1.1;
@@ -162,6 +166,9 @@ spec:
             - name: nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+            - name: media-images
+              mountPath: /images
+              readOnly: true
           resources:
             requests:
               cpu: 25m
@@ -173,6 +180,9 @@ spec:
         - name: nginx-config
           configMap:
             name: nginx-api-gateway-configmap
+        - name: media-images
+          persistentVolumeClaim:
+            claimName: media-images
 ---
 apiVersion: v1
 kind: Service
