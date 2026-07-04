@@ -21,6 +21,6 @@ while IFS= read -r image_name; do
   IMAGE_REF="$image_ref" yq -i '(.images[] | select(.name == env(IMAGE_REF)) | .newTag) = "main"' "$overlay"
 done < <(yq -r '.services[] | select(.deploy == true) | .imageName' services.yaml)
 
-scripts/activate-environment.sh dev
+scripts/activate-environment.sh baseline
 
-echo "developer preview torn down; dev restored as the active environment"
+echo "developer preview torn down; dev and staging restored as active environments"

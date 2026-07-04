@@ -21,17 +21,11 @@ Intent:
 - Jenkins `developer_build` patches only the selected branch services to branch commit SHA tags.
 - Services not selected for a preview stay on the `main` tag.
 - Default state is dormant through `replicas-dormant.yaml`.
-- `developer_build` should call `scripts/prepare-developer-preview.sh <service=tag> [...]`.
-- `teardown_developer` should call `scripts/teardown-developer.sh`.
+- Developer preview is disabled in the current runtime policy.
+- `developer_build` must not change the GitOps desired state unless the policy is explicitly re-enabled.
 
-Prepare a branch preview with `service=tag` assignments:
-
-```bash
-scripts/prepare-developer-preview.sh tax=9f2c4a1 payment=6d7e8f9
-```
-
-Tear down the preview and restore `dev` as the active environment:
+The guard script exits non-zero with a policy message:
 
 ```bash
-scripts/teardown-developer.sh
+scripts/prepare-developer-preview.sh tax=9f2c4a1
 ```

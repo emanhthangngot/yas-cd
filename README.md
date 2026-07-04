@@ -33,18 +33,16 @@ Jenkins should update image tags through the repository contract script:
 
 ```bash
 scripts/update-image-tag.sh dev cart main
-scripts/update-image-tag.sh developer tax 9f2c4a1
 scripts/update-image-tag.sh staging cart v1.2.3
 ```
 
-For environment-level CD flows, use the higher-level scripts so only one
-full-stack namespace is active on the single-node cluster:
+For environment-level CD flows, keep the baseline runtime active: `dev` and
+`staging` run together while `developer` stays dormant.
 
 ```bash
 scripts/promote-staging-release.sh v1.2.3
-scripts/prepare-developer-preview.sh tax=9f2c4a1
 scripts/teardown-developer.sh
-scripts/activate-environment.sh dev
+scripts/activate-environment.sh baseline
 ```
 
 The default runtime follows the CQ demo service scope from

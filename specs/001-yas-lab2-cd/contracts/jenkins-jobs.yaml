@@ -1,7 +1,7 @@
 jobs:
   developer_build:
     target_environment: developer
-    purpose: Deploy a branch-preview slice for one or more selected services.
+    purpose: Disabled in the current single-node runtime policy.
     parameters:
       selected_services:
         type: list[string]
@@ -14,17 +14,12 @@ jobs:
         allowed: [main, commit-sha]
         default: main
     preconditions:
-      - yas-platform is healthy
-      - staging is dormant unless explicitly approved otherwise
+      - developer previews are explicitly re-enabled by an operator
     gitops_side_effects:
-      - run scripts/prepare-developer-preview.sh with service=commit-sha assignments
-      - update overlays/developer image tags
-      - update developer replica policy to active
-      - set dev and staging replica policies to dormant
-      - validate with scripts/validate-gitops.sh
+      - none by default; scripts/prepare-developer-preview.sh exits non-zero
     postconditions:
-      - yas-developer syncs from yas-cd/main
-      - developer namespace becomes active only for the preview window
+      - dev and staging remain active
+      - developer remains dormant
 
   teardown_developer:
     target_environment: developer
@@ -52,10 +47,10 @@ jobs:
       - image tag exists in Docker Hub
     gitops_side_effects:
       - update overlays/dev image tags
-      - run scripts/activate-environment.sh dev
-      - ensure dev replica policy is active
+      - run scripts/activate-environment.sh baseline
+      - ensure dev and staging replica policies are active
     postconditions:
-      - yas-dev becomes the active full environment
+      - yas-dev and yas-staging stay active
 
   release_staging:
     target_environment: staging
@@ -71,8 +66,9 @@ jobs:
     gitops_side_effects:
       - run scripts/promote-staging-release.sh release_tag
       - update overlays/staging image tags
-      - activate staging when validation is required
-      - set dev and developer replica policies to dormant
+      - keep dev active
+      - keep staging active
+      - keep developer dormant
     postconditions:
       - staging uses immutable tags only
 

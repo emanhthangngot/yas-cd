@@ -20,7 +20,7 @@ if [ "$service_count" -le 0 ]; then
   exit 1
 fi
 
-active_environment_count=0
+active_environments=""
 deployable_images="$(mktemp)"
 trap 'rm -f "$deployable_images"' EXIT
 
@@ -49,12 +49,13 @@ for overlay in dev staging developer; do
 
   replica_patch="$(yq -r '.patches[]? | select(.target.kind == "Deployment" and (.path == "replicas-active.yaml" or .path == "replicas-dormant.yaml")) | .path' "overlays/${overlay}/kustomization.yaml")"
   if [ "$replica_patch" = "replicas-active.yaml" ]; then
-    active_environment_count=$((active_environment_count + 1))
+    active_environments="${active_environments} ${overlay}"
   fi
 done
 
-if [ "$active_environment_count" -ne 1 ]; then
-  echo "exactly one full-stack environment must be active, found: ${active_environment_count}" >&2
+active_environments="$(echo "$active_environments" | xargs)"
+if [ "$active_environments" != "dev staging" ]; then
+  echo "dev and staging must be active together, developer must stay dormant; active environments: ${active_environments:-none}" >&2
   exit 1
 fi
 

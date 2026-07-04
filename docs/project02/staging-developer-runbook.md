@@ -1,15 +1,15 @@
-# Staging And Developer CD Runbook
+# Dev And Staging Parallel CD Runbook
 
-This runbook keeps the single-node K3s cluster stable while validating
-`staging` and `developer`. The rule is one active full-stack environment at a
-time. Jenkins must change this repository and let ArgoCD reconcile the cluster.
-Do not use `kubectl set image` or direct `kubectl apply` in `dev`, `staging`,
-or `developer`.
+This runbook keeps the single-node K3s cluster useful while matching the Lab 2
+demo shape: `dev` and `staging` run in parallel, while `developer` stays
+dormant. Jenkins must change this repository and let ArgoCD reconcile the
+cluster. Do not use `kubectl set image` or direct `kubectl apply` in `dev`,
+`staging`, or `developer`.
 
 ## Default State
 
 - `dev`: active
-- `staging`: dormant
+- `staging`: active
 - `developer`: dormant
 
 The overlay state is controlled by these patch files:
@@ -34,8 +34,8 @@ git push origin main
 Expected result:
 
 - all `overlays/staging` images use `v1.2.3`
-- `staging` is active
-- `dev` and `developer` are dormant
+- `dev` and `staging` are active
+- `developer` is dormant
 - `scripts/validate-gitops.sh` passes
 - `scripts/validate-staging-immutable.sh` passes
 
@@ -49,65 +49,31 @@ sudo k3s kubectl top nodes
 curl -H 'Host: yas.staging.local' http://34.124.212.254:30080/
 ```
 
-After validation, restore the default runtime:
+After validation, keep or restore the baseline runtime:
 
 ```bash
-scripts/activate-environment.sh dev
+scripts/activate-environment.sh baseline
 git add overlays
-git commit -m "cd(lab2): return staging to dormant"
+git commit -m "cd(lab2): restore dev staging baseline"
 git pull --rebase origin main
 git push origin main
 ```
 
-## Developer Preview Flow
+## Developer Preview Policy
 
-Use this for the Jenkins `developer_build` job after building and pushing the
-selected branch images.
-
-```bash
-scripts/prepare-developer-preview.sh tax=9f2c4a1 payment=6d7e8f9
-git status --short
-git add overlays scripts docs README.md
-git commit -m "cd(lab2): activate developer preview"
-git pull --rebase origin main
-git push origin main
-```
-
-Expected result:
-
-- selected services use the supplied commit SHA tags
-- unselected services reset to `main`
-- `developer` is active
-- `dev` and `staging` are dormant
-- `scripts/validate-gitops.sh` passes
-
-Cluster evidence:
+The `developer` namespace is intentionally dormant in this runtime policy. The
+cluster is sized for `dev + staging` plus platform services, not a third full
+environment. `scripts/prepare-developer-preview.sh` now exits with a clear
+message instead of changing desired state.
 
 ```bash
-sudo k3s kubectl get app -n argocd yas-developer
-sudo k3s kubectl get deploy -n developer
-sudo k3s kubectl get pods -n developer
-sudo k3s kubectl top nodes
-curl -H 'Host: yas.developer.local' http://34.124.212.254:30080/
-```
-
-## Developer Teardown Flow
-
-Use this for the Jenkins `teardown_developer` job.
-
-```bash
-scripts/teardown-developer.sh
-git add overlays
-git commit -m "cd(lab2): teardown developer preview"
-git pull --rebase origin main
-git push origin main
+scripts/prepare-developer-preview.sh tax=9f2c4a1
 ```
 
 Expected result:
 
 - `developer` is dormant
-- all developer image tags reset to `main`
-- `dev` is active
+- `dev` and `staging` remain active
 - `scripts/validate-gitops.sh` passes
 
 ## Rollback

@@ -37,6 +37,6 @@ while IFS= read -r image_name; do
   IMAGE_REF="$image_ref" RELEASE_TAG="$RELEASE_TAG" yq -i '(.images[] | select(.name == env(IMAGE_REF)) | .newTag) = env(RELEASE_TAG)' "$overlay"
 done < <(yq -r '.services[] | select(.deploy == true) | .imageName' services.yaml)
 
-scripts/activate-environment.sh staging
+scripts/activate-environment.sh baseline
 
 echo "promoted staging to ${RELEASE_TAG}"
