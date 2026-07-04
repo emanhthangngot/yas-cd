@@ -49,5 +49,8 @@ patches:
     path: cpu-throttle.yaml
   - target:
       kind: Deployment
+    path: rollout-cap.yaml
+  - target:
+      kind: Deployment
       name: sampledata
     path: sampledata-replicas-dormant.yaml
