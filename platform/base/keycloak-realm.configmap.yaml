@@ -582,7 +582,9 @@ data:
             "http://localhost:3000/*",
             "http://localhost:8087/*",
             "http://yas.dev.local/*",
+            "http://yas.dev.local:30846/*",
             "http://yas.staging.local/*",
+            "http://yas.staging.local:30846/*",
             "http://yas.developer.local/*"
           ],
           "webOrigins": [],
@@ -926,7 +928,9 @@ data:
             "http://storefront.yas.local.com/*",
             "http://localhost:8087/*",
             "http://yas.dev.local/*",
+            "http://yas.dev.local:30846/*",
             "http://yas.staging.local/*",
+            "http://yas.staging.local:30846/*",
             "http://yas.developer.local/*"
           ],
           "webOrigins": [],

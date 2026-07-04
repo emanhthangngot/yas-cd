@@ -47,10 +47,10 @@ request() {
   local output_file="$3"
   curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    -H "Host: yas.${env_name}.local" \
+    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -o "$output_file" \
     -w "%{http_code}" \
-    "http://${GCP_VM_EXTERNAL_IP}:${APP_NODEPORT}${path}"
+    "http://yas.${env_name}.local:${APP_NODEPORT}${path}"
 }
 
 request_headers() {
@@ -59,11 +59,11 @@ request_headers() {
   local output_file="$3"
   curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    -H "Host: yas.${env_name}.local" \
+    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -D "$output_file" \
     -o /dev/null \
     -w "%{http_code}" \
-    "http://${GCP_VM_EXTERNAL_IP}:${APP_NODEPORT}${path}"
+    "http://yas.${env_name}.local:${APP_NODEPORT}${path}"
 }
 
 expect_status() {
@@ -100,6 +100,24 @@ for env_name in "${environments[@]}"; do
   fi
   if ! grep -Eiq "location: .*redirect_uri=.*yas\\.${env_name}\\.local.*login.*keycloak" "$auth_headers"; then
     echo "${env_name} keycloak authorization redirect does not return to /login/oauth2/code/keycloak" >&2
+    exit 1
+  fi
+  if [ "$APP_NODEPORT" != "80" ] && ! grep -Eiq "location: .*redirect_uri=.*yas\\.${env_name}\\.local:${APP_NODEPORT}/login/oauth2/code/keycloak" "$auth_headers"; then
+    echo "${env_name} keycloak authorization redirect does not include NodePort ${APP_NODEPORT} in redirect_uri" >&2
+    exit 1
+  fi
+
+  auth_location="$(awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/\r$/, "", $0); sub(/^location:[[:space:]]*/, "", $0); print; exit}' "$auth_headers")"
+  keycloak_body="$tmpdir/${env_name}-keycloak-login.html"
+  keycloak_status="$(curl -sS \
+    --max-time "$CURL_TIMEOUT" \
+    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    -o "$keycloak_body" \
+    -w "%{http_code}" \
+    "$auth_location")"
+  expect_status "$keycloak_status" '^2[0-9][0-9]$' "${env_name} keycloak login page"
+  if ! grep -q 'Sign in to Yas' "$keycloak_body"; then
+    echo "${env_name} keycloak login page did not render the Yas realm login form" >&2
     exit 1
   fi
 

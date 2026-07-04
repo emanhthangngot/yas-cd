@@ -10,6 +10,8 @@ spec:
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.staging.local:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
+              value: http://yas.staging.local:30846/login/oauth2/code/api-client
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,3 +25,5 @@ spec:
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
               value: http://yas.staging.local:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
+              value: http://yas.staging.local:30846/login/oauth2/code/keycloak
