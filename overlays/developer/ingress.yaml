@@ -36,6 +36,27 @@ spec:
                 name: storefront-bff
                 port:
                   number: 80
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
