@@ -3,14 +3,44 @@ kind: PeerAuthentication
 metadata:
   name: default
   namespace: dev
-spec:
   mtls:
     mode: STRICT
-  portLevelMtls:
-    "3000":
-      mode: PERMISSIVE
-    "8080":
-      mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: storefront-ui-permissive
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: storefront-ui
+  mtls:
+    mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: backoffice-ui-permissive
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backoffice-ui
+  mtls:
+    mode: PERMISSIVE
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: swagger-ui-permissive
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: swagger-ui
+  mtls:
+    mode: PERMISSIVE
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
