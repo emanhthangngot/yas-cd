@@ -44,7 +44,7 @@ data:
               keycloak:
                 issuer-uri: http://identity/realms/Yas
             registration:
-              api-client:
+              keycloak:
                 provider: keycloak
                 client-id: storefront-bff
                 client-secret: ${KEYCLOAK_STOREFRONT_BFF_CLIENT_SECRET}

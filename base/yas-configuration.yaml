@@ -146,7 +146,7 @@ data:
       servlet:
         context-path: /media
     yas:
-      publicUrl: http://media/media
+      publicUrl: /api/media
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -206,14 +206,6 @@ data:
       cloud:
         gateway:
           routes:
-            - id: product_api
-              uri: http://product
-              order: -10
-              predicates:
-                - Path=/api/product/**
-              filters:
-                - RewritePath=/api/(?<segment>.*), /${segment}
-                - TokenRelay=
             - id: cart_api
               uri: http://cart
               order: -10
@@ -230,6 +222,30 @@ data:
               filters:
                 - RewritePath=/api/(?<segment>.*), /${segment}
                 - TokenRelay=
+            - id: inventory_api
+              uri: http://inventory
+              order: -10
+              predicates:
+                - Path=/api/inventory/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: location_api
+              uri: http://location
+              order: -10
+              predicates:
+                - Path=/api/location/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: media_api
+              uri: http://media
+              order: -10
+              predicates:
+                - Path=/api/media/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
             - id: order_api
               uri: http://order
               order: -10
@@ -238,18 +254,86 @@ data:
               filters:
                 - RewritePath=/api/(?<segment>.*), /${segment}
                 - TokenRelay=
-            - id: api
-              uri: http://storefront-bff
+            - id: payment_api
+              uri: http://payment
               order: -10
               predicates:
-                - Path=/api/**
+                - Path=/api/payment/**
               filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
                 - TokenRelay=
-            - id: nextjs
-              uri: http://storefront-ui:3000
+            - id: payment_paypal_api
+              uri: http://payment-paypal
               order: -10
               predicates:
-                - Path=/**
+                - Path=/api/payment-paypal/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: product_api
+              uri: http://product
+              order: -10
+              predicates:
+                - Path=/api/product/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: promotion_api
+              uri: http://promotion
+              order: -10
+              predicates:
+                - Path=/api/promotion/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: rating_api
+              uri: http://rating
+              order: -10
+              predicates:
+                - Path=/api/rating/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: search_api
+              uri: http://search
+              order: -10
+              predicates:
+                - Path=/api/search/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: tax_api
+              uri: http://tax
+              order: -10
+              predicates:
+                - Path=/api/tax/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: webhook_api
+              uri: http://webhook
+              order: -10
+              predicates:
+                - Path=/api/webhook/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: sampledata_api
+              uri: http://sampledata
+              order: -10
+              predicates:
+                - Path=/api/sampledata/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
+            - id: recommendation_api
+              uri: http://recommendation
+              order: -10
+              predicates:
+                - Path=/api/recommendation/**
+              filters:
+                - RewritePath=/api/(?<segment>.*), /${segment}
+                - TokenRelay=
             - id: ui
               uri: ${UI_HOST}
               order: -10
@@ -300,7 +384,7 @@ data:
               keycloak:
                 issuer-uri: http://identity/realms/Yas
             registration:
-              api-client:
+              keycloak:
                 provider: keycloak
                 client-id: storefront-bff
                 client-secret: ${KEYCLOAK_STOREFRONT_BFF_CLIENT_SECRET}

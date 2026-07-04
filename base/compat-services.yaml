@@ -60,8 +60,22 @@ data:
           proxy_set_header Host $proxy_host;
           proxy_set_header X-Real-IP $remote_addr;
         }
+        location /rating {
+          proxy_pass http://rating;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
         location /payment {
           proxy_pass http://payment;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /payment-paypal {
+          proxy_pass http://payment-paypal;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;
@@ -74,8 +88,36 @@ data:
           proxy_set_header Host $proxy_host;
           proxy_set_header X-Real-IP $remote_addr;
         }
+        location /promotion {
+          proxy_pass http://promotion;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
         location /search {
           proxy_pass http://search;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /recommendation {
+          proxy_pass http://recommendation;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /webhook {
+          proxy_pass http://webhook;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_set_header Host $proxy_host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+        location /sampledata {
+          proxy_pass http://sampledata;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;

@@ -19,6 +19,11 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Partially aligned on `main` | One Jenkinsfile exists. `main` still has old `DEPLOY_TO_DEVELOPER` behavior. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
+| Storefront login config | Fixed in CD desired state | `storefront-bff` now uses OAuth registration id `keycloak`, matching `/oauth2/authorization/keycloak`; needs runtime login verification. |
+| API gateway routing | Fixed in CD desired state | BFF route table now maps `/api/<service>/**` directly for product, location, inventory, cart, customer, media, rating, payment, payment-paypal, tax, promotion, search, order, recommendation, webhook, and sampledata; generic `/api/**` self-route was removed. |
+| Gateway route generation | Implemented in CD repo | `scripts/sync-gateway-routes.sh` now derives backend gateway routes from `services.yaml`; `scripts/validate-gitops.sh` fails if rendered route YAML drifts from the service catalog. |
+| Media image routing | Fixed in CD desired state | Media URLs now resolve through same-origin `/api/media`, and both Spring Gateway and compat NGINX route media; needs browser/runtime verification. |
+| Storefront runtime smoke check | Implemented in CD repo | `scripts/smoke-runtime-storefront.sh` verifies Keycloak login redirect, product API routing, and same-origin `/api/media/**` assets for `dev` and `staging` after ArgoCD sync. |
 | Platform infrastructure readiness | Done | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness are fully verified and documented in docs/project02/platform-infrastructure.md. |
 | Service mesh | Done | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
@@ -124,5 +129,10 @@ kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/st
 3. Trigger or simulate a `vX.Y.Z` release and confirm staging GitOps update.
 4. Re-check ArgoCD and cluster health after CD PR #14.
 5. Capture platform infrastructure evidence for PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVCs.
-6. Implement and capture Istio sidecar evidence for required `dev` and `staging` app pods as `READY 2/2`.
-7. Capture evidence for dev, staging, Docker Hub tags, ArgoCD sync, external access, and mesh.
+6. Runtime-verify storefront login/registration through Keycloak using the `keycloak` registration path.
+7. Run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=<nodeport> scripts/smoke-runtime-storefront.sh dev staging` after ArgoCD sync.
+8. Runtime-verify gateway routes for required storefront/backoffice API paths.
+9. Runtime-verify product/media images load through `/api/media/**`.
+10. Keep gateway routes synchronized through `scripts/sync-gateway-routes.sh` whenever backend services are added or removed from `services.yaml`.
+11. Refresh/finalize Istio sidecar evidence for required `dev` and `staging` app pods as `READY 2/2`.
+12. Capture evidence for dev, staging, Docker Hub tags, ArgoCD sync, external access, and mesh.

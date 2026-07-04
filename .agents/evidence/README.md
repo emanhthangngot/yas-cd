@@ -112,6 +112,9 @@ yas-staging     Synced        Healthy
 - [x] **Storefront API Gateway and BFF Resolution Verification**:
   - Since the legacy `storefront-bff` jar contains bundled routes that direct all `/api/**` traffic (stripped of `/api` prefix) to `http://nginx`, we deployed a lightweight NGINX API Gateway pod matching this interface.
   - Due to Istio Service Mesh requirements, this NGINX Gateway is configured to use `proxy_http_version 1.1` and preserve `proxy_host` header to prevent Envoy sidecar connection drops.
+  - **Needs refresh after media route fix**: older evidence below still shows thumbnail URLs as `http://media/media/...`. The current desired state changes media public URLs to same-origin `/api/media/...`, so the product and media curl/browser evidence must be recaptured after ArgoCD sync.
+  - **Needs refresh after route-table fix**: the current desired state now removes the generic `/api/** -> storefront-bff` route and renders explicit API routes for each service path. Recapture representative storefront and backoffice API calls after ArgoCD sync.
+  - **Runtime smoke command**: after ArgoCD sync, run `GCP_VM_EXTERNAL_IP=<ip> APP_NODEPORT=<nodeport> scripts/smoke-runtime-storefront.sh dev staging` and attach the output here. This verifies `/oauth2/authorization/keycloak`, `/api/product/storefront/products`, and the first same-origin `/api/media/**` asset returned by the product API.
   - Testing connection to **staging** product catalog API (showing seeded iPhones):
     ```bash
     $ curl -si -H "Host: yas.staging.local" http://34.124.212.254:30846/api/product/storefront/products
@@ -155,6 +158,3 @@ yas-staging     Synced        Healthy
     set-cookie: SESSION=...; Path=/; HTTPOnly
     x-envoy-decorator-operation: storefront-bff.dev.svc.cluster.local:80/*
     ```
-
-
-

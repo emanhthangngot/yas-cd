@@ -14,6 +14,8 @@ require_tool() {
 require_tool yq
 require_tool kustomize
 
+scripts/sync-gateway-routes.sh --check
+
 service_count="$(yq e '.services | length' services.yaml)"
 if [ "$service_count" -le 0 ]; then
   echo "services.yaml does not contain services" >&2
@@ -22,24 +24,51 @@ fi
 
 active_environments=""
 deployable_images="$(mktemp)"
-trap 'rm -f "$deployable_images"' EXIT
+expected_gateway_services="$(mktemp)"
+trap 'rm -f "$deployable_images" "$expected_gateway_services"' EXIT
 
 yq -r '.services[] | select(.deploy == true) | .imageName' services.yaml | sort >"$deployable_images"
+yq -r '.services[] | select(.type == "backend" and .chart != null) | .name' services.yaml | sort >"$expected_gateway_services"
 
 for overlay in dev staging developer; do
   echo "validating overlay: $overlay"
 
   overlay_images="$(mktemp)"
+  rendered_overlay="$(mktemp)"
+  rendered_gateway_routes="$(mktemp)"
   yq -r '.images[].name | split("/")[-1]' "overlays/${overlay}/kustomization.yaml" | sort >"$overlay_images"
 
   if ! diff -u "$deployable_images" "$overlay_images"; then
     echo "overlay ${overlay} image list does not match deployable services.yaml images" >&2
-    rm -f "$overlay_images"
+    rm -f "$overlay_images" "$rendered_overlay" "$rendered_gateway_routes"
     exit 1
   fi
   rm -f "$overlay_images"
 
-  kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone "overlays/${overlay}" >/dev/null
+  kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone "overlays/${overlay}" >"$rendered_overlay"
+
+  yq -r 'select(.kind == "ConfigMap" and .metadata.name == "yas-gateway-routes-config-configmap")
+    | .data."gateway-routes-config.yaml"' "$rendered_overlay" >"$rendered_gateway_routes"
+
+  while IFS= read -r service; do
+    if ! yq -e ".spring.cloud.gateway.routes[]
+      | select(.id == \"${service//-/_}_api\")
+      | select(.uri == \"http://${service}\")
+      | select(.predicates[] == \"Path=/api/${service}/**\")" "$rendered_gateway_routes" >/dev/null; then
+      echo "overlay ${overlay} missing gateway route for service: ${service}" >&2
+      rm -f "$rendered_overlay" "$rendered_gateway_routes"
+      exit 1
+    fi
+  done <"$expected_gateway_services"
+
+  if yq -e '.spring.cloud.gateway.routes[] | select(.id == "api" and .uri == "http://storefront-bff")' \
+    "$rendered_gateway_routes" >/dev/null 2>/dev/null; then
+    echo "overlay ${overlay} must not route generic /api/** back to storefront-bff" >&2
+    rm -f "$rendered_overlay" "$rendered_gateway_routes"
+    exit 1
+  fi
+
+  rm -f "$rendered_overlay" "$rendered_gateway_routes"
 
   replica_patch_count="$(yq -r '[.patches[]? | select(.target.kind == "Deployment" and (.path == "replicas-active.yaml" or .path == "replicas-dormant.yaml"))] | length' "overlays/${overlay}/kustomization.yaml")"
   if [ "$replica_patch_count" != "1" ]; then
