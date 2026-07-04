@@ -33,8 +33,15 @@ Progress report:
 - [ ] ArgoCD `yas-developer` Synced/Healthy
 - [ ] `argocd app wait` output for required apps
 - [ ] `developer_build` log showing branch-to-commit resolution
+- [ ] `developer_build` log showing `scripts/prepare-developer-preview.sh <service=tag>`
+- [ ] `yas-developer` active evidence with selected service commit-SHA image tags
 - [ ] `teardown_developer` log showing GitOps prune
+- [ ] `teardown_developer` log showing `scripts/teardown-developer.sh`
+- [ ] Developer overlay reset to `main` image tags after teardown
 - [ ] `rollback_environment` log showing revert
+- [ ] `release_staging` log showing `scripts/promote-staging-release.sh vX.Y.Z`
+- [ ] `yas-staging` active evidence with immutable release image tags
+- [ ] `scripts/activate-environment.sh dev` evidence after staging validation
 - [ ] App URL reachable via GCP VM external IP plus hosts file or Host header
 - [ ] Mesh namespace decision recorded: `dev` first, `developer` fallback only if needed
 - [ ] Mesh namespace label output: `kubectl label namespace ... istio-injection=enabled --overwrite`

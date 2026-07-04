@@ -4,13 +4,11 @@ namespace: staging
 resources:
   - ../../base
   - ingress.yaml
-
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas
       yas.nashtechglobal.com/environment: staging
     includeSelectors: true
-
 images:
   - name: docker.io/emanhthangngot/yas-cart
     newTag: v0.0.0
@@ -52,12 +50,7 @@ images:
     newTag: v0.0.0
   - name: docker.io/emanhthangngot/yas-storefront
     newTag: v0.0.0
-
 patches:
   - target:
       kind: Deployment
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 0
-
+    path: replicas-dormant.yaml
