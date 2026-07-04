@@ -25,6 +25,7 @@ services:
     imageName: yas-cart
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres, redis]
   - name: customer
     path: customer
@@ -33,6 +34,7 @@ services:
     imageName: yas-customer
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres, keycloak]
   - name: inventory
     path: inventory
@@ -41,6 +43,7 @@ services:
     imageName: yas-inventory
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres]
   - name: location
     path: location
@@ -49,6 +52,8 @@ services:
     imageName: yas-location
     type: backend
     deploy: true
+    demoRole: runtime-dependency
+    dependencyReason: "Required by tax for the teacher demo tax flow."
     dependencies: [postgres]
   - name: media
     path: media
@@ -57,6 +62,7 @@ services:
     imageName: yas-media
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres]
   - name: order
     path: order
@@ -65,6 +71,7 @@ services:
     imageName: yas-order
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres, kafka, cart, customer, product, tax, payment]
   - name: payment
     path: payment
@@ -73,6 +80,8 @@ services:
     imageName: yas-payment
     type: backend
     deploy: true
+    demoRole: runtime-dependency
+    dependencyReason: "Required by order checkout flow referenced by the teacher service note."
     dependencies: [postgres, payment-paypal]
   - name: payment-paypal
     path: payment-paypal
@@ -81,6 +90,8 @@ services:
     imageName: yas-payment-paypal
     type: backend
     deploy: true
+    demoRole: runtime-dependency
+    dependencyReason: "Required by payment service startup and checkout demo."
     dependencies: [postgres]
   - name: product
     path: product
@@ -89,6 +100,7 @@ services:
     imageName: yas-product
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres, elasticsearch, media]
   - name: promotion
     path: promotion
@@ -96,7 +108,9 @@ services:
     chart: k8s/charts/promotion
     imageName: yas-promotion
     type: backend
-    deploy: true
+    deploy: false
+    demoRole: optional
+    exclusionReason: "Outside the teacher-required CQ demo service list."
     dependencies: [postgres, product]
   - name: rating
     path: rating
@@ -104,7 +118,9 @@ services:
     chart: k8s/charts/rating
     imageName: yas-rating
     type: backend
-    deploy: true
+    deploy: false
+    demoRole: optional
+    exclusionReason: "Outside the teacher-required CQ demo service list."
     dependencies: [postgres, customer, product]
   - name: search
     path: search
@@ -113,6 +129,7 @@ services:
     imageName: yas-search
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [elasticsearch, kafka]
   - name: tax
     path: tax
@@ -121,6 +138,7 @@ services:
     imageName: yas-tax
     type: backend
     deploy: true
+    demoRole: teacher-required
     dependencies: [postgres, location]
   - name: webhook
     path: webhook
@@ -128,7 +146,9 @@ services:
     chart: k8s/charts/webhook
     imageName: yas-webhook
     type: backend
-    deploy: true
+    deploy: false
+    demoRole: optional
+    exclusionReason: "Outside the teacher-required CQ demo service list."
     dependencies: [postgres, kafka]
   - name: sampledata
     path: sampledata
@@ -136,7 +156,10 @@ services:
     chart: k8s/charts/sampledata
     imageName: yas-sampledata
     type: backend
-    deploy: true
+    deploy: false
+    demoRole: teacher-required-run-once
+    runOnce: true
+    exclusionReason: "Seed data service should not run continuously after data is initialized."
     dependencies: [postgres, backend-services]
   - name: recommendation
     path: recommendation
@@ -144,7 +167,9 @@ services:
     chart: k8s/charts/recommendation
     imageName: yas-recommendation
     type: backend
-    deploy: true
+    deploy: false
+    demoRole: optional
+    exclusionReason: "Outside the teacher-required CQ demo service list."
     dependencies: [postgres, pgvector, kafka]
   - name: backoffice-bff
     path: backoffice-bff
@@ -153,6 +178,7 @@ services:
     imageName: yas-backoffice-bff
     type: bff
     deploy: true
+    demoRole: teacher-required
     dependencies: [keycloak, redis, backend-services]
   - name: storefront-bff
     path: storefront-bff
@@ -161,6 +187,7 @@ services:
     imageName: yas-storefront-bff
     type: bff
     deploy: true
+    demoRole: teacher-required
     dependencies: [keycloak, redis, backend-services]
   - name: backoffice-ui
     path: backoffice
@@ -169,6 +196,7 @@ services:
     imageName: yas-backoffice
     type: ui
     deploy: true
+    demoRole: teacher-required
     dependencies: [backoffice-bff]
   - name: storefront-ui
     path: storefront
@@ -177,7 +205,18 @@ services:
     imageName: yas-storefront
     type: ui
     deploy: true
+    demoRole: teacher-required
     dependencies: [storefront-bff]
+  - name: swagger-ui
+    path: null
+    dockerfile: null
+    chart: charts/swagger-ui
+    imageName: swagger-ui
+    type: documentation
+    deploy: false
+    demoRole: teacher-required-third-party
+    exclusionReason: "Runtime chart uses swaggerapi/swagger-ui directly; Jenkins does not build a YAS image."
+    dependencies: [backend-services]
   - name: common-library
     path: common-library
     dockerfile: null

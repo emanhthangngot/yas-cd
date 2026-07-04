@@ -8,6 +8,13 @@ spec:
     - host: yas.dev.local
       http:
         paths:
+          - path: /swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: swagger-ui
+                port:
+                  number: 8080
           - path: /
             pathType: Prefix
             backend:

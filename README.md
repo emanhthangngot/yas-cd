@@ -47,4 +47,9 @@ scripts/teardown-developer.sh
 scripts/activate-environment.sh dev
 ```
 
+The default runtime follows the CQ demo service scope from
+`docs/project02/service-scope-cq.md`: teacher-required services, the minimal
+runtime dependencies for `order` and `tax`, `swagger-ui`, and `sampledata`
+kept dormant after seeding.
+
 Never commit real secrets, kubeconfigs, tokens, SSH keys, Docker Hub credentials, Snyk tokens, SonarQube tokens, ArgoCD tokens, or Google Cloud service account keys.

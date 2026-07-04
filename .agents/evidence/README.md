@@ -43,6 +43,9 @@ Progress report:
 - [ ] `yas-staging` active evidence with immutable release image tags
 - [ ] `scripts/activate-environment.sh dev` evidence after staging validation
 - [ ] App URL reachable via GCP VM external IP plus hosts file or Host header
+- [ ] CQ service scope evidence: rendered deploy list matches `docs/project02/service-scope-cq.md`
+- [ ] `swagger-ui` reachable through `/swagger-ui`
+- [ ] `sampledata` rendered with `0` replicas after seed data is available
 - [ ] Mesh namespace decision recorded: `dev` first, `developer` fallback only if needed
 - [ ] Mesh namespace label output: `kubectl label namespace ... istio-injection=enabled --overwrite`
 - [ ] Mesh namespace labels shown by `kubectl get namespace ... --show-labels`

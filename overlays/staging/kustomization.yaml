@@ -28,19 +28,9 @@ images:
     newTag: v0.0.0
   - name: docker.io/emanhthangngot/yas-product
     newTag: v0.0.0
-  - name: docker.io/emanhthangngot/yas-promotion
-    newTag: v0.0.0
-  - name: docker.io/emanhthangngot/yas-rating
-    newTag: v0.0.0
   - name: docker.io/emanhthangngot/yas-search
     newTag: v0.0.0
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: v0.0.0
-  - name: docker.io/emanhthangngot/yas-webhook
-    newTag: v0.0.0
-  - name: docker.io/emanhthangngot/yas-sampledata
-    newTag: v0.0.0
-  - name: docker.io/emanhthangngot/yas-recommendation
     newTag: v0.0.0
   - name: docker.io/emanhthangngot/yas-backoffice-bff
     newTag: v0.0.0
@@ -54,3 +44,7 @@ patches:
   - target:
       kind: Deployment
     path: replicas-dormant.yaml
+  - target:
+      kind: Deployment
+      name: sampledata
+    path: sampledata-replicas-dormant.yaml
