@@ -68,13 +68,15 @@ behavior is not yet compatible with the actual lab boundary:
 ### Workstream 1: Single-Node Runtime Governance
 
 The cluster must stop treating `dev`, `staging`, and `developer` as three
-always-on full-stack environments. The GitOps desired state must encode a
+always-on full-stack environments. The GitOps desired state now encodes a
 single-node-safe policy where:
 
 - `yas-platform` remains always-on.
-- One full environment is active at a time by default.
-- Non-active environments reconcile to a dormant state rather than attempting
-  a full rollout after reboot or sync.
+- `dev` and `staging` run in parallel for the final demo baseline.
+- `developer` reconciles to a dormant state rather than attempting a third
+  full rollout after reboot or sync.
+- `staging` uses lower CPU limits and `maxSurge: 0` rollouts to avoid startup
+  spikes while running beside `dev`.
 - Shared charts enforce resource requests and limits suitable for a Java-heavy
   workload on `e2-standard-8`.
 
@@ -125,13 +127,11 @@ respect environment exclusivity, and produce auditable evidence.
 - FR-012: Admin interfaces must remain restricted by SSH tunnel or firewall
   allowlisting.
 - FR-013: The GitOps desired state must encode an environment activation
-  policy where at most one full YAS application environment is active on the
-  single node at a time.
-- FR-014: `dev` must be the default active environment after bootstrap or
-  reboot unless an explicit operator or Jenkins action promotes another
-  environment.
-- FR-015: `staging` and `developer` must default to a dormant state when they
-  are not explicitly being validated.
+  policy where `dev` and `staging` are active together and `developer` is
+  dormant on the single node.
+- FR-014: `dev` must stay active after bootstrap or reboot.
+- FR-015: `staging` must stay active beside `dev`, but with conservative CPU
+  limits and no rollout surge.
 - FR-016: Shared backend and UI charts must define conservative resource
   requests and limits so Kubernetes can schedule predictably and prevent
   uncontrolled JVM growth.
@@ -155,9 +155,9 @@ respect environment exclusivity, and produce auditable evidence.
   `DestinationRule`, `VirtualService`, and `AuthorizationPolicy` resources
   needed to prove the assignment scenarios.
 - FR-023: `deploy_dev` must promote `main` images into the active `dev`
-  environment without waking dormant optional environments.
-- FR-024: `release_staging` must activate `staging` only for immutable release
-  tags and must not leave `developer` active at the same time.
+  environment without waking `developer`.
+- FR-024: `release_staging` must promote `staging` only for immutable release
+  tags and must keep `developer` dormant.
 - FR-025: `rollback_environment` must revert an environment to a previous
   overlay state or image tag while preserving the active/dormant policy.
 - FR-026: `cluster_smoke_check` must report the active environment, ArgoCD app
@@ -176,9 +176,9 @@ respect environment exclusivity, and produce auditable evidence.
 - NFR-004: GitOps commits in this repo must not trigger full application CI in
   `tzin1401/yas`.
 - NFR-005: The solution must not rely on Tailscale.
-- NFR-006: When only `yas-platform`, one active environment, and the minimal
-  mesh slice are running, node CPU must settle below sustained saturation
-  after startup and remain usable for SSH and `kubectl` operations.
+- NFR-006: When `yas-platform`, `dev`, `staging`, and the minimal mesh slice
+  are running, node CPU must settle below sustained saturation after startup
+  and remain usable for SSH and `kubectl` operations.
 - NFR-007: Memory pressure must remain below the point where pods are commonly
   OOM-killed during normal validation workflows.
 - NFR-008: Mesh evidence must be reproducible using committed manifests and
@@ -187,10 +187,10 @@ respect environment exclusivity, and produce auditable evidence.
 ## Success Criteria
 
 - `yas-platform` is `Synced/Healthy`.
-- One designated full environment, starting with `dev`, reaches
-  `Synced/Healthy` while the node remains usable.
-- `staging` and `developer` can be activated on demand and returned to dormant
-  state without manual `kubectl set image` or direct app-namespace mutation.
+- `dev` and `staging` reach `Synced/Healthy` together while the node remains
+  usable.
+- `developer` remains dormant unless the team explicitly re-enables the legacy
+  preview flow.
 - Shared charts enforce default CPU and memory requests and limits.
 - Committed secrets are represented through a hardened GitOps mechanism rather
   than plain-text desired state.

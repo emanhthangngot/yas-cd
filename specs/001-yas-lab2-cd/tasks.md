@@ -44,5 +44,12 @@
 - [x] CD repo contains docs, Spec Kit, and agent skills.
 - [x] CD repo exists on GitHub under `emanhthangngot/yas-cd`.
 - [x] App repo only owns app source and CI.
-- [ ] ArgoCD apps sync from `yas-cd/main`.
-- [x] Developer deployment includes platform dependencies.
+- [x] ArgoCD apps sync from `yas-cd/main`.
+- [x] CQ service scope is aligned in CD repo.
+- [x] `dev` and `staging` run in parallel by desired state.
+- [x] `developer` is dormant by desired state.
+- [x] Staging CPU and rollout surge are capped for the single-node VM.
+- [ ] App repo `main` fully matches the new developer-dormant policy.
+- [ ] Jenkins multibranch tag discovery for `vX.Y.Z` releases is confirmed.
+- [ ] Runtime state after CD PR #14 is re-verified and captured.
+- [ ] Service mesh evidence is captured.

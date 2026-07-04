@@ -50,4 +50,10 @@ The default runtime follows the CQ demo service scope from
 runtime dependencies for `order` and `tax`, `swagger-ui`, and `sampledata`
 kept dormant after seeding.
 
+For the latest handoff context before starting a new chat, read:
+
+```bash
+docs/project02/current-handoff.md
+```
+
 Never commit real secrets, kubeconfigs, tokens, SSH keys, Docker Hub credentials, Snyk tokens, SonarQube tokens, ArgoCD tokens, or Google Cloud service account keys.

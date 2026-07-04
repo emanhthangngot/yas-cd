@@ -66,6 +66,14 @@ cluster is sized for `dev + staging` plus platform services, not a third full
 environment. `scripts/prepare-developer-preview.sh` now exits with a clear
 message instead of changing desired state.
 
+Important app-repo note:
+
+- CD repo policy disables developer runtime.
+- App repo `main` still has a Jenkins parameter `DEPLOY_TO_DEVELOPER` that can update
+  `overlays/developer`.
+- Merge or revise the app-side Jenkinsfile change before treating developer as permanently
+  disabled end-to-end.
+
 ```bash
 scripts/prepare-developer-preview.sh tax=9f2c4a1
 ```

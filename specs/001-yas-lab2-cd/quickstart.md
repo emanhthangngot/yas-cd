@@ -26,36 +26,46 @@ Expected outcome:
 
 ## 2. Validate Single-Node Runtime Governance
 
-Confirm dormant optional environments:
+Confirm the current baseline runtime:
 
 ```bash
+sudo k3s kubectl get pods -n dev
 sudo k3s kubectl get pods -n staging
 sudo k3s kubectl get pods -n developer
 ```
 
 Expected outcome:
-- optional environments are empty or intentionally dormant when not under test
+- `dev` is active
+- `staging` is active
+- `developer` is dormant
 
-Confirm the active environment:
+Confirm the node is still usable while `dev` and `staging` run together:
 
 ```bash
-sudo k3s kubectl get pods -n dev
-sudo k3s kubectl top pods -n dev --sort-by=cpu
+sudo k3s kubectl top nodes
+sudo k3s kubectl top pods -A --sort-by=cpu | head -30
 ```
 
 Expected outcome:
-- only one full environment is consuming the bulk of app CPU
-- the node remains usable while that environment converges
+- staging services are CPU-capped
+- staging rollouts do not surge extra pods
+- Jenkins jobs are accounted for separately from Kubernetes workload pressure
 
-## 3. Validate Developer Preview Flow
+## 3. Validate Developer Policy
 
-From Jenkins or an operator-approved simulation:
+Developer preview is currently disabled at the CD policy level.
 
-1. trigger `developer_build` with one selected service branch
-2. wait for the GitOps commit to `overlays/developer`
-3. confirm only the developer namespace activates for preview
+Run locally in the CD repo:
 
-Runtime checks:
+```bash
+scripts/prepare-developer-preview.sh tax=9f2c4a1
+```
+
+Expected outcome:
+- the script exits with a policy message
+- `developer` remains dormant
+
+Runtime check:
 
 ```bash
 sudo k3s kubectl get applications -n argocd yas-developer
@@ -63,12 +73,24 @@ sudo k3s kubectl get pods -n developer
 ```
 
 Expected outcome:
-- `yas-developer` becomes active only during preview
-- `dev` and `staging` remain within the exclusivity policy
+- `yas-developer` is synced to the dormant desired state
+- all developer deployments are `0/0`
+
+Important app-repo check:
+- app repo `main` still has `DEPLOY_TO_DEVELOPER`
+- merge or revise the app-side Jenkinsfile before relying on this policy end-to-end
 
 ## 4. Validate Staging Release Flow
 
-Promote an immutable tag through `release_staging` and check:
+Promote an immutable tag through a Jenkins tag build or local GitOps simulation:
+
+```bash
+scripts/promote-staging-release.sh v1.2.3
+scripts/validate-gitops.sh
+scripts/validate-staging-immutable.sh
+```
+
+Then check the cluster:
 
 ```bash
 sudo k3s kubectl get applications -n argocd yas-staging
@@ -77,7 +99,9 @@ sudo k3s kubectl get pods -n staging
 
 Expected outcome:
 - staging uses only `vX.Y.Z` tags
-- staging can be activated and later returned to dormant state
+- staging remains active beside dev
+- developer remains dormant
+- staging rollouts use `maxSurge: 0` and `maxUnavailable: 1`
 
 ## 5. Validate Mesh Demo
 
@@ -122,6 +146,7 @@ Collect and store:
 - `kubectl get applications -n argocd`
 - `kubectl get pods -A`
 - `kubectl top nodes`
+- `kubectl top pods -A --sort-by=cpu`
 - Jenkins logs for deployment and teardown jobs
 - Git history for GitOps commits
 - mesh curl output and Kiali screenshot

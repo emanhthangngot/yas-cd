@@ -119,9 +119,10 @@ Acceptance:
 
 Developer:
 
-- Run `developer_build` with one branch-specific service.
+- Current policy keeps developer dormant.
 - Confirm ArgoCD `yas-developer` is `Synced/Healthy`.
-- Curl app through `yas.developer.local:30080`.
+- Confirm developer deployments are `0/0`.
+- Review or disable the app repo `DEPLOY_TO_DEVELOPER` behavior before treating this as permanent end-to-end policy.
 
 Dev:
 
@@ -134,6 +135,7 @@ Staging:
 - Push `vX.Y.Z`.
 - Confirm `yas-staging` sync.
 - Confirm immutable tag in GitOps diff.
+- Confirm staging is active beside dev with CPU throttle and `maxSurge: 0`.
 
 Rollback/teardown:
 

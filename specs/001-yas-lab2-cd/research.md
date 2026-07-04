@@ -1,22 +1,25 @@
 # Research: Single-Node Runtime Governance And Mesh Completion
 
-## Decision 1: Use an active-plus-dormant environment model
+## Decision 1: Use a dev-plus-staging baseline and keep developer dormant
 
-**Decision**: Treat `dev` as the default active full-stack environment. Treat
-`staging` and `developer` as dormant by default and activate them only when a
-release or developer validation flow explicitly requires them.
+**Decision**: Treat `dev` and `staging` as the active final-demo baseline. Keep
+`developer` dormant by default and do not run a third full environment on the
+single-node VM.
 
 **Rationale**: The current single-node `k3s` runtime cannot safely boot three
-full Java-heavy environments at once. The live cluster evidence already shows
-CPU saturation and unstable SSH during concurrent environment startup. Making
-all three environments always-on is incompatible with the lab hardware and the
-course objective of demonstrating CD, not multi-node production HA.
+full Java-heavy environments at once. The live cluster evidence showed CPU
+saturation and unstable SSH during concurrent environment startup. The final
+demo still benefits from `dev` and `staging` running side by side, so staging
+is kept active but resource-throttled and rollout-capped. `developer` remains
+dormant to avoid the third full-stack workload.
 
 **Alternatives considered**:
 - Keep all three environments always-on: rejected because the node already hits
   sustained `99%` CPU and falls over after reboot or sync churn.
-- Remove `staging` or `developer` entirely: rejected because the assignment
-  still requires those flows.
+- Run only `dev` and keep `staging` dormant: rejected because the user wants to
+  observe `dev` and `staging` in parallel for the final demo.
+- Remove `developer` entirely: rejected because the overlay and ArgoCD app are
+  still useful for evidence and rollback policy, but desired replicas stay `0`.
 
 ## Decision 2: Add resource defaults before any autoscaling
 

@@ -28,15 +28,18 @@ Progress report:
 - [ ] Docker Hub `vX.Y.Z` release tag
 - [ ] Staging GitOps diff contains immutable `vX.Y.Z` image tags only
 - [ ] Staging mutable-tag gate shows no `latest`, `main`, or branch tag
+- [ ] Staging resource evidence shows CPU throttle and `maxSurge: 0`
 - [ ] ArgoCD `yas-dev` Synced/Healthy
 - [ ] ArgoCD `yas-staging` Synced/Healthy
 - [ ] ArgoCD `yas-developer` Synced/Healthy
 - [ ] `argocd app wait` output for required apps
-- [ ] `developer_build` log showing branch-to-commit resolution
+- [ ] App repo Jenkinsfile evidence: one Jenkinsfile selects behavior by `TAG_NAME`, `BRANCH_NAME`, and `DEPLOY_TO_DEVELOPER`
+- [ ] Jenkins multibranch evidence showing whether Git tags are discovered/built
+- [ ] `developer_build` legacy behavior reviewed or disabled
 - [ ] Developer preview disabled evidence: `scripts/prepare-developer-preview.sh` exits with policy message
 - [ ] `teardown_developer` log showing GitOps prune
 - [ ] `teardown_developer` log showing `scripts/teardown-developer.sh`
-- [ ] Developer overlay reset to `main` image tags after teardown
+- [ ] Developer deployments render and run as `0/0`
 - [ ] `rollback_environment` log showing revert
 - [ ] `release_staging` log showing `scripts/promote-staging-release.sh vX.Y.Z`
 - [ ] `yas-staging` active evidence with immutable release image tags

@@ -824,39 +824,39 @@ Evidence cần lưu:
 - Curl output.
 - Screenshot browser nếu có.
 
-## 21. Chạy Developer Build Flow
+## 21. Kiểm tra Developer Policy
 
-Trong Jenkins:
+Developer runtime hiện được giữ dormant để `dev` và `staging` chạy song song
+trên single-node VM mà không quá tải. App repo `main` vẫn còn parameter
+`DEPLOY_TO_DEVELOPER`; cần merge/revise Jenkinsfile trước khi coi policy này là
+đúng end-to-end.
 
-- Chạy branch feature hoặc job developer.
-- Set `DEPLOY_TO_DEVELOPER=true`.
-- Nên thay đổi một service deployable để demo tập trung.
+Trong CD repo:
+
+```bash
+scripts/prepare-developer-preview.sh tax=9f2c4a1
+```
 
 Kết quả mong đợi:
 
-- Jenkins build image service được chọn với commit SHA tag.
-- Jenkins update `overlays/developer`.
-- ArgoCD sync `yas-developer`.
-- Service không được chọn vẫn dùng `main`.
+- Script báo developer preview đang disabled.
+- ArgoCD vẫn sync `yas-developer`.
+- Deployment trong namespace `developer` là `0/0`.
 
 Verify:
 
 ```bash
 cd /home/pearspringmind/Studying/Devops/Lab2/yas-cd
-git fetch origin
-git log -5 --oneline origin/main
-git show origin/main:overlays/developer/kustomization.yaml | sed -n '1,160p'
-
-argocd app wait yas-developer --health --sync --timeout 600
-curl -H "Host: yas.developer.local" "http://${GCP_VM_EXTERNAL_IP}:30080/"
+scripts/prepare-developer-preview.sh tax=9f2c4a1 || true
+sudo k3s kubectl get applications -n argocd yas-developer
+sudo k3s kubectl get deploy -n developer
 ```
 
 Evidence cần lưu:
 
-- Jenkins log.
-- GitOps diff.
+- Output script disabled developer preview.
 - ArgoCD output.
-- Curl output.
+- Developer deployments `0/0`.
 
 ## 22. Chạy Dev Flow
 

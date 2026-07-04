@@ -40,9 +40,10 @@ Runtime source of truth: one Google Cloud Compute Engine VM, 32 GB RAM, Ubuntu 2
 1. Show GCP VM, firewall, and cluster evidence.
 2. Show Jenkins Lab 1 CI gates still active in `tzin1401/yas`.
 3. Push feature branch and build Docker Hub image tag.
-4. Run `developer_build`; show Jenkins updates `emanhthangngot/yas-cd`.
-5. Show ArgoCD syncs `yas-developer` from `emanhthangngot/yas-cd/main`.
-6. Push/merge main; show `yas-dev` sync.
-7. Push release tag; show `yas-staging` sync with immutable tag.
+4. Show developer preview is disabled or explicitly reviewed; `yas-developer`
+   should stay dormant under the current runtime policy.
+5. Push/merge main; show `yas-dev` sync.
+6. Push release tag; show `yas-staging` sync with immutable tag.
+7. Show `yas-dev` and `yas-staging` running in parallel while `developer` is `0/0`.
 8. Run rollback and teardown.
 9. Show mesh evidence.

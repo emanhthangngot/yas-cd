@@ -132,6 +132,36 @@ pipeline {
   không đưa lại hướng bootstrap control-plane/worker cũ.
 - Label Jenkins agent: thống nhất `gcp-build-agent` (xem mục Quy ước Jenkinsfile).
 
+## Trạng thái hiện tại - 2026-07-04
+
+File handoff ngắn cho chat mới: `docs/project02/current-handoff.md`.
+
+**CD repo `main` đã có các thay đổi quan trọng:**
+
+- PR #11: căn lại service scope theo PDF yêu cầu của thầy, chỉ chạy các service cần thiết
+  cho demo CQ cộng dependency tối thiểu; `sampledata` để dormant.
+- PR #12: bỏ runtime developer mặc định; `dev` và `staging` chạy song song, `developer`
+  dormant.
+- PR #13: throttle CPU staging để giảm áp lực trên single-node VM.
+- PR #14: staging rollout dùng `maxSurge: 0`, `maxUnavailable: 1` để không nhân đôi pod
+  Java trong lúc update.
+
+**App repo `main` hiện tại:**
+
+- Chỉ có 1 `Jenkinsfile`, không có 3 Jenkinsfile riêng.
+- Jenkinsfile dùng `TAG_NAME`, `BRANCH_NAME`, và `DEPLOY_TO_DEVELOPER` để chọn luồng.
+- Push feature branch build/push image tag commit-id.
+- Merge/push `main` build/push commit-id, `main`, `latest`, rồi update `dev`.
+- Push tag `vX.Y.Z` là case riêng cho `staging`, nhưng Jenkins multibranch phải bật
+  discover/build tags thì mới tự chạy.
+- App `main` vẫn còn behavior `DEPLOY_TO_DEVELOPER=true` update developer; branch/PR disable
+  developer GitOps chưa merge vào app `main`.
+
+**Runtime cần kiểm tra lại:**
+
+- Sau PR #14, cần refresh/đợi ArgoCD rồi xác nhận `dev` và `staging` đều `1/1`,
+  `developer` `0/0`, node CPU không còn bị peak do rollout surge.
+
 ## Roadmap milestone (development-roadmap-fixed.md)
 
 - **M0** ✅ docs/spec foundation
