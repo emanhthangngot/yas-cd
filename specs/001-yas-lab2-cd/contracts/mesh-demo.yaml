@@ -1,5 +1,9 @@
 mesh_demo:
   namespace: mesh-demo
+  evidence_role: supporting_only
+  final_acceptance_requires:
+    - dev_sidecar_readiness
+    - staging_sidecar_readiness
   service_slice:
     source_service: tax
     target_service: location

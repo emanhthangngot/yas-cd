@@ -15,14 +15,42 @@ Run on the GCP VM:
 ```bash
 sudo k3s kubectl get applications -n argocd
 sudo k3s kubectl get pods -A
+sudo k3s kubectl get pods -n postgres
+sudo k3s kubectl get pods -n redis
+sudo k3s kubectl get pods -n kafka
+sudo k3s kubectl get pods -n elasticsearch
+sudo k3s kubectl get pods -n keycloak
+sudo k3s kubectl get svc -n postgres
+sudo k3s kubectl get svc -n redis
+sudo k3s kubectl get svc -n kafka
+sudo k3s kubectl get svc -n elasticsearch
+sudo k3s kubectl get svc -n keycloak
+sudo k3s kubectl get pvc -n postgres
+sudo k3s kubectl get pvc -n kafka
+sudo k3s kubectl get pvc -n elasticsearch
 sudo k3s kubectl top nodes
 sudo k3s kubectl top pods -A --sort-by=cpu
 ```
 
 Expected outcome:
 - `yas-platform` is `Synced/Healthy`
+- PostgreSQL, Redis, Kafka, Elasticsearch, and Keycloak pods are ready
+- PostgreSQL, Kafka, and Elasticsearch PVCs are `Bound`
+- required internal service endpoints exist for app pods
 - node remains reachable by SSH
 - operator can identify the current active environment and top CPU consumers
+
+Confirm required PostgreSQL databases exist:
+
+```bash
+sudo k3s kubectl exec -n postgres statefulset/postgresql -- \
+  psql -U lab-postgres-user -d postgres -c '\l'
+```
+
+Expected outcome:
+- databases exist for CQ services and runtime dependencies, including
+  `cart`, `customer`, `inventory`, `keycloak`, `location`, `media`, `order`,
+  `payment`, `payment-paypal`, `product`, `search`, and `tax`
 
 ## 2. Validate Single-Node Runtime Governance
 
@@ -103,9 +131,58 @@ Expected outcome:
 - developer remains dormant
 - staging rollouts use `maxSurge: 0` and `maxUnavailable: 1`
 
-## 5. Validate Mesh Demo
+## 5. Validate Istio Sidecars For Dev And Staging
 
-After `mesh-demo` manifests are applied and healthy:
+Check injection policy:
+
+```bash
+sudo k3s kubectl get namespace dev staging --show-labels
+```
+
+Expected outcome:
+- `dev` and `staging` show `istio-injection=enabled`, or every included
+  workload template has an explicit sidecar injection annotation
+
+Restart or sync affected workloads after enabling injection, then verify pod
+readiness:
+
+```bash
+sudo k3s kubectl get pods -n dev
+sudo k3s kubectl get pods -n staging
+```
+
+Expected outcome:
+- every required running application pod in `dev` shows `READY 2/2`
+- every required running application pod in `staging` shows `READY 2/2`
+- dormant run-once pods such as `sampledata` may remain `0/0`
+
+Confirm representative pods contain both containers:
+
+```bash
+sudo k3s kubectl get pod -n dev <pod> -o jsonpath='{.spec.containers[*].name}{"\n"}'
+sudo k3s kubectl get pod -n staging <pod> -o jsonpath='{.spec.containers[*].name}{"\n"}'
+```
+
+Expected outcome:
+- output includes the application container and `istio-proxy`
+
+Validate mesh policy resources:
+
+```bash
+sudo k3s kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n dev
+sudo k3s kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n staging
+```
+
+Expected outcome:
+- STRICT mTLS is configured
+- retry policy is configured
+- authorization allow and deny behavior can be captured through curl logs
+- Kiali shows traffic edges for `dev` and `staging` workloads
+
+## 6. Validate Mesh Demo
+
+`mesh-demo` remains useful as a focused policy test bed, but it is supporting
+evidence only. After `mesh-demo` manifests are applied and healthy:
 
 ```bash
 sudo k3s kubectl get ns mesh-demo
@@ -127,7 +204,7 @@ Expected outcome:
 - one denied path is blocked
 - retry behavior on 5xx is visible through logs or metrics
 
-## 6. Validate External Access
+## 7. Validate External Access
 
 From an external machine with `hosts` entries:
 
@@ -139,7 +216,7 @@ Expected outcome:
 - external access works through ingress `NodePort`
 - application services remain internal `ClusterIP` backends
 
-## 7. Capture Deliverable Evidence
+## 8. Capture Deliverable Evidence
 
 Collect and store:
 
@@ -149,4 +226,7 @@ Collect and store:
 - `kubectl top pods -A --sort-by=cpu`
 - Jenkins logs for deployment and teardown jobs
 - Git history for GitOps commits
+- platform infrastructure readiness output
+- `dev` and `staging` pod readiness output showing `2/2`
+- `dev` and `staging` container-name output showing `istio-proxy`
 - mesh curl output and Kiali screenshot

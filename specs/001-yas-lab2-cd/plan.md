@@ -8,10 +8,11 @@
 
 Complete the remaining Lab 2 deliverables by converting the current GitOps
 design into a single-node-safe operating model. The implementation will keep
-`yas-platform` always-on, make only one full YAS environment active by
-default, harden generic charts with resources and safer secret handling, and
-introduce a dedicated low-footprint `mesh-demo` namespace for the Istio/Kiali
-requirements. Jenkins operational jobs will be aligned to that runtime policy
+`yas-platform` always-on, run `dev` and `staging` in parallel, keep
+`developer` dormant, harden generic charts with resources and safer secret
+handling, and enable Istio sidecars for the required running application pods
+in `dev` and `staging` so readiness evidence shows workload plus sidecar as
+`2/2 Ready`. Jenkins operational jobs will be aligned to that runtime policy
 so cluster validation does not trigger a three-environment startup storm.
 
 ## Technical Context
@@ -50,8 +51,8 @@ single-node lab deployment
 - must fit the current single-node lab budget
 
 **Scale/Scope**:
-- approximately 20 application deployments per full environment
-- three application environments plus one minimal mesh demo namespace
+- approximately 16 required application deployments per active CQ environment
+- two active application environments plus one dormant developer environment
 - one always-on platform stack for shared dependencies
 
 ## Constitution Check
@@ -125,10 +126,13 @@ Research conclusions are documented in [research.md](./research.md). The
 important decisions are:
 
 - Use an `active + dormant` environment model for the single node.
-- Keep `yas-platform` always-on and only one full app environment active by
-  default.
-- Use a dedicated `mesh-demo` namespace instead of full-mesh sidecars across
-  all environments.
+- Keep `yas-platform` always-on and keep `dev` plus `staging` active for the
+  final demo baseline.
+- Treat PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases,
+  ingress NodePorts, and local-path PVCs as prerequisite infrastructure before
+  accepting `dev` or `staging` application health.
+- Enable Istio sidecars for required `dev` and `staging` application pods and
+  collect `2/2 Ready` evidence.
 - Use `tax -> location` as the default mesh evidence path.
 - Harden secrets with Sealed Secrets for committed desired state.
 - Add resource defaults before considering any autoscaling.
@@ -139,10 +143,10 @@ important decisions are:
   environment profiles, runtime budgets, mesh scenarios, Jenkins job contracts,
   and evidence artifacts.
 - `contracts/` captures the explicit interfaces for Jenkins jobs, runtime
-  governance, and mesh-demo behavior.
+  governance, platform infrastructure readiness, and Istio sidecar readiness.
 - [quickstart.md](./quickstart.md) defines the operator validation flow for
-  stabilizing the node, validating `dev`, activating optional environments on
-  demand, and running the mesh demo.
+  stabilizing the node, validating platform infrastructure, validating `dev`
+  and `staging`, and collecting mesh sidecar evidence.
 
 ## Complexity Tracking
 

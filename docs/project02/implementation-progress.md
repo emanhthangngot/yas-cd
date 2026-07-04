@@ -19,7 +19,8 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Partially aligned on `main` | One Jenkinsfile exists. `main` still has old `DEPLOY_TO_DEVELOPER` behavior. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Needs Jenkins tag-discovery verification. |
-| Service mesh | Planned/documented | Needs final runtime evidence. |
+| Platform infrastructure readiness | Specified for evidence | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness must be captured before app health signoff. |
+| Service mesh | Expanded spec | `dev` and `staging` required app pods must show workload plus Istio sidecar as `READY 2/2`; `mesh-demo` is supporting evidence only. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
 
 ## Recent CD Repo PRs
@@ -122,4 +123,6 @@ kustomize build --enable-helm --load-restrictor=LoadRestrictionsNone overlays/st
 2. Confirm Jenkins multibranch is configured to discover/build Git tags.
 3. Trigger or simulate a `vX.Y.Z` release and confirm staging GitOps update.
 4. Re-check ArgoCD and cluster health after CD PR #14.
-5. Capture evidence for dev, staging, Docker Hub tags, ArgoCD sync, external access, and mesh.
+5. Capture platform infrastructure evidence for PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVCs.
+6. Implement and capture Istio sidecar evidence for required `dev` and `staging` app pods as `READY 2/2`.
+7. Capture evidence for dev, staging, Docker Hub tags, ArgoCD sync, external access, and mesh.

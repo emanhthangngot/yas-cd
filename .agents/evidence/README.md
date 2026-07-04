@@ -20,6 +20,11 @@ Progress report:
 - [ ] `kubectl get pods -A`
 - [ ] `kubectl get storageclass,pvc -A`
 - [ ] `kubectl describe storageclass local-path`
+- [ ] `yas-platform` ArgoCD app `Synced/Healthy` before app health signoff
+- [ ] Platform pods ready: PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak
+- [ ] Platform services exist for PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases
+- [ ] Platform PVCs `Bound` for PostgreSQL, Kafka, and Elasticsearch
+- [ ] PostgreSQL database list includes CQ services and runtime dependencies
 - [ ] `services.yaml` parsed and matched against repo artifacts
 - [ ] Helm/Kustomize render or dry-run output for changed manifests
 - [ ] Jenkins `yas-ci-multibranch` successful run
@@ -51,6 +56,12 @@ Progress report:
 - [ ] Mesh namespace decision recorded: `dev` first, `developer` fallback only if needed
 - [ ] Mesh namespace label output: `kubectl label namespace ... istio-injection=enabled --overwrite`
 - [ ] Mesh namespace labels shown by `kubectl get namespace ... --show-labels`
+- [ ] `dev` namespace has Istio injection enabled or explicit workload annotations
+- [ ] `staging` namespace has Istio injection enabled or explicit workload annotations
+- [ ] `kubectl get pods -n dev` shows required running app pods `READY 2/2`
+- [ ] `kubectl get pods -n staging` shows required running app pods `READY 2/2`
+- [ ] Representative `dev` pod spec contains `istio-proxy`
+- [ ] Representative `staging` pod spec contains `istio-proxy`
 - [ ] Mesh workload restart output: `kubectl rollout restart deployment -n <namespace>`
 - [ ] Mesh rollout status output: `kubectl rollout status deployment -n <namespace>`
 - [ ] Istio pod READY `2/2` from `kubectl get pods -n <namespace>`

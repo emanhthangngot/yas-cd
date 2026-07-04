@@ -1,0 +1,103 @@
+platform_infrastructure:
+  argocd_app: yas-platform
+  sync_branch: main
+  source_path: platform/base
+
+  required_namespaces:
+    - postgres
+    - redis
+    - kafka
+    - elasticsearch
+    - keycloak
+
+  required_components:
+    postgres:
+      kind: StatefulSet
+      namespace: postgres
+      service: postgresql.postgres.svc.cluster.local:5432
+      pvc_required: true
+      required_databases:
+        - cart
+        - customer
+        - inventory
+        - keycloak
+        - location
+        - media
+        - order
+        - payment
+        - payment-paypal
+        - product
+        - search
+        - tax
+        - sampledata
+      consumers:
+        - cart
+        - customer
+        - inventory
+        - keycloak
+        - location
+        - media
+        - order
+        - payment
+        - payment-paypal
+        - product
+        - tax
+    redis:
+      kind: Deployment
+      namespace: redis
+      service: redis-master.redis.svc.cluster.local:6379
+      pvc_required: false
+      consumers:
+        - cart
+        - backoffice-bff
+        - storefront-bff
+    kafka:
+      kind: StatefulSet
+      namespace: kafka
+      service: kafka-cluster-kafka-brokers.kafka.svc.cluster.local:9092
+      pvc_required: true
+      consumers:
+        - order
+        - search
+    elasticsearch:
+      kind: StatefulSet
+      namespace: elasticsearch
+      service: elasticsearch-es-http.elasticsearch.svc.cluster.local:9200
+      pvc_required: true
+      consumers:
+        - product
+        - search
+    keycloak:
+      kind: Deployment
+      namespace: keycloak
+      service: identity.keycloak.svc.cluster.local:80
+      pvc_required: false
+      consumers:
+        - customer
+        - backoffice-bff
+        - storefront-bff
+        - backoffice-ui
+        - storefront-ui
+
+  namespace_aliases:
+    dev:
+      identity: identity.keycloak.svc.cluster.local
+    staging:
+      identity: identity.keycloak.svc.cluster.local
+
+  readiness_contract:
+    required_before:
+      - yas-dev
+      - yas-staging
+    commands:
+      - "kubectl get application -n argocd yas-platform"
+      - "kubectl get pods -n postgres,redis,kafka,elasticsearch,keycloak"
+      - "kubectl get svc -n postgres,redis,kafka,elasticsearch,keycloak"
+      - "kubectl get pvc -n postgres,kafka,elasticsearch"
+      - "kubectl exec -n postgres statefulset/postgresql -- psql -U lab-postgres-user -d postgres -c '\\l'"
+    success_signals:
+      - "yas-platform is Synced/Healthy"
+      - "all required platform pods are Ready"
+      - "stateful platform PVCs are Bound"
+      - "required service DNS names exist"
+      - "required PostgreSQL databases exist"

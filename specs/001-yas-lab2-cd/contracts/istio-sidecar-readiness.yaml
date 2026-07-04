@@ -1,0 +1,82 @@
+istio_sidecar_readiness:
+  target_namespaces:
+    - dev
+    - staging
+
+  injection:
+    preferred_mode: namespace_label
+    required_label:
+      istio-injection: enabled
+    allowed_alternative: pod_template_annotation
+    alternative_annotation:
+      sidecar.istio.io/inject: "true"
+
+  included_workloads:
+    source: services.yaml
+    selection:
+      deploy: true
+      replicas_greater_than_zero: true
+      environments:
+        - dev
+        - staging
+    expected_services:
+      - cart
+      - customer
+      - inventory
+      - location
+      - media
+      - order
+      - payment
+      - payment-paypal
+      - product
+      - search
+      - tax
+      - backoffice-bff
+      - storefront-bff
+      - backoffice-ui
+      - storefront-ui
+      - swagger-ui
+
+  exclusions:
+    default:
+      - sampledata
+    rule: "Any additional exclusion requires a documented service-level reason and explicit approval evidence."
+
+  readiness:
+    target_ready_column: "2/2"
+    required_containers:
+      - workload
+      - istio-proxy
+    developer_namespace: dormant
+
+  mesh_policies:
+    peerauthentication:
+      mtls_mode: STRICT
+    destinationrule:
+      tls_mode: ISTIO_MUTUAL
+    virtualservice:
+      retry:
+        attempts: 3
+        retryOn: "5xx,connect-failure,refused-stream"
+        perTryTimeout: 2s
+    authorizationpolicy:
+      required_evidence:
+        - allowed_source_can_reach_target
+        - denied_source_is_blocked
+
+  validation:
+    commands:
+      - "kubectl get namespace dev staging --show-labels"
+      - "kubectl get pods -n dev"
+      - "kubectl get pods -n staging"
+      - "kubectl get pod -n dev <pod> -o jsonpath='{.spec.containers[*].name}'"
+      - "kubectl get pod -n staging <pod> -o jsonpath='{.spec.containers[*].name}'"
+      - "kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n dev"
+      - "kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n staging"
+    success_signals:
+      - "dev and staging namespaces have injection enabled or all included pod templates opt in"
+      - "all included running application pods report READY 2/2"
+      - "all included pods contain istio-proxy"
+      - "STRICT mTLS is configured for dev and staging"
+      - "allow and deny AuthorizationPolicy evidence is captured"
+      - "Kiali shows traffic for dev and staging workloads"

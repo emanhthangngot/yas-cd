@@ -57,6 +57,11 @@ without requiring an external cloud secret manager.
 
 ## Decision 4: Use a dedicated minimal `mesh-demo` namespace
 
+**Status update 2026-07-04**: superseded as the final acceptance path by the
+expanded sidecar-readiness requirement for `dev` and `staging`. `mesh-demo`
+may still be used as supporting evidence or a focused policy test bed, but it
+is not sufficient for final mesh acceptance.
+
 **Decision**: Deliver Service Mesh requirements in a dedicated namespace
 `mesh-demo` instead of enabling Istio sidecars across `dev`, `staging`, and
 `developer`.

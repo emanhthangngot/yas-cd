@@ -14,13 +14,50 @@ Represents one GitOps-managed application environment.
 
 **Validation**
 - `dev`, `staging`, and `developer` must keep distinct overlay paths.
-- Only one `full-stack` environment may have `default_state=active`.
+- `dev` and `staging` may both have `default_state=active` for the final demo
+  baseline; `developer` must remain dormant unless explicitly re-enabled.
 - `staging` must use `release-only`.
 
 **State transitions**
 - `dormant -> active`: triggered by Jenkins job or operator-approved GitOps
   promotion
 - `active -> dormant`: triggered by teardown or post-validation demotion
+
+## PlatformInfrastructureProfile
+
+Represents the shared infrastructure that must be running before `dev` and
+`staging` application health is accepted.
+
+**Fields**
+- `name`: `yas-platform`
+- `argocd_app`: `yas-platform`
+- `required_namespaces`: `postgres`, `redis`, `kafka`, `elasticsearch`,
+  `keycloak`
+- `required_services`: stable DNS endpoints consumed by app pods
+- `stateful_components`: PostgreSQL, Kafka, Elasticsearch
+- `stateless_components`: Redis, Keycloak, identity aliases, ingress NodePort
+- `storage_class`: K3s `local-path`
+- `dependency_consumers`: application services from `dev` and `staging`
+
+**Required service endpoints**
+- `postgresql.postgres.svc.cluster.local:5432`
+- `redis-master.redis.svc.cluster.local:6379`
+- `kafka-cluster-kafka-brokers.kafka.svc.cluster.local:9092`
+- `elasticsearch-es-http.elasticsearch.svc.cluster.local:9200`
+- `identity.keycloak.svc.cluster.local:80`
+- `identity.dev.svc.cluster.local:80`
+- `identity.staging.svc.cluster.local:80`
+
+**Validation**
+- `yas-platform` must be `Synced/Healthy` before accepting `yas-dev` or
+  `yas-staging` health.
+- Each required namespace must exist.
+- Each required service must resolve inside the cluster and select or point to
+  the intended backend.
+- PostgreSQL, Kafka, and Elasticsearch must have bound PVCs.
+- PostgreSQL must contain databases for all required CQ services and runtime
+  dependencies.
+- Redis, Kafka, Elasticsearch, PostgreSQL, and Keycloak pods must be ready.
 
 ## RuntimeBudget
 
@@ -39,11 +76,17 @@ Represents the cluster budget assumptions for the single-node lab.
 - `ui_default_limit_cpu`
 - `ui_default_limit_memory`
 - `namespace_guardrails`: `LimitRange`, optional `ResourceQuota`
+- `sidecar_default_request_cpu`
+- `sidecar_default_request_memory`
+- `sidecar_default_limit_cpu`
+- `sidecar_default_limit_memory`
 
 **Validation**
 - Requests must be lower than limits.
 - Defaults must be present for shared charts.
 - Budgets must fit the documented single-node target.
+- Budgets must include the additional `istio-proxy` container added to every
+  injected `dev` and `staging` pod.
 
 ## GitOpsOverlayState
 
@@ -85,10 +128,10 @@ Represents an operational Jenkins interface.
 
 ## MeshScenario
 
-Represents the minimal service-mesh demo path.
+Represents service-mesh behavior for required application workloads.
 
 **Fields**
-- `namespace`: `mesh-demo`
+- `namespaces`: `dev`, `staging`, optional `mesh-demo`
 - `source_service`: default `tax`
 - `target_service`: default `location`
 - `traffic_type`: service-to-service HTTP
@@ -103,6 +146,34 @@ Represents the minimal service-mesh demo path.
 - Must use real YAS services.
 - Must be small enough to fit the runtime budget.
 - Must produce both allow and deny evidence.
+- Must include `dev` and `staging` evidence; `mesh-demo` evidence is
+  supplementary only.
+
+## SidecarReadinessPolicy
+
+Represents the required Istio sidecar state for application pods.
+
+**Fields**
+- `target_namespaces`: `dev`, `staging`
+- `injection_mode`: namespace label or pod-template annotation
+- `included_workloads`: required CQ services and runtime dependencies rendered
+  with replicas greater than zero
+- `excluded_workloads`: dormant run-once pods or explicitly approved
+  exceptions
+- `expected_ready_count`: `2/2`
+- `required_containers`: workload container and `istio-proxy`
+- `rollout_strategy`: restart or ArgoCD sync after injection policy changes
+- `resource_budget`: Istio proxy request and limit assumptions
+- `evidence_commands`: pod readiness, container names, namespace labels,
+  mTLS policy, and Kiali topology
+
+**Validation**
+- `dev` and `staging` namespaces must show Istio injection enabled or each
+  included pod template must carry an explicit injection annotation.
+- Every included running application pod must report `READY 2/2`.
+- `kubectl get pod -o jsonpath` evidence must show an `istio-proxy` container.
+- Exclusions must be listed with reason and approval evidence.
+- Rollout must preserve `developer` as dormant.
 
 ## EvidenceArtifact
 

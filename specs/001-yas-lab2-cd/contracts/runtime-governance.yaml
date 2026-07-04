@@ -8,12 +8,22 @@ runtime_governance:
       - elasticsearch
       - keycloak
       - argocd
+    readiness_required_before_apps: true
+    service_endpoints:
+      postgres: postgresql.postgres.svc.cluster.local:5432
+      redis: redis-master.redis.svc.cluster.local:6379
+      kafka: kafka-cluster-kafka-brokers.kafka.svc.cluster.local:9092
+      elasticsearch: elasticsearch-es-http.elasticsearch.svc.cluster.local:9200
+      keycloak: identity.keycloak.svc.cluster.local:80
+      identity_dev_alias: identity.dev.svc.cluster.local:80
+      identity_staging_alias: identity.staging.svc.cluster.local:80
 
   full_stack_environments:
-    active_limit: 1
-    default_active: dev
-    optional_environments:
+    active_limit: 2
+    default_active:
+      - dev
       - staging
+    optional_environments:
       - developer
     dormant_behavior:
       app_deployments_replicas: 0
@@ -35,6 +45,22 @@ runtime_governance:
       limits:
         cpu: 250m
         memory: 256Mi
+    istio_proxy:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+  sidecar_policy:
+    required_namespaces:
+      - dev
+      - staging
+    target_ready_count: "2/2"
+    required_container: istio-proxy
+    developer_default: dormant
+    exception_policy: explicit_documented_approval_only
 
   namespace_guardrails:
     required:

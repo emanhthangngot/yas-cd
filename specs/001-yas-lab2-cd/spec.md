@@ -9,8 +9,9 @@ The completion scope now has three priorities:
 1. Stabilize runtime on the single-node cluster so at least one full YAS
    environment becomes `Synced/Healthy` and survives reboot without startup
    storms.
-2. Deliver the missing advanced Service Mesh evidence with a minimal,
-   GitOps-managed YAS service slice that fits the lab resource budget.
+2. Deliver the missing advanced Service Mesh evidence for the running
+   `dev` and `staging` workloads, with every required application pod showing
+   both the workload container and the Istio sidecar as `Ready`.
 3. Close the remaining Jenkins operational jobs and evidence paths around
    `developer`, `dev`, `staging`, rollback, and smoke-check flows.
 
@@ -24,8 +25,8 @@ behavior is not yet compatible with the actual lab boundary:
   `yas-developer` are not all healthy at the same time.
 - After reboot or concurrent sync, the node experiences CPU saturation from
   many Spring Boot services starting in parallel.
-- The project still lacks the advanced Service Mesh artifacts required by the
-  assignment.
+- The project still lacks a full sidecar-readiness plan for the application
+  workloads that are already running healthy in `dev` and `staging`.
 - Generic charts still need stronger runtime guardrails, especially resource
   governance and safer secret handling.
 
@@ -50,7 +51,10 @@ behavior is not yet compatible with the actual lab boundary:
 - Environment activation policy for `dev`, `staging`, and `developer`
 - GitOps-safe secret hardening for committed desired state
 - Shared backend and UI chart resource governance
-- Minimal Service Mesh implementation and evidence
+- Service Mesh implementation and evidence for required `dev` and `staging`
+  application pods
+- Platform infrastructure readiness needed before `dev` and `staging`
+  application pods can remain healthy
 - Jenkins job contracts for deployment, teardown, promotion, rollback, and
   smoke-check operations
 - Required documentation and validation artifacts under `specs/001-yas-lab2-cd/`
@@ -80,20 +84,51 @@ single-node-safe policy where:
 - Shared charts enforce resource requests and limits suitable for a Java-heavy
   workload on `e2-standard-8`.
 
-### Workstream 2: Service Mesh Completion
+### Workstream 2: Platform Infrastructure Readiness For Dev And Staging
 
-The advanced requirement must be satisfied without reintroducing the same
-resource problem. Instead of enabling Istio across every namespace and every
-service, the design must use a dedicated, minimal GitOps-managed mesh slice
-that is sufficient to prove:
+`dev` and `staging` application pods depend on shared platform services that
+must exist before the application overlays can be treated as healthy. The
+GitOps platform layer must define, sync, and verify these shared dependencies:
+
+- PostgreSQL in namespace `postgres`, including the YAS application databases
+  required by `cart`, `customer`, `inventory`, `keycloak`, `location`,
+  `media`, `order`, `payment`, `payment-paypal`, `product`, `search`, `tax`,
+  and the dormant or optional services kept in the catalog.
+- Redis in namespace `redis`, reachable by BFF and cache-dependent services.
+- Kafka in namespace `kafka`, reachable through the broker service name used
+  by event-driven services such as `order` and `search`.
+- Elasticsearch in namespace `elasticsearch`, reachable by `product` and
+  `search`.
+- Keycloak in namespace `keycloak`, backed by PostgreSQL and reachable through
+  the `identity` service alias from `dev` and `staging`.
+- K3s local-path persistent storage for stateful platform data.
+- Traefik NodePort ingress for application entrypoints while backend services
+  stay internal.
+
+The infrastructure evidence must prove that these services are `Ready`, have
+stable in-cluster DNS names, own their required PVCs where applicable, and are
+available before declaring `dev` or `staging` application health complete.
+
+### Workstream 3: Service Mesh Completion
+
+The advanced requirement must now cover the required application pods in
+`dev` and `staging`, not only a separate `mesh-demo` slice. The design must
+enable Istio sidecar injection for the relevant namespaces or pod templates in
+a GitOps-managed way and prove:
 
 - sidecar injection
+- pod readiness as `2/2` for workload container plus `istio-proxy`
 - STRICT mTLS
 - retry on HTTP 5xx
 - authorization allow and deny behavior
 - Kiali topology evidence
 
-### Workstream 3: Jenkins Operational Flow Completion
+The `mesh-demo` overlay may remain as a low-footprint fallback or focused
+policy test bed, but final acceptance for this workstream requires sidecar
+readiness evidence from `dev` and `staging` pods that are part of the required
+CQ service scope.
+
+### Workstream 4: Jenkins Operational Flow Completion
 
 The remaining Jenkins jobs must align with the runtime policy above instead of
 fighting ArgoCD or overloading the cluster. Jobs must use GitOps commits only,
@@ -148,9 +183,9 @@ respect environment exclusivity, and produce auditable evidence.
 - FR-020: The default mesh slice must use the direct dependency chain
   `tax -> location`, because it provides real service-to-service YAS traffic
   with a smaller footprint than broader flows such as `order`.
-- FR-021: The mesh namespace must enable Istio sidecar injection without
-  forcing full-mesh sidecars into all `dev`, `staging`, and `developer`
-  workloads.
+- FR-021: `dev` and `staging` must enable Istio sidecar injection for required
+  application pods through GitOps-managed namespace labels or pod-template
+  annotations.
 - FR-022: Mesh manifests must include `PeerAuthentication`,
   `DestinationRule`, `VirtualService`, and `AuthorizationPolicy` resources
   needed to prove the assignment scenarios.
@@ -166,6 +201,27 @@ respect environment exclusivity, and produce auditable evidence.
   model of `hosts` file plus ingress `NodePort`; application services should
   remain internal `ClusterIP` services behind ingress unless a specific mesh
   or debug case requires otherwise.
+- FR-028: `yas-platform` must provide the shared runtime infrastructure needed
+  by the active `dev` and `staging` overlays: PostgreSQL, Redis, Kafka,
+  Elasticsearch, Keycloak, identity aliases, ingress NodePorts, and persistent
+  storage for stateful platform services.
+- FR-029: PostgreSQL must initialize or retain databases for all deployed YAS
+  services required by the CQ scope and their runtime dependencies.
+- FR-030: Kafka, PostgreSQL, Redis, Elasticsearch, and Keycloak must expose
+  stable internal service names matching the application configuration used by
+  rendered `dev` and `staging` workloads.
+- FR-031: Platform infrastructure readiness must be verified before marking
+  `dev` or `staging` application readiness complete.
+- FR-032: For each required `dev` and `staging` application pod that is not a
+  dormant run-once seed pod, readiness evidence must show `READY 2/2` after
+  sidecar injection is enabled.
+- FR-033: If a pod cannot safely run with an Istio sidecar, the exception must
+  be documented with the service name, reason, compensating evidence, and an
+  explicit approval note. Silent `sidecar.istio.io/inject: "false"` is not
+  acceptable for required CQ services.
+- FR-034: Service-mesh rollout must preserve the current single-node baseline:
+  `dev` and `staging` remain active, `developer` remains dormant, and staging
+  keeps its CPU throttle and `maxSurge: 0` policy.
 
 ## Non-Functional Requirements
 
@@ -176,13 +232,16 @@ respect environment exclusivity, and produce auditable evidence.
 - NFR-004: GitOps commits in this repo must not trigger full application CI in
   `tzin1401/yas`.
 - NFR-005: The solution must not rely on Tailscale.
-- NFR-006: When `yas-platform`, `dev`, `staging`, and the minimal mesh slice
-  are running, node CPU must settle below sustained saturation after startup
-  and remain usable for SSH and `kubectl` operations.
+- NFR-006: When `yas-platform`, sidecar-enabled `dev`, and sidecar-enabled
+  `staging` are running, node CPU must settle below sustained saturation after
+  startup and remain usable for SSH and `kubectl` operations.
 - NFR-007: Memory pressure must remain below the point where pods are commonly
   OOM-killed during normal validation workflows.
 - NFR-008: Mesh evidence must be reproducible using committed manifests and
   documented commands, not hand-configured cluster state.
+- NFR-009: Sidecar rollout must include a resource-budget review because
+  adding `istio-proxy` increases CPU and memory pressure for every injected
+  pod.
 
 ## Success Criteria
 
@@ -194,8 +253,15 @@ respect environment exclusivity, and produce auditable evidence.
 - Shared charts enforce default CPU and memory requests and limits.
 - Committed secrets are represented through a hardened GitOps mechanism rather
   than plain-text desired state.
-- `mesh-demo` reaches `Synced/Healthy` with sidecars ready and evidence for
-  STRICT mTLS, retry, allow, deny, and Kiali topology.
+- Platform infrastructure pods for PostgreSQL, Redis, Kafka, Elasticsearch,
+  and Keycloak are running and ready before `dev` and `staging` app health is
+  accepted.
+- Required `dev` and `staging` application pods show `2/2 Ready` after Istio
+  injection, with one ready workload container and one ready `istio-proxy`
+  sidecar.
+- Mesh evidence covers `dev` and `staging` workloads with STRICT mTLS, retry,
+  allow, deny, and Kiali topology. `mesh-demo` may provide supporting evidence
+  but is no longer sufficient by itself.
 - Jenkins jobs `developer_build`, `teardown_developer`, `deploy_dev`,
   `release_staging`, `rollback_environment`, and `cluster_smoke_check` are
   documented with clear inputs, outputs, and GitOps side effects.
