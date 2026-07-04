@@ -65,7 +65,8 @@ data:
           proxy_set_header X-Real-IP $remote_addr;
         }
         location /rating {
-          proxy_pass http://rating;
+          set $target rating;
+          proxy_pass http://$target;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;
@@ -93,7 +94,8 @@ data:
           proxy_set_header X-Real-IP $remote_addr;
         }
         location /promotion {
-          proxy_pass http://promotion;
+          set $target promotion;
+          proxy_pass http://$target;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;
@@ -107,14 +109,16 @@ data:
           proxy_set_header X-Real-IP $remote_addr;
         }
         location /recommendation {
-          proxy_pass http://recommendation;
+          set $target recommendation;
+          proxy_pass http://$target;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;
           proxy_set_header X-Real-IP $remote_addr;
         }
         location /webhook {
-          proxy_pass http://webhook;
+          set $target webhook;
+          proxy_pass http://$target;
           proxy_http_version 1.1;
           proxy_set_header Connection "";
           proxy_set_header Host $proxy_host;
