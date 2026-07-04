@@ -4,6 +4,7 @@ namespace: dev
 resources:
   - ../../base
   - ingress.yaml
+  - istio.yaml
 patches:
   - path: payment-liquibase-clear-checksums-patch.yaml
     target:

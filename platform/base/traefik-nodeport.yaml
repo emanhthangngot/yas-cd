@@ -11,8 +11,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: traefik
 spec:
-  type: LoadBalancer
-  allocateLoadBalancerNodePorts: true
+  type: NodePort
   externalTrafficPolicy: Cluster
   internalTrafficPolicy: Cluster
   ipFamilyPolicy: PreferDualStack

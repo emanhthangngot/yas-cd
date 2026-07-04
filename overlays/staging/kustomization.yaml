@@ -4,6 +4,7 @@ namespace: staging
 resources:
   - ../../base
   - ingress.yaml
+  - istio.yaml
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas
