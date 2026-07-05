@@ -1,0 +1,190 @@
+// ============================================================
+//  YAS Lab 2 CD – developer_build / teardown_developer job
+//  Runs from CD repo (emanhthangngot/yas-cd), pattern giống
+//  Jenkinsfile.seed-sampledata: thao tác GitOps, không build source.
+//
+//  ACTION=preview:
+//    1. Resolve APP_BRANCH của repo app -> commit SHA (12 ký tự,
+//       khớp tag image mà yas-ci-multibranch đã push cho branch đó)
+//    2. Verify image SHA tồn tại trên Docker Hub (fail sớm nếu
+//       branch chưa chạy CI — job này KHÔNG rebuild)
+//    3. scripts/prepare-developer-preview.sh <service>=<sha>
+//       (service chỉ định dùng image preview, còn lại tag main;
+//        developer active, staging dormant, dev giữ nguyên)
+//    4. Validate + commit + push yas-cd/main -> ArgoCD reconcile
+//
+//  ACTION=teardown:
+//    scripts/teardown-developer.sh (developer dormant,
+//    dev + staging active) + commit + push.
+//
+//  Jenkins job setup: Pipeline from SCM = yas-cd/main,
+//  Script Path = Jenkinsfile.developer-build, agent gcp-build-agent.
+// ============================================================
+
+pipeline {
+    agent {
+        label 'gcp-build-agent'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 20, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['preview', 'teardown'],
+            description: 'preview: bật developer với service chỉ định. teardown: trả về baseline (developer dormant).'
+        )
+        string(
+            name: 'APP_BRANCH',
+            defaultValue: 'main',
+            description: '[preview] Branch của repo app (tzin1401/yas) muốn xem trước.'
+        )
+        string(
+            name: 'SERVICES',
+            defaultValue: 'tax',
+            description: '[preview] Danh sách service preview, cách nhau bởi dấu cách (vd: "tax" hoặc "tax product"). Service khác giữ tag main.'
+        )
+        string(
+            name: 'CONFIRM',
+            defaultValue: '',
+            description: 'Gõ đúng "developer-preview" (preview) hoặc "developer-teardown" (teardown) để xác nhận.'
+        )
+    }
+
+    environment {
+        APP_REPO              = 'https://github.com/tzin1401/yas.git'
+        GITOPS_BRANCH         = 'main'
+        GITOPS_CREDENTIALS_ID = 'github-gitops-ssh'
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds'
+    }
+
+    stages {
+
+        stage('Guard') {
+            steps {
+                script {
+                    def expected = (params.ACTION == 'preview') ? 'developer-preview' : 'developer-teardown'
+                    if (params.CONFIRM != expected) {
+                        error "CONFIRM phải là '${expected}' cho ACTION=${params.ACTION} (nhận được: '${params.CONFIRM}')"
+                    }
+                }
+            }
+        }
+
+        stage('Resolve Branch -> Image Tag') {
+            when { expression { params.ACTION == 'preview' } }
+            steps {
+                sh '''#!/usr/bin/env bash
+                    set -euo pipefail
+                    full_sha="$(git ls-remote "$APP_REPO" "refs/heads/${APP_BRANCH}" | awk '{print $1}')"
+                    if [ -z "$full_sha" ]; then
+                        echo "Branch không tồn tại trên repo app: ${APP_BRANCH}" >&2
+                        exit 1
+                    fi
+                    # 12 ký tự — khớp `git rev-parse --short=12` của yas-ci-multibranch
+                    printf '%s' "${full_sha:0:12}" > .preview-image-tag
+                    echo "Resolved ${APP_BRANCH} -> ${full_sha:0:12}"
+                '''
+            }
+        }
+
+        stage('Verify Images On Docker Hub') {
+            when { expression { params.ACTION == 'preview' } }
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: "${env.DOCKERHUB_CREDENTIALS_ID}",
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+                        preview_tag="$(cat .preview-image-tag)"
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+
+                        for service in $SERVICES; do
+                            image_name="$(SERVICE="$service" yq -r '.services[] | select(.name == env(SERVICE)) | .imageName' services.yaml)"
+                            if [ -z "$image_name" ] || [ "$image_name" = "null" ]; then
+                                echo "Service không có trong services.yaml: ${service}" >&2
+                                exit 1
+                            fi
+                            image_ref="docker.io/emanhthangngot/${image_name}:${preview_tag}"
+                            echo "Checking ${image_ref}"
+                            if ! docker manifest inspect "$image_ref" >/dev/null 2>&1; then
+                                echo "Image chưa tồn tại: ${image_ref}" >&2
+                                echo "Branch ${APP_BRANCH} chưa chạy CI thành công — chạy yas-ci-multibranch cho branch đó trước (job này không rebuild source)." >&2
+                                exit 1
+                            fi
+                        done
+                    '''
+                }
+            }
+        }
+
+        stage('GitOps – Apply Preview / Teardown') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: "${env.GITOPS_CREDENTIALS_ID}",
+                    keyFileVariable: 'GITOPS_SSH_KEY'
+                )]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+                        export GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+
+                        # Job checkout sẵn yas-cd (Pipeline from SCM) nhưng detached — làm việc trên clone sạch cho chắc.
+                        rm -rf yas-cd-work
+                        git clone git@github.com:emanhthangngot/yas-cd.git yas-cd-work
+                        cd yas-cd-work
+                        git checkout "$GITOPS_BRANCH"
+
+                        if [ "$ACTION" = "preview" ]; then
+                            preview_tag="$(cat ../.preview-image-tag)"
+                            assignments=""
+                            for service in $SERVICES; do
+                                assignments="$assignments ${service}=${preview_tag}"
+                            done
+                            # shellcheck disable=SC2086
+                            scripts/prepare-developer-preview.sh $assignments
+                            commit_msg="cd(lab2): developer preview ${SERVICES// /,}@${preview_tag} from ${APP_BRANCH} [skip ci]"
+                            YAS_CD_EXPECTED_ACTIVE="dev developer" scripts/validate-gitops.sh
+                        else
+                            scripts/teardown-developer.sh
+                            commit_msg="cd(lab2): teardown developer preview [skip ci]"
+                            scripts/validate-gitops.sh
+                        fi
+
+                        git status --short
+                        if git diff --quiet; then
+                            echo "GitOps đã ở đúng trạng thái mong muốn — không có gì để commit."
+                            exit 0
+                        fi
+
+                        git config user.name "jenkins-cd"
+                        git config user.email "jenkins-cd@local"
+                        git add overlays
+                        git commit -m "$commit_msg"
+                        git pull --rebase origin "$GITOPS_BRANCH"
+                        git push origin "$GITOPS_BRANCH"
+                        echo "Pushed. ArgoCD (yas-developer/yas-staging) sẽ reconcile theo syncPolicy hiện hành."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo "developer_build ${params.ACTION} OK — kiểm tra ArgoCD app yas-developer, URL: http://yas.developer.local:30846/"
+        }
+        failure {
+            echo "developer_build ${params.ACTION} FAILED — xem log stage đỏ; GitOps chưa bị thay đổi nếu fail trước bước push."
+        }
+    }
+}
