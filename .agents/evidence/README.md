@@ -198,7 +198,8 @@ yas-staging     Synced        Healthy
   - `yas-cd`: **0 findings**. Evidence: [12_gitleaks_yas_cd.json](../../evidence/12_gitleaks_yas_cd.json)
   - `yas` (app repo): 124 findings = 11 unique strings, all fake test/demo credentials inherited from
     upstream NashTech history (Keycloak `test-realm.json` fixtures). No secrets committed by this team.
-    No rotation required. Evidence: [13_gitleaks_yas_app_repo.json](../../evidence/13_gitleaks_yas_app_repo.json),
+    No rotation required. Evidence: [13_gitleaks_yas_app_repo.redacted.json](../../evidence/13_gitleaks_yas_app_repo.redacted.json)
+    (secret values redacted so the CI secret-pattern gate stays clean; raw report kept off-repo),
     triage: [14_gitleaks_triage_summary.md](../../evidence/14_gitleaks_triage_summary.md)
 - [x] **Admin surface exposure**: ArgoCD has no public NodePort (ClusterIP only, access via SSH tunnel);
   port 30444 closed from the internet. Matches `access_policy.admin_surfaces_public: false`.
