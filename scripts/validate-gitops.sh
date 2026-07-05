@@ -89,6 +89,11 @@ if [ "$active_environments" != "$expected_active_environments" ]; then
   exit 1
 fi
 
+for seed_overlay in operations/sampledata-seed/dev operations/sampledata-seed/staging; do
+  echo "validating operation overlay: ${seed_overlay}"
+  kustomize build --load-restrictor=LoadRestrictionsNone "$seed_overlay" >/dev/null
+done
+
 scripts/validate-staging-immutable.sh
 
 if grep -RInE --exclude-dir=.git --exclude=validate-gitops.sh 'git@github\.com:tzin1401/yas-cd\.git|tzin1401/yas-cd|targetRevision: lab2/cd-platform|path: deploy/gitops' \

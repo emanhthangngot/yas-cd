@@ -1,0 +1,132 @@
+// Jenkins parameterized job: seed_sampledata
+// Purpose: run the sampledata seed Job once through GitOps + manual ArgoCD sync.
+
+pipeline {
+    agent {
+        label 'gcp-build-agent'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 20, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice(name: 'TARGET_ENV', choices: ['dev', 'staging'], description: 'Environment to seed.')
+        string(name: 'IMAGE_TAG', defaultValue: 'main', description: 'yas-sampledata image tag. Use vX.Y.Z for staging.')
+        string(name: 'CONFIRM', defaultValue: '', description: 'Type seed-dev or seed-staging to confirm.')
+        string(name: 'ARGOCD_SERVER', defaultValue: 'argocd-server.argocd.svc.cluster.local:443', description: 'ArgoCD server reachable from the Jenkins agent.')
+    }
+
+    environment {
+        GITOPS_REPO = 'git@github.com:emanhthangngot/yas-cd.git'
+        GITOPS_BRANCH = 'main'
+        GITOPS_CREDENTIALS_ID = 'github-gitops-ssh'
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-readonly'
+        ARGOCD_CREDENTIALS_ID = 'argocd-token'
+    }
+
+    stages {
+        stage('Validate Parameters') {
+            steps {
+                sh '''#!/usr/bin/env bash
+                    set -euo pipefail
+
+                    expected="seed-${TARGET_ENV}"
+                    if [ "${CONFIRM}" != "$expected" ]; then
+                        echo "Confirmation mismatch. Expected CONFIRM=${expected}" >&2
+                        exit 1
+                    fi
+
+                    if [ "${TARGET_ENV}" = "staging" ] && ! echo "${IMAGE_TAG}" | grep -Eq '^v[0-9]+\\.[0-9]+\\.[0-9]+([-.][0-9A-Za-z.-]+)?$'; then
+                        echo "staging requires immutable release tag vX.Y.Z, got: ${IMAGE_TAG}" >&2
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
+        stage('Check Existing Seed Job') {
+            steps {
+                withCredentials([file(credentialsId: "${env.KUBECONFIG_CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+
+                        if kubectl --kubeconfig "$KUBECONFIG_FILE" -n "$TARGET_ENV" get job sampledata-seed-once >/tmp/sampledata-seed-job.txt 2>/dev/null; then
+                            cat /tmp/sampledata-seed-job.txt
+                            echo "sampledata seed Job already exists in ${TARGET_ENV}; not creating another one."
+                            touch .sampledata-seed-exists
+                        fi
+                    '''
+                }
+            }
+        }
+
+        stage('Prepare GitOps Seed Desired State') {
+            when {
+                expression { !fileExists('.sampledata-seed-exists') }
+            }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: "${env.GITOPS_CREDENTIALS_ID}", keyFileVariable: 'GITOPS_SSH_KEY')]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+
+                        export GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+
+                        rm -rf yas-cd-seed-work
+                        git clone "$GITOPS_REPO" yas-cd-seed-work
+                        cd yas-cd-seed-work
+                        git checkout "$GITOPS_BRANCH"
+
+                        scripts/prepare-sampledata-seed.sh "$TARGET_ENV" "$IMAGE_TAG"
+                        scripts/validate-gitops.sh
+
+                        if git diff --quiet; then
+                            echo "Sampledata seed desired state already matches ${TARGET_ENV}/${IMAGE_TAG}."
+                            exit 0
+                        fi
+
+                        git config user.name "jenkins-cd"
+                        git config user.email "jenkins-cd@local"
+                        git add operations/sampledata-seed
+                        git commit -m "cd(lab2): prepare ${TARGET_ENV} sampledata seed [skip ci]"
+                        git pull --rebase origin "$GITOPS_BRANCH"
+                        git push origin "$GITOPS_BRANCH"
+                    '''
+                }
+            }
+        }
+
+        stage('Sync ArgoCD Seed App') {
+            when {
+                expression { !fileExists('.sampledata-seed-exists') }
+            }
+            steps {
+                withCredentials([string(credentialsId: "${env.ARGOCD_CREDENTIALS_ID}", variable: 'ARGOCD_AUTH_TOKEN')]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+
+                        app="yas-${TARGET_ENV}-sampledata-seed"
+                        argocd app sync "$app" \
+                          --server "$ARGOCD_SERVER" \
+                          --auth-token "$ARGOCD_AUTH_TOKEN" \
+                          --grpc-web
+                        argocd app wait "$app" \
+                          --server "$ARGOCD_SERVER" \
+                          --auth-token "$ARGOCD_AUTH_TOKEN" \
+                          --grpc-web \
+                          --health --timeout 600
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

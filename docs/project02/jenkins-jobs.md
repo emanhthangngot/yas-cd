@@ -85,8 +85,47 @@ git push origin "$GITOPS_BRANCH"
 - `teardown_developer`: restore the baseline where `developer` is dormant and `dev`/`staging` are active.
 - `deploy_dev`: update `overlays/dev` from successful `main` images.
 - `release_staging`: update `overlays/staging` only with `vX.Y.Z` image tags, then require explicit `argocd app sync yas-staging` approval.
+- `seed_sampledata`: one-shot ops job that prepares `operations/sampledata-seed/<env>` and manually syncs `yas-<env>-sampledata-seed`; it does not grant Kubernetes workload-create permissions to storefront services.
 - `rollback_environment`: revert overlay to a previous tag or GitOps commit.
 - `cluster_smoke_check`: run read-only `kubectl`, `argocd`, and curl checks.
+
+## `seed_sampledata`
+
+Use this job only after the target environment is synced and healthy. It is an
+operator action, not a storefront/customer-facing button.
+
+Recommended Jenkins setup:
+
+- Job name: `seed_sampledata`
+- SCM: `git@github.com:emanhthangngot/yas-cd.git`
+- Branch: `main`
+- Jenkinsfile path: `Jenkinsfile.seed-sampledata`
+- Agent label: `gcp-build-agent`
+- Required credentials: `github-gitops-ssh`, `argocd-token`, `kubeconfig-readonly`
+
+Parameters:
+
+- `TARGET_ENV`: `dev` or `staging`
+- `IMAGE_TAG`: `main` for dev, immutable `vX.Y.Z` for staging
+- `CONFIRM`: exactly `seed-dev` or `seed-staging`
+- `ARGOCD_SERVER`: ArgoCD endpoint reachable from the Jenkins agent
+
+Safety model:
+
+- The Job object name is fixed: `sampledata-seed-once`.
+- If that Job already exists, Jenkins reports it and skips GitOps changes.
+- The seed Job has an initContainer that checks product/media row counts and refuses to run when data already exists.
+- The app-facing BFF/UI is not granted permission to create Jobs or any other workload.
+- The sampledata Deployment remains `0` replicas; only the one-shot Job runs.
+
+Normal commands behind the Jenkinsfile:
+
+```bash
+scripts/prepare-sampledata-seed.sh dev main
+scripts/prepare-sampledata-seed.sh staging v1.2.3
+argocd app sync yas-dev-sampledata-seed
+argocd app sync yas-staging-sampledata-seed
+```
 
 ## Skip-CI Rule
 

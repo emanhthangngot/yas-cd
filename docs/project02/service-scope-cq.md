@@ -50,8 +50,16 @@ They remain in `charts/` and can be reintroduced for a full YAS profile later.
 ## Sample Data Policy
 
 `sampledata` remains in the rendered manifests for explicit seed operations, but
-all environment overlays force its replicas to `0` by default. This matches the
-PDF note that sample data should run once and can then be turned off.
+all environment overlays force its replicas to `0` by default. Seed data is
+loaded through the separate `operations/sampledata-seed/<env>` one-shot Job and
+manual ArgoCD apps `yas-dev-sampledata-seed` / `yas-staging-sampledata-seed`.
+This matches the PDF note that sample data should run once and can then be
+turned off.
+
+The seed Job is an operator/Jenkins action, not a storefront button. Its fixed
+name `sampledata-seed-once` acts as the run-once marker, and an initContainer
+refuses to call the destructive sampledata endpoint if product/media data
+already exists.
 
 ## Active Demo Runtime
 
@@ -60,6 +68,7 @@ With the CQ scope active, the default `dev` environment renders:
 - 15 Docker Hub-managed YAS services
 - 1 third-party `swagger-ui` service
 - `sampledata` deployment at `0` replicas
+- optional `sampledata-seed-once` Job after the operator runs `seed_sampledata`
 
 This keeps the single-node K3s runtime smaller than the previous 20-service
 full-YAS profile while preserving the required demo paths.

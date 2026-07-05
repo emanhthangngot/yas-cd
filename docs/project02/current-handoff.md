@@ -25,7 +25,7 @@ Current desired runtime policy:
 - `dev`: active.
 - `staging`: active.
 - `developer`: dormant.
-- `sampledata`: dormant after seeding.
+- `sampledata`: Deployment dormant (`0` replicas); seed data is loaded by the separate `seed_sampledata` Jenkins job through manual ArgoCD sync of `yas-<env>-sampledata-seed`.
 
 Current deployable CQ service scope:
 
@@ -69,6 +69,7 @@ Important mismatch:
 - CD repo policy keeps `developer` dormant by default.
 - App repo working tree removes the old `DEPLOY_TO_DEVELOPER` parameter from the main Jenkinsfile.
 - The required course `developer_build` path is implemented as a separate Jenkinsfile that calls this repo's `scripts/prepare-developer-preview.sh`.
+- The sample data path is implemented as a separate `Jenkinsfile.seed-sampledata` job in `yas-cd`; do not expose Kubernetes Job creation through storefront-bff.
 
 ## Staging Release Case
 
@@ -108,6 +109,8 @@ cd /home/pearspringmind/Studying/Devops/Lab2/yas-cd
 git status --short --branch
 scripts/validate-gitops.sh
 scripts/validate-staging-immutable.sh
+kustomize build --load-restrictor=LoadRestrictionsNone operations/sampledata-seed/dev
+kustomize build --load-restrictor=LoadRestrictionsNone operations/sampledata-seed/staging
 ```
 
 Check app repo main:

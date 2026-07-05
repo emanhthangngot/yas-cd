@@ -39,7 +39,7 @@ Current ArgoCD policy update:
 - PR #11: `cd(lab2): align cq demo service scope`
   - Kept teacher-required services and minimal runtime dependencies.
   - Added `swagger-ui`.
-  - Kept `sampledata` dormant after seeding.
+  - Kept `sampledata` Deployment dormant after seeding.
   - Removed `promotion`, `rating`, `recommendation`, and `webhook` from normal runtime pressure.
 - PR #12: `cd(lab2): run dev staging in parallel`
   - `dev` active.
@@ -60,7 +60,7 @@ Runtime policy:
 - `dev`: active.
 - `staging`: active.
 - `developer`: dormant.
-- `sampledata`: dormant after seed data is available.
+- `sampledata`: Deployment dormant after seed data is available; one-shot seed is handled by `seed_sampledata` / `sampledata-seed-once`.
 
 Image tag policy:
 

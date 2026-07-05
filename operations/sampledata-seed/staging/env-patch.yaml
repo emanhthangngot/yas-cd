@@ -1,0 +1,15 @@
+- op: replace
+  path: /spec/template/spec/initContainers/0/env/4/value
+  value: staging_product
+- op: replace
+  path: /spec/template/spec/initContainers/0/env/5/value
+  value: staging_media
+- op: replace
+  path: /spec/template/spec/containers/0/env/0/value
+  value: jdbc:postgresql://postgresql.postgres:5432/staging_sampledata
+- op: replace
+  path: /spec/template/spec/containers/0/env/1/value
+  value: jdbc:postgresql://postgresql.postgres:5432/staging_product
+- op: replace
+  path: /spec/template/spec/containers/0/env/2/value
+  value: jdbc:postgresql://postgresql.postgres:5432/staging_media

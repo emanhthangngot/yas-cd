@@ -1,0 +1,127 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sampledata-seed-once
+  labels:
+    app.kubernetes.io/name: sampledata
+    app.kubernetes.io/component: seed-job
+    app.kubernetes.io/part-of: yas
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sampledata
+        app.kubernetes.io/component: seed-job
+        app.kubernetes.io/part-of: yas
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: sampledata
+      initContainers:
+        - name: guard-empty-catalog
+          image: pgvector/pgvector:pg15
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGHOST
+              value: postgresql.postgres
+            - name: PGPORT
+              value: "5432"
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: yas-postgresql-credentials-secret
+                  key: POSTGRESQL_USERNAME
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yas-postgresql-credentials-secret
+                  key: POSTGRESQL_PASSWORD
+            - name: PRODUCT_DATABASE
+              value: product
+            - name: MEDIA_DATABASE
+              value: media
+          command:
+            - sh
+            - -ec
+          args:
+            - |
+              count_rows() {
+                database="$1"
+                table_name="$2"
+                psql -d "$database" -tAc "select case when to_regclass('public.${table_name}') is null then 0 else (select count(*) from ${table_name}) end"
+              }
+
+              product_count="$(count_rows "$PRODUCT_DATABASE" product)"
+              media_count="$(count_rows "$MEDIA_DATABASE" media)"
+              echo "product_count=${product_count} media_count=${media_count}"
+
+              if [ "$product_count" -gt 0 ] || [ "$media_count" -gt 0 ]; then
+                echo "Refusing to run destructive sampledata seed because product/media data already exists." >&2
+                exit 1
+              fi
+      containers:
+        - name: sampledata-seed
+          image: docker.io/emanhthangngot/yas-sampledata:main
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/sampledata
+            - name: SPRING_DATASOURCE_PRODUCT_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/product
+            - name: SPRING_DATASOURCE_MEDIA_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/media
+            - name: LOGGING_CONFIG
+              value: /opt/yas/config/logback.xml
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: /opt/yas/config/application.yaml
+          envFrom:
+            - secretRef:
+                name: yas-postgresql-credentials-secret
+          command:
+            - sh
+            - -ec
+          args:
+            - |
+              java -jar /app.jar &
+              app_pid="$!"
+              trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+
+              ready="false"
+              for _ in $(seq 1 90); do
+                if wget -q -O - http://127.0.0.1:8090/actuator/health/readiness >/tmp/sampledata-health.json 2>/dev/null; then
+                  cat /tmp/sampledata-health.json
+                  ready="true"
+                  break
+                fi
+                sleep 2
+              done
+
+              if [ "$ready" != "true" ]; then
+                echo "sampledata did not become ready before timeout" >&2
+                exit 1
+              fi
+
+              wget -q -O - \
+                --header='Content-Type: application/json' \
+                --post-data='{"message":"addSampleModel"}' \
+                http://127.0.0.1/sampledata/storefront/sampledata
+
+              kill "$app_pid" 2>/dev/null || true
+              wait "$app_pid" 2>/dev/null || true
+          volumeMounts:
+            - mountPath: /opt/yas/config
+              name: yas-configuration
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: yas-configuration
+          configMap:
+            name: yas-configuration-configmap

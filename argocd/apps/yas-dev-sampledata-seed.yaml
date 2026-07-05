@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-dev-sampledata-seed
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
+    targetRevision: main
+    path: operations/sampledata-seed/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=false
