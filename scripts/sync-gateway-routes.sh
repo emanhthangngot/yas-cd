@@ -55,23 +55,28 @@ yq -r '.services[] | select(.type == "backend" and .chart != null) | .name' serv
   echo "spring:"
   echo "  cloud:"
   echo "    gateway:"
-  echo "      routes:"
+  # Spring Cloud Gateway in the shipped BFF images binds routes from
+  # spring.cloud.gateway.server.webflux.routes; the legacy
+  # spring.cloud.gateway.routes key is silently ignored.
+  echo "      server:"
+  echo "        webflux:"
+  echo "          routes:"
   while IFS= read -r service; do
     route_id="${service//-/_}_api"
-    echo "        - id: ${route_id}"
-    echo "          uri: http://${service}"
-    echo "          order: -10"
-    echo "          predicates:"
-    echo "            - Path=/api/${service}/**"
-    echo "          filters:"
-    echo '            - RewritePath=/api/(?<segment>.*), /${segment}'
-    echo "            - TokenRelay="
+    echo "            - id: ${route_id}"
+    echo "              uri: http://${service}"
+    echo "              order: -10"
+    echo "              predicates:"
+    echo "                - Path=/api/${service}/**"
+    echo "              filters:"
+    echo '                - RewritePath=/api/(?<segment>.*), /${segment}'
+    echo "                - TokenRelay="
   done <"$services_file"
-  echo "        - id: ui"
-  echo '          uri: ${UI_HOST}'
-  echo "          order: -10"
-  echo "          predicates:"
-  echo "            - Path=/**"
+  echo "            - id: ui"
+  echo '              uri: ${UI_HOST}'
+  echo "              order: -10"
+  echo "              predicates:"
+  echo "                - Path=/**"
 } >"$base_gateway_config"
 
 {
@@ -98,7 +103,8 @@ GATEWAY_CONFIG="$base_gateway_config" yq -i \
   "$base_target"
 
 CHART_ROUTES="$chart_routes" yq -i \
-  '.gatewayRoutesConfig.spring.cloud.gateway.routes = load(strenv(CHART_ROUTES))' \
+  'del(.gatewayRoutesConfig.spring.cloud.gateway.routes) |
+   .gatewayRoutesConfig.spring.cloud.gateway.server.webflux.routes = load(strenv(CHART_ROUTES))' \
   "$chart_target"
 
 if [ "$CHECK" = true ]; then
