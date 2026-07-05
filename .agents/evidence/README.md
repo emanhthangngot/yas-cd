@@ -10,8 +10,8 @@ This document records the verification status and command outputs for the YAS La
 - [x] **istioctl**: `1.30.1`
 
 ## 2. Infrastructure Platform Verification
-- [x] **GCP VM specs**: Verified via [01_gcp_vm_specs.png](file:///home/pearspringmind/Studying/Devops/Lab2/yas-cd/evidence/01_gcp_vm_specs.png) (32 GB RAM class machine).
-- [x] **GCP IP address**: Verified via [02_gcp_vm_ip_addr.png](file:///home/pearspringmind/Studying/Devops/Lab2/yas-cd/evidence/02_gcp_vm_ip_addr.png) (External IP `34.124.212.254`).
+- [x] **GCP VM specs**: Verified via [01_gcp_vm_specs.png](../../evidence/01_gcp_vm_specs.png) (32 GB RAM class machine).
+- [x] **GCP IP address**: Verified via [02_gcp_vm_ip_addr.png](../../evidence/02_gcp_vm_ip_addr.png) (External IP `34.124.212.254`).
 - [x] **Kubernetes Nodes**:
   ```bash
   $ kubectl get nodes -o wide
@@ -44,6 +44,11 @@ This document records the verification status and command outputs for the YAS La
   - `staging_cart`, `staging_customer`, `staging_inventory`, `staging_location`, `staging_media`, `staging_order`, `staging_payment`, `staging_payment-paypal`, `staging_product`, `staging_search`, `staging_tax`, `staging_sampledata`, `staging_backoffice-bff`, `staging_storefront-bff`
 
 ## 3. ArgoCD App Verification
+
+> Snapshot below was captured at verification time. Status is dynamic — re-check with
+> `kubectl get applications -n argocd` before demos (observed 2026-07-05: several apps
+> transiently `Progressing` while pods restarted; see [06_argocd_apps_overview.png](../../evidence/06_argocd_apps_overview.png)).
+
 - [x] **`yas-platform`**: `Synced / Healthy`
 - [x] **`yas-dev`**: `Synced / Healthy`
 - [x] **`yas-staging`**: `Synced / Healthy`
@@ -180,3 +185,34 @@ yas-staging     Synced        Healthy
     ```bash
     status=200 marker=Register,Username,Email,
     ```
+
+## 5. Security Audit (VB — 2026-07-05)
+
+- [x] **GitOps validation gate**: `scripts/validate-gitops.sh` passes on `main` — all overlays render,
+  image lists match `services.yaml`, staging contains immutable release tags only.
+  Evidence: [07_validate_gitops_passed.txt](../../evidence/07_validate_gitops_passed.txt)
+- [x] **GitOps structure review**: `base/` contains no hardcoded namespace; all 7 ArgoCD Applications
+  point to `emanhthangngot/yas-cd.git` @ `main` with correct paths.
+  Evidence: [11_gitops_structure_review.txt](../../evidence/11_gitops_structure_review.txt)
+- [x] **Secret scan (gitleaks, full git history)**:
+  - `yas-cd`: **0 findings**. Evidence: [12_gitleaks_yas_cd.json](../../evidence/12_gitleaks_yas_cd.json)
+  - `yas` (app repo): 124 findings = 11 unique strings, all fake test/demo credentials inherited from
+    upstream NashTech history (Keycloak `test-realm.json` fixtures). No secrets committed by this team.
+    No rotation required. Evidence: [13_gitleaks_yas_app_repo.json](../../evidence/13_gitleaks_yas_app_repo.json),
+    triage: [14_gitleaks_triage_summary.md](../../evidence/14_gitleaks_triage_summary.md)
+- [x] **Admin surface exposure**: ArgoCD has no public NodePort (ClusterIP only, access via SSH tunnel);
+  port 30444 closed from the internet. Matches `access_policy.admin_surfaces_public: false`.
+  Evidence: [15_port_exposure_check.txt](../../evidence/15_port_exposure_check.txt)
+- [x] **ArgoCD admin password rotated** (2026-07-05) — previous credential had been exposed in team chat.
+  New credential shared out-of-band only.
+- [x] **App entrypoint diagnosis**: app is publicly reachable and healthy via NodePort **30846**, but this
+  diverges from the contract (`app_entrypoint: 30080/30081`), the port is auto-assigned (regenerating the
+  ingress-nginx Service would break the firewall rule), and `platform/base/traefik-nodeport.yaml` is a
+  ghost Service (no Traefik installed) squatting on port 30080. Handed to cluster owner with fix proposal.
+  Evidence: [16_app_entrypoint_diagnosis.txt](../../evidence/16_app_entrypoint_diagnosis.txt)
+- [x] **App reachable (dev)**: storefront returns HTTP 200 via `yas.dev.local`.
+  Evidence: [17_app_reachable_dev.png](../../evidence/17_app_reachable_dev.png)
+- [ ] **Open item — plaintext lab secrets in Git**: `base/yas-configuration.yaml` commits `kind: Secret`
+  with plaintext lab values, violating `secret_policy.committed_form: sealed-secret`. Values are lab-only
+  placeholders (not real credentials). Pending team decision: migrate to SealedSecrets vs. accept risk
+  with a documented production reality check.

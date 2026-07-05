@@ -1,0 +1,8 @@
+== validate-gitops.sh @ 2026-07-05 commit 38b921d ==
+validating overlay: dev
+validating overlay: staging
+validating overlay: developer
+validating operation overlay: operations/sampledata-seed/dev
+validating operation overlay: operations/sampledata-seed/staging
+staging immutability check passed: all staging image tags are release tags
+GitOps validation passed

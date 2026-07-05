@@ -1,0 +1,24 @@
+== App entrypoint diagnosis | 2026-07-05 ==
+Trieu chung ban dau: cong 30080 (app_entrypoint theo runtime-governance.yaml) khong truy cap duoc tu internet lan tu chinh VM.
+
+Chuoi chan doan:
+1. Internet -> 30444: CLOSED (dung thiet ke, admin qua SSH tunnel)
+2. Internet -> 30080: CLOSED; VM internal -> 30080: HTTP 000
+3. svc traefik (kube-system): NodePort 30080/30081 nhung ENDPOINTS <none>, khong co pod traefik nao
+   -> file platform/base/traefik-nodeport.yaml la service "ma": tro vao Traefik khong duoc cai tren K3s nay
+4. IngressClass duy nhat cua cluster: nginx (k8s.io/ingress-nginx) - ingress thuc te la ingress-nginx
+5. svc ingress-nginx-controller: type LoadBalancer, EXTERNAL-IP <pending> vinh vien (khong co LB provider tren VM don)
+6. Kubernetes tu cap NodePort ngau nhien cho no: 80:30846, 443:32679
+7. curl -H 'Host: yas.dev.local' http://10.148.0.2:30846/ -> HTTP 200 (app SONG qua 30846)
+8. Internet -> 30846: TcpTestSucceeded: True (firewall DA mo cong nay; team da biet va dung 30846
+   trong .agents/evidence/README.md de verify)
+
+Ket luan:
+- App DANG public va hoat dong tot qua cong 30846. Khong co su co runtime.
+- Tuy nhien co 3 diem lech can xu ly:
+  a) Contract runtime-governance.yaml ghi app_entrypoint 30080/30081 - khong khop thuc te 30846.
+  b) traefik-nodeport.yaml la service ma chiem dung cong 30080, gay hieu lam khi audit.
+  c) RUI RO: 30846 la NodePort TU CAP ngau nhien. Neu svc ingress-nginx-controller bi tao lai,
+     Kubernetes se cap so khac -> firewall rule 30846 thanh vo dung, app mat duong vao dot ngot.
+- De xuat cho TX: xoa traefik svc ma; doi svc ingress-nginx-controller sang type NodePort voi
+  nodePort co dinh 30080/30081 (qua GitOps); cap nhat firewall; hoac cap nhat contract theo thuc te.

@@ -1,0 +1,8 @@
+== Port exposure check tu internet (Test-NetConnection, PowerShell) | 2026-07-05 ==
+34.124.212.254:30444 (ArgoCD admin)     -> TcpTestSucceeded: False  (DONG - dung thiet ke, admin chi qua SSH tunnel)
+34.124.212.254:30080 (app theo contract) -> TcpTestSucceeded: False  (DONG - cong contract khong dung thuc te, xem file 16)
+34.124.212.254:30846 (app thuc te)       -> TcpTestSucceeded: True   (MO - app public qua NodePort tu cap)
+
+Ket luan security:
+- Admin surface (ArgoCD) khong public: DAT (access_policy.admin_surfaces_public: false).
+- App entrypoint public qua 30846 thay vi 30080/30081 nhu contract: LECH, xem file 16.
