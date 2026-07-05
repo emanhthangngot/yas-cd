@@ -64,7 +64,7 @@ Runtime policy:
 
 Image tag policy:
 
-- `dev`: mutable `main` image tags.
+- `dev`: successful `main` builds deploy immutable commit SHA tags through GitOps; Docker Hub still receives `main` and `latest` convenience tags.
 - `staging`: immutable release tags only, such as `v1.2.3`.
 - `developer`: dormant by default; feature branches in the main app Jenkinsfile build/push images only and skip GitOps updates. `Jenkinsfile.developer-build` handles the course-required preview path.
 
@@ -76,11 +76,11 @@ Checked after returning local app repo to `main`:
 - No separate dev/staging/developer Jenkinsfiles exist.
 - Main Jenkinsfile selects behavior using `TAG_NAME` and `BRANCH_NAME`; developer preview is separated into `Jenkinsfile.developer-build`.
 - Feature branch image tag: short commit id.
-- `main` image tags: short commit id, `main`, and `latest`.
+- `main` image tags: short commit id, `main`, and `latest`; GitOps deploys the short commit id to `dev`.
 - Release tag image tags: existing short commit id promoted to `vX.Y.Z`; release jobs fail instead of rebuilding if the commit image is missing.
 - GitOps target:
   - `TAG_NAME=vX.Y.Z` -> `staging`
-  - `BRANCH_NAME=main` -> `dev`
+  - `BRANCH_NAME=main` -> `dev` with short commit id image tags
   - feature branch -> no GitOps update
 
 Important follow-up:

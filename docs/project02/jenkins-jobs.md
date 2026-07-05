@@ -34,8 +34,12 @@ Do not commit credential material, kubeconfig content, Google Cloud service acco
 Current target selection on app repo `main`:
 
 - `TAG_NAME=vX.Y.Z`: target `staging`, image tag `vX.Y.Z`.
-- `BRANCH_NAME=main`: target `dev`, image tag `main`.
+- `BRANCH_NAME=main`: target `dev`, image tag is the successful commit SHA.
 - Feature branch: image is pushed with commit SHA, GitOps update is skipped.
+
+The `main` and `latest` Docker Hub tags are still pushed for lab convenience,
+but the `dev` GitOps manifest uses the commit SHA tag so every successful main
+build creates a real Deployment template diff and ArgoCD rolls new pods.
 
 Release tags follow build-once/promote-many. The tag job verifies the
 corresponding commit-SHA image exists in Docker Hub and creates the release tag
