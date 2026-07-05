@@ -52,7 +52,7 @@ for overlay in dev staging developer; do
     | .data."gateway-routes-config.yaml"' "$rendered_overlay" >"$rendered_gateway_routes"
 
   while IFS= read -r service; do
-    if ! yq -e ".spring.cloud.gateway.routes[]
+    if ! yq -e ".spring.cloud.gateway.server.webflux.routes[]
       | select(.id == \"${service//-/_}_api\")
       | select(.uri == \"http://${service}\")
       | select(.predicates[] == \"Path=/api/${service}/**\")" "$rendered_gateway_routes" >/dev/null; then
@@ -62,7 +62,7 @@ for overlay in dev staging developer; do
     fi
   done <"$expected_gateway_services"
 
-  if yq -e '.spring.cloud.gateway.routes[] | select(.id == "api" and .uri == "http://storefront-bff")' \
+  if yq -e '.spring.cloud.gateway.server.webflux.routes[] | select(.id == "api" and .uri == "http://storefront-bff")' \
     "$rendered_gateway_routes" >/dev/null 2>/dev/null; then
     echo "overlay ${overlay} must not route generic /api/** back to storefront-bff" >&2
     rm -f "$rendered_overlay" "$rendered_gateway_routes"
