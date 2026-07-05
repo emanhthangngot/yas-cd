@@ -4,6 +4,9 @@ metadata:
   name: backoffice-bff
 spec:
   template:
+    metadata:
+      annotations:
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-05-01"
     spec:
       hostAliases:
         - ip: "10.43.97.201"
@@ -24,6 +27,8 @@ spec:
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
               value: http://yas.dev.local:30846/login/oauth2/code/api-client
+            - name: SERVER_FORWARD_HEADERS_STRATEGY
+              value: framework
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,6 +36,9 @@ metadata:
   name: storefront-bff
 spec:
   template:
+    metadata:
+      annotations:
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-05-01"
     spec:
       hostAliases:
         - ip: "10.43.97.201"
@@ -51,3 +59,5 @@ spec:
               value: http://yas.dev.local:30846/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
               value: http://yas.dev.local:30846/login/oauth2/code/keycloak
+            - name: SERVER_FORWARD_HEADERS_STRATEGY
+              value: framework

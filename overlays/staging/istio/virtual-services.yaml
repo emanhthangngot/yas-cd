@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: location
+  namespace: staging
+spec:
+  hosts:
+  - location
+  - location.staging.svc.cluster.local
+  http:
+  - route:
+    - destination:
+        host: location
+        port:
+          number: 80
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: "5xx,connect-failure,refused-stream"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tax
+  namespace: staging
+spec:
+  hosts:
+  - tax
+  - tax.staging.svc.cluster.local
+  http:
+  - route:
+    - destination:
+        host: tax
+        port:
+          number: 80
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: "5xx,connect-failure,refused-stream"

@@ -4,6 +4,18 @@ metadata:
   name: backoffice-bff-extra-configmap
 data:
   backoffice-bff-extra-config.yaml: |
+    logging:
+      level:
+        org.springframework.security: DEBUG
+    server:
+      reactive:
+        session:
+          cookie:
+            name: YAS_BACKOFFICE_SESSION
+            path: /
+            same-site: lax
+            http-only: true
+            secure: false
     spring:
       data:
         redis:
@@ -30,6 +42,18 @@ metadata:
   name: storefront-bff-extra-configmap
 data:
   storefront-bff-extra-config.yaml: |
+    logging:
+      level:
+        org.springframework.security: DEBUG
+    server:
+      reactive:
+        session:
+          cookie:
+            name: YAS_STOREFRONT_SESSION
+            path: /
+            same-site: lax
+            http-only: true
+            secure: false
     spring:
       data:
         redis:

@@ -4,7 +4,11 @@ namespace: dev
 resources:
   - ../../base
   - ingress.yaml
-  - istio.yaml
+  - istio/namespace.yaml
+  - istio/mtls.yaml
+  - istio/destination-rules.yaml
+  - istio/virtual-services.yaml
+  - istio/authorization-policies.yaml
   - limitrange.yaml
 patches:
   - path: payment-liquibase-clear-checksums-patch.yaml
@@ -18,10 +22,10 @@ patches:
     target:
       kind: Deployment
       name: sampledata
-  - path: istio-resources-patch.yaml
+  - path: istio/sidecar-resources-patch.yaml
     target:
       kind: Deployment
-  - path: oauth-authorization-uri-patch.yaml
+  - path: istio/keycloak-oauth-patch.yaml
   - path: db-url-patch.yaml
   - path: redis-patch.yaml
 labels:

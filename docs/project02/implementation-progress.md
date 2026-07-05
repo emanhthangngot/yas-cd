@@ -1,6 +1,6 @@
 # Lab 2 CD Implementation Progress
 
-Last updated: 2026-07-04
+Last updated: 2026-07-05
 
 CD repo: `git@github.com:emanhthangngot/yas-cd.git`
 App repo: `git@github.com:tzin1401/yas.git`
@@ -19,13 +19,13 @@ before starting a new chat, read `docs/project02/current-handoff.md` first.
 | ArgoCD apps | Implemented and previously observed | `yas-dev`, `yas-staging`, `yas-developer` point at `yas-cd/main`. Re-check after PR #14. |
 | App repo Jenkinsfile | Aligned in working tree | Main Jenkinsfile handles `dev`/`staging`; developer preview is separated into `Jenkinsfile.developer-build`. |
 | Staging release tag flow | Implemented in Jenkinsfile/CD scripts | Release tags promote existing commit-SHA images with `docker buildx imagetools create`; needs Jenkins tag-discovery verification. |
-| Storefront login/register config | Runtime verified | `storefront-bff` uses OAuth registration id `keycloak`; authorization, login page, and registration page render through same-host Keycloak URLs on NodePort `30846` for `dev` and `staging`. |
+| Storefront login/register config | Runtime verified and hardened in CD | `storefront-bff` uses OAuth registration id `keycloak`; authorization, login page, and registration page render through same-host Keycloak URLs on NodePort `30846` for `dev` and `staging`. The BFF OAuth patch sets `SERVER_FORWARD_HEADERS_STRATEGY=framework`, and BFF extra config pins distinct WebFlux session cookies for storefront/backoffice callback state. |
 | API gateway routing | Fixed in CD desired state | BFF route table now maps `/api/<service>/**` directly for product, location, inventory, cart, customer, media, rating, payment, payment-paypal, tax, promotion, search, order, recommendation, webhook, and sampledata; generic `/api/**` self-route was removed. |
 | Gateway route generation | Implemented in CD repo | `scripts/sync-gateway-routes.sh` now derives backend gateway routes from `services.yaml`; `scripts/validate-gitops.sh` fails if rendered route YAML drifts from the service catalog. |
 | Media image routing | Runtime verified | Product APIs now return same-origin `/api/media/...` thumbnail URLs, and the first seeded thumbnail returns `200 OK image/jpeg` in both `dev` and `staging`. |
 | Storefront runtime smoke check | Implemented in CD repo | `scripts/smoke-runtime-storefront.sh` verifies Keycloak login redirect, Keycloak login page, registration page, product API routing, and same-origin `/api/media/**` assets for `dev` and `staging` after ArgoCD sync. |
 | Platform infrastructure readiness | Done | PostgreSQL, Redis, Kafka, Elasticsearch, Keycloak, identity aliases, and PVC readiness are fully verified and documented in docs/project02/platform-infrastructure.md. |
-| Service mesh | Done | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. |
+| Service mesh | Done and reorganized | Required app pods in `dev` and `staging` namespaces show workload plus Istio sidecar as `READY 2/2`; STRICT mTLS, retry, and AuthorizationPolicy are verified and working. Overlay manifests are grouped under `overlays/<env>/istio/` by namespace, mTLS, DestinationRule, VirtualService, AuthorizationPolicy, Keycloak OAuth patch, and sidecar resources. |
 | Final evidence pack | In progress | Use `.agents/evidence/README.md`. |
 
 Current ArgoCD policy update:
@@ -95,6 +95,9 @@ Last observed on 2026-07-04 after commit `c40848e`:
 - `yas-platform`, `yas-dev`, and `yas-staging` were `Synced` at revision `c40848e7ccdbafa4f8cca6d219aac656da98b684`.
 - ArgoCD health still reported `Progressing`, but every required app pod in `dev` and `staging` reported both app container and Istio sidecar as `true,true Running`.
 - `storefront-bff` OAuth redirect in `dev` and `staging` points at `http://yas.<env>.local:30846/realms/Yas/...` and returns to `http://yas.<env>.local:30846/login/oauth2/code/keycloak`.
+- `backoffice-bff` and `storefront-bff` set `SERVER_FORWARD_HEADERS_STRATEGY=framework` through the environment-specific Keycloak OAuth patch so Spring resolves forwarded ingress host/proto/port consistently.
+- `storefront-bff` uses `YAS_STOREFRONT_SESSION` and `backoffice-bff` uses `YAS_BACKOFFICE_SESSION`; retest OAuth callback in an incognito window or after deleting old `SESSION` cookies.
+- Storefront ingress routes `/authentication` and `/logout` to `storefront-bff`; without these routes, the UI receives the storefront HTML page instead of the BFF authentication JSON/logout handler.
 - Keycloak `storefront-bff` and `backoffice-bff` clients were updated to allow `http://yas.dev.local:30846/*` and `http://yas.staging.local:30846/*`; the same redirect URIs are now present in the GitOps realm config for new bootstraps.
 - Keycloak login page returned `status=200 title=Sign in to Yas`; registration page returned `status=200 marker=Register,Username,Email,` in both `dev` and `staging`.
 - Product API returned same-origin thumbnail URLs (`/api/media/...`) and the first thumbnail returned `200 OK` with `Content-Type: image/jpeg` in both `dev` and `staging`.

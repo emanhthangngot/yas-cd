@@ -57,6 +57,20 @@ spec:
                 name: storefront-bff
                 port:
                   number: 80
+          - path: /authentication
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /logout
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
           - path: /admin
             pathType: Prefix
             backend:
