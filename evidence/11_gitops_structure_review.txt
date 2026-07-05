@@ -1,0 +1,27 @@
+== GitOps structure review | 2026-07-05 | commit 38b921d ==
+
+-- A2: base/ khong hardcode namespace (ky vong: rong) --
+(no matches - PASS)
+
+-- A3: ArgoCD apps tro dung repo/branch/path --
+argocd/apps/yas-dev-sampledata-seed.yaml:9:    repoURL: git@github.com:emanhthangngot/yas-cd.git
+argocd/apps/yas-dev-sampledata-seed.yaml:10:    targetRevision: main
+argocd/apps/yas-dev-sampledata-seed.yaml:11:    path: operations/sampledata-seed/dev
+argocd/apps/yas-dev.yaml:9:    repoURL: git@github.com:emanhthangngot/yas-cd.git
+argocd/apps/yas-dev.yaml:10:    targetRevision: main
+argocd/apps/yas-dev.yaml:11:    path: overlays/dev
+argocd/apps/yas-developer.yaml:9:    repoURL: git@github.com:emanhthangngot/yas-cd.git
+argocd/apps/yas-developer.yaml:10:    targetRevision: main
+argocd/apps/yas-developer.yaml:11:    path: overlays/developer
+argocd/apps/yas-mesh-demo.yaml:11:    repoURL: 'git@github.com:emanhthangngot/yas-cd.git'
+argocd/apps/yas-mesh-demo.yaml:12:    path: overlays/mesh-demo
+argocd/apps/yas-mesh-demo.yaml:13:    targetRevision: main
+argocd/apps/yas-platform.yaml:9:    repoURL: git@github.com:emanhthangngot/yas-cd.git
+argocd/apps/yas-platform.yaml:10:    targetRevision: main
+argocd/apps/yas-platform.yaml:11:    path: platform/base
+argocd/apps/yas-staging-sampledata-seed.yaml:9:    repoURL: git@github.com:emanhthangngot/yas-cd.git
+argocd/apps/yas-staging-sampledata-seed.yaml:10:    targetRevision: main
+argocd/apps/yas-staging-sampledata-seed.yaml:11:    path: operations/sampledata-seed/staging
+argocd/apps/yas-staging.yaml:9:    repoURL: 'git@github.com:emanhthangngot/yas-cd.git'
+argocd/apps/yas-staging.yaml:10:    targetRevision: main
+argocd/apps/yas-staging.yaml:11:    path: overlays/staging
