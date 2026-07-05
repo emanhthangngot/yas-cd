@@ -31,31 +31,31 @@ labels:
     includeSelectors: true
 images:
   - name: docker.io/emanhthangngot/yas-cart
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-customer
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-location
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-media
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-order
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-payment-paypal
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-product
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-search
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-backoffice-bff
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-storefront-bff
-    newTag: main
+    newTag: 587daae6f4e3
   - name: docker.io/emanhthangngot/yas-backoffice
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront
