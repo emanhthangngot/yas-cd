@@ -1,0 +1,9 @@
+commit 6d9570f9f68b1f70e806c73f14c2823c317c6869
+Author: jenkins-cd <jenkins-cd@local>
+Date:   Mon Jul 6 08:26:39 2026 +0000
+
+    cd(lab2): developer preview tax@033fa258746b from dev_tax_service [skip ci]
+
+ overlays/developer/kustomization.yaml | 4 ++--
+ overlays/staging/kustomization.yaml   | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)

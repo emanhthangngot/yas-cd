@@ -1,0 +1,7 @@
+== Demo prep: align yas-staging Application with Git (manual-sync) | 2026-07-05 ==
+Truoc:  {"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true"]}
+Lenh:   kubectl apply Application yas-staging theo ban origin/main (bo khoi automated)
+Sau:    {"syncOptions":["CreateNamespace=true"]}
+Y nghia: release staging can nguoi duyet sync (dung runbook staging-developer-runbook.md)
+Ghi chu: day cung la vi du drift giua Git va cluster o tang Application manifest -
+         cac file argocd/apps/*.yaml phai kubectl apply tay, khong tu dong sync.

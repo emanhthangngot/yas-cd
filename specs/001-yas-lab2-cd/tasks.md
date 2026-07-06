@@ -49,9 +49,9 @@
 - [x] `dev` and `staging` run in parallel by desired state.
 - [x] `developer` is dormant by desired state.
 - [x] Staging CPU and rollout surge are capped for the single-node VM.
-- [ ] App repo `main` fully matches the new developer-dormant policy.
-- [ ] Jenkins multibranch tag discovery for `vX.Y.Z` releases is confirmed.
-- [ ] Runtime state after CD PR #14 is re-verified and captured.
+- [x] App repo `main` fully matches the new developer-dormant policy. (developer_build preview/teardown verified 2026-07-06; evidence 28-33)
+- [x] Jenkins multibranch tag discovery for `vX.Y.Z` releases is confirmed. (tag v0.1.2 discovered, built, promoted, deployed; evidence 21d)
+- [x] Runtime state after CD PR #14 is re-verified and captured. (baseline + 3-flow demo captured; evidence 20, 35)
 - [ ] Service mesh evidence is captured.
 
 ## Phase 5 - Platform Infrastructure And Istio Sidecar Readiness
