@@ -19,9 +19,11 @@ applicationConfig:
     shutdown: graceful
     port: 80
   management:
-    otlp:
+    opentelemetry:
       tracing:
-        endpoint: http://opentelemetry-collector.observability:4318/v1/traces
+        export:
+          otlp:
+            endpoint: http://opentelemetry-collector.observability:4318/v1/traces
     server:
       port: 8090
     health:
