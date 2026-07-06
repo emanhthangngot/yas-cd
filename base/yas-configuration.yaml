@@ -25,6 +25,10 @@ data:
           export:
             otlp:
               endpoint: http://opentelemetry-collector.observability:4318/v1/traces
+        metrics:
+          export:
+            otlp:
+              endpoint: http://opentelemetry-collector.observability:4318/v1/metrics
       tracing:
         sampling:
           probability: 1.0
