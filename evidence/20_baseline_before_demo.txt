@@ -1,0 +1,19 @@
+thevinh@gcp-ci-cd-agent:~$ kubectl get applications -n argocd
+kubectl get deploy -n dev --no-headers | awk '{print $1, $2}' | head -3
+kubectl get deploy -n staging --no-headers | awk '{print $1, $2}' | head -3
+kubectl get deploy -n developer --no-headers | awk '{print $1, $2}' | head -3
+NAME            SYNC STATUS   HEALTH STATUS
+yas-dev         Synced        Healthy
+yas-developer   Synced        Progressing
+yas-mesh-demo   Synced        Healthy
+yas-platform    Synced        Healthy
+yas-staging     OutOfSync     Healthy
+backoffice-bff 1/1
+backoffice-ui 1/1
+cart 1/1
+backoffice-bff 1/1
+backoffice-ui 1/1
+cart 1/1
+backoffice-bff 0/0
+backoffice-ui 0/0
+cart 0/0

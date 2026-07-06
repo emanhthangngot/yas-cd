@@ -1,0 +1,22 @@
+No resources found in staging namespace.
+NAME                                 READY   STATUS    RESTARTS      AGE
+backoffice-bff-98f7f77c8-s4kvt       1/1     Running   0             6m8s
+backoffice-ui-846bc7dbfc-fqrk7       1/1     Running   0             6m8s
+cart-65f7579d64-mkgjp                1/1     Running   0             6m8s
+customer-6494568fdb-st68p            1/1     Running   0             6m8s
+inventory-dcb7999db-t6rp2            1/1     Running   0             6m8s
+location-7b9d75b4fc-gwll7            1/1     Running   0             6m7s
+media-844f98f9b-pdvsq                1/1     Running   0             6m8s
+nginx-api-gateway-846594676d-z5m94   1/1     Running   0             6m7s
+order-85c86d98c4-fftrp               1/1     Running   0             6m8s
+payment-57469b5b44-7qxt5             0/1     Running   3 (86s ago)   6m8s
+payment-paypal-58ccbb547b-jbgbt      1/1     Running   0             6m8s
+product-6fb558484c-cd8kq             1/1     Running   0             6m8s
+search-79597db658-ftfp2              1/1     Running   0             6m8s
+storefront-bff-859d4985cd-bh7qg      1/1     Running   0             6m8s
+storefront-ui-9b88bdc59-47fgv        1/1     Running   0             6m8s
+swagger-ui-849b7ff5bb-k887g          1/1     Running   0             6m7s
+tax-566b7c8677-ms9cl                 1/1     Running   0             6m8s
+docker.io/emanhthangngot/yas-tax:033fa258746b
+NAME              CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)
+gcp-ci-cd-agent   3936m        49%      16614Mi         51%

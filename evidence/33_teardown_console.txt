@@ -1,0 +1,125 @@
+Started by user Nguyễn Lê Thế Vinh
+Obtained Jenkinsfile.developer-build from git git@github.com:emanhthangngot/yas-cd.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on gcp-agent in /home/vinhp1546/jenkins/workspace/developer_build
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-gitops-ssh
+Cloning the remote Git repository
+Cloning repository git@github.com:emanhthangngot/yas-cd.git
+ > git init /home/vinhp1546/jenkins/workspace/developer_build # timeout=10
+Fetching upstream changes from git@github.com:emanhthangngot/yas-cd.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_SSH to set credentials GitHub SSH key for YAS CD GitOps repository updates
+Verifying host key using known hosts file, will automatically accept unseen keys
+ > git fetch --tags --force --progress -- git@github.com:emanhthangngot/yas-cd.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 6d9570f9f68b1f70e806c73f14c2823c317c6869 (refs/remotes/origin/main)
+Commit message: "cd(lab2): developer preview tax@033fa258746b from dev_tax_service [skip ci]"
+ > git config remote.origin.url git@github.com:emanhthangngot/yas-cd.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 6d9570f9f68b1f70e806c73f14c2823c317c6869 # timeout=10
+ > git rev-list --no-walk f89a15999665802647a337465658384880d81354 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+[2026-07-06T08:40:42.726Z] Timeout set to expire in 20 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Guard)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Resolve Branch -> Image Tag)
+Stage "Resolve Branch -> Image Tag" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify Images On Docker Hub)
+Stage "Verify Images On Docker Hub" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (GitOps – Apply Preview / Teardown)
+[Pipeline] withCredentials
+[2026-07-06T08:40:43.918Z] Masking supported pattern matches of $GITOPS_SSH_KEY
+[Pipeline] {
+[Pipeline] sh
+[2026-07-06T08:40:45.188Z] Cloning into 'yas-cd-work'...
+[2026-07-06T08:40:48.964Z] Already on 'main'
+[2026-07-06T08:40:48.964Z] Your branch is up to date with 'origin/main'.
+[2026-07-06T08:40:49.598Z] set dev to active
+[2026-07-06T08:40:49.598Z] set staging to active
+[2026-07-06T08:40:49.598Z] set developer to dormant
+[2026-07-06T08:40:49.598Z] validating overlay: dev
+[2026-07-06T08:40:53.376Z] validating overlay: staging
+[2026-07-06T08:40:58.173Z] validating overlay: developer
+[2026-07-06T08:41:01.953Z] validating operation overlay: operations/sampledata-seed/dev
+[2026-07-06T08:41:01.953Z] validating operation overlay: operations/sampledata-seed/staging
+[2026-07-06T08:41:01.953Z] staging immutability check passed: all staging image tags are release tags
+[2026-07-06T08:41:01.953Z] GitOps validation passed
+[2026-07-06T08:41:02.588Z] activated runtime mode: baseline
+[2026-07-06T08:41:02.588Z] developer preview torn down; dev and staging restored as active environments
+[2026-07-06T08:41:02.588Z] validating overlay: dev
+[2026-07-06T08:41:06.363Z] validating overlay: staging
+[2026-07-06T08:41:09.236Z] validating overlay: developer
+[2026-07-06T08:41:13.008Z] validating operation overlay: operations/sampledata-seed/dev
+[2026-07-06T08:41:13.009Z] validating operation overlay: operations/sampledata-seed/staging
+[2026-07-06T08:41:13.009Z] staging immutability check passed: all staging image tags are release tags
+[2026-07-06T08:41:13.009Z] GitOps validation passed
+[2026-07-06T08:41:13.009Z]  M overlays/developer/kustomization.yaml
+[2026-07-06T08:41:13.009Z]  M overlays/staging/kustomization.yaml
+[2026-07-06T08:41:13.009Z] [main 0506383] cd(lab2): teardown developer preview [skip ci]
+[2026-07-06T08:41:13.009Z]  2 files changed, 3 insertions(+), 3 deletions(-)
+[2026-07-06T08:41:15.067Z] From github.com:emanhthangngot/yas-cd
+[2026-07-06T08:41:15.067Z]  * branch            main       -> FETCH_HEAD
+[2026-07-06T08:41:15.700Z] Current branch main is up to date.
+[2026-07-06T08:41:18.595Z] To github.com:emanhthangngot/yas-cd.git
+[2026-07-06T08:41:18.595Z]    6d9570f..0506383  main -> main
+[2026-07-06T08:41:18.595Z] Pushed. ArgoCD (yas-developer/yas-staging) sẽ reconcile theo syncPolicy hiện hành.
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[2026-07-06T08:41:19.448Z] [WS-CLEANUP] Deleting project workspace...
+[2026-07-06T08:41:19.448Z] [WS-CLEANUP] Deferred wipeout is used...
+[2026-07-06T08:41:19.650Z] [WS-CLEANUP] done
+[Pipeline] echo
+[2026-07-06T08:41:19.674Z] developer_build teardown OK — kiểm tra ArgoCD app yas-developer, URL: http://yas.developer.local:30846/
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

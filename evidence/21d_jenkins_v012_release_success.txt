@@ -1,0 +1,360 @@
+Started by user Nguyễn Lê Thế Vinh
+Connecting to https://api.github.com using tzin1401/****** (GitHub PAT for tzin1401/yas)
+Obtained Jenkinsfile from cb059449ce30ab02a5d985fafec005d5179f4717
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on gcp-agent in /home/vinhp1546/jenkins/workspace/yas-ci-pipeline_v0.1.2
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: NONE
+using credential github-pat
+Cloning the remote Git repository
+Cloning with configured refspecs honoured and with tags
+Cloning repository https://github.com/tzin1401/yas.git
+ > git init /home/vinhp1546/jenkins/workspace/yas-ci-pipeline_v0.1.2 # timeout=10
+Fetching upstream changes from https://github.com/tzin1401/yas.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials GitHub PAT for tzin1401/yas
+ > git fetch --tags --force --progress -- https://github.com/tzin1401/yas.git +refs/tags/v0.1.2:refs/tags/v0.1.2 # timeout=10
+Fetching with tags
+ > git config remote.origin.url https://github.com/tzin1401/yas.git # timeout=10
+ > git config --add remote.origin.fetch +refs/tags/v0.1.2:refs/tags/v0.1.2 # timeout=10
+ > git config remote.origin.url https://github.com/tzin1401/yas.git # timeout=10
+Fetching upstream changes from https://github.com/tzin1401/yas.git
+using GIT_ASKPASS to set credentials GitHub PAT for tzin1401/yas
+ > git fetch --tags --force --progress -- https://github.com/tzin1401/yas.git +refs/tags/v0.1.2:refs/tags/v0.1.2 # timeout=10
+Checking out Revision cb059449ce30ab02a5d985fafec005d5179f4717 (v0.1.2)
+Commit message: "Merge pull request #50 from tzin1401/vb/fix-release-promote-source"
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cb059449ce30ab02a5d985fafec005d5179f4717 # timeout=10
+ > git rev-list --no-walk cb059449ce30ab02a5d985fafec005d5179f4717 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+[2026-07-06T05:21:16.479Z] Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] tool
+[Pipeline] tool
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] checkout
+[2026-07-06T05:21:17.264Z] The recommended git tool is: NONE
+[2026-07-06T05:21:17.555Z] using credential github-pat
+[2026-07-06T05:21:17.663Z] Fetching changes from the remote Git repository
+[2026-07-06T05:21:17.862Z] Fetching with tags
+[2026-07-06T05:21:17.610Z]  > git rev-parse --resolve-git-dir /home/vinhp1546/jenkins/workspace/yas-ci-pipeline_v0.1.2/.git # timeout=10
+[2026-07-06T05:21:17.808Z]  > git config remote.origin.url https://github.com/tzin1401/yas.git # timeout=10
+[2026-07-06T05:21:17.910Z] Fetching upstream changes from https://github.com/tzin1401/yas.git
+[2026-07-06T05:21:17.911Z]  > git --version # timeout=10
+[2026-07-06T05:21:17.915Z]  > git --version # 'git version 2.43.0'
+[2026-07-06T05:21:17.916Z] using GIT_ASKPASS to set credentials GitHub PAT for tzin1401/yas
+[2026-07-06T05:21:17.920Z]  > git fetch --tags --force --progress -- https://github.com/tzin1401/yas.git +refs/tags/v0.1.2:refs/tags/v0.1.2 # timeout=10
+[2026-07-06T05:21:18.488Z] Checking out Revision cb059449ce30ab02a5d985fafec005d5179f4717 (v0.1.2)
+[2026-07-06T05:21:18.537Z]  > git config core.sparsecheckout # timeout=10
+[2026-07-06T05:21:18.541Z]  > git checkout -f cb059449ce30ab02a5d985fafec005d5179f4717 # timeout=10
+[2026-07-06T05:21:19.596Z] Commit message: "Merge pull request #50 from tzin1401/vb/fix-release-promote-source"
+[Pipeline] sh
+[2026-07-06T05:21:21.651Z] + git fetch origin main:refs/remotes/origin/main
+[2026-07-06T05:21:21.651Z] From https://github.com/tzin1401/yas
+[2026-07-06T05:21:21.651Z]  * [new branch]        main       -> origin/main
+[Pipeline] sh
+[2026-07-06T05:21:23.081Z] + find . -path ./.git -prune -o -name mvnw -type f -print -exec chmod +x {} +
+[2026-07-06T05:21:23.081Z] ./media/mvnw
+[2026-07-06T05:21:23.081Z] ./webhook/mvnw
+[2026-07-06T05:21:23.081Z] ./order/mvnw
+[2026-07-06T05:21:23.081Z] ./promotion/mvnw
+[2026-07-06T05:21:23.081Z] ./location/mvnw
+[2026-07-06T05:21:23.081Z] ./rating/mvnw
+[2026-07-06T05:21:23.081Z] ./inventory/mvnw
+[2026-07-06T05:21:23.081Z] ./automation-ui/mvnw
+[2026-07-06T05:21:23.081Z] ./customer/mvnw
+[2026-07-06T05:21:23.081Z] ./storefront-bff/mvnw
+[2026-07-06T05:21:23.081Z] ./cart/mvnw
+[2026-07-06T05:21:23.081Z] ./backoffice-bff/mvnw
+[2026-07-06T05:21:23.081Z] ./payment/mvnw
+[2026-07-06T05:21:23.081Z] ./search/mvnw
+[2026-07-06T05:21:23.081Z] ./product/mvnw
+[2026-07-06T05:21:23.081Z] ./payment-paypal/mvnw
+[2026-07-06T05:21:23.081Z] ./tax/mvnw
+[2026-07-06T05:21:23.081Z] ./sampledata/mvnw
+[Pipeline] sh
+[2026-07-06T05:21:24.507Z] + chmod +x ci/detect-changed-modules.sh ci/check-coverage.sh ci/verify-ci-tools.sh
+[Pipeline] sh
+[2026-07-06T05:21:25.934Z] + ci/verify-ci-tools.sh
+[2026-07-06T05:21:25.934Z] gitleaks OK (8.18.4)
+[2026-07-06T05:21:27.251Z] snyk OK (1.1305.2)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Detect Changed Modules)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-07-06T05:21:28.876Z] + ci/detect-changed-modules.sh
+[Pipeline] echo
+[2026-07-06T05:21:29.294Z] CHANGED_MODULES=common-library,backoffice-bff,cart,customer,inventory,location,media,order,payment-paypal,payment,product,promotion,rating,search,storefront-bff,tax,webhook,sampledata,recommendation,delivery
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Validate Non-Code Changes)
+Stage "Validate Non-Code Changes" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Gitleaks – Secret Scan)
+[Pipeline] sh
+[2026-07-06T05:21:30.726Z] + [ -f gitleaks-baseline.json ]
+[2026-07-06T05:21:30.726Z] + gitleaks detect --source=. --no-git --config=gitleaks.toml --report-path=gitleaks-report.json --exit-code=1
+[2026-07-06T05:21:30.726Z] 
+[2026-07-06T05:21:30.726Z]     ○
+[2026-07-06T05:21:30.726Z]     │╲
+[2026-07-06T05:21:30.726Z]     │ ○
+[2026-07-06T05:21:30.726Z]     ○ ░
+[2026-07-06T05:21:30.726Z]     ░    gitleaks
+[2026-07-06T05:21:30.726Z] 
+[2026-07-06T05:21:31.013Z] [90m5:21AM[0m [32mINF[0m scan completed in 610ms
+[2026-07-06T05:21:31.013Z] [90m5:21AM[0m [32mINF[0m no leaks found
+[2026-07-06T05:21:31.013Z] + echo Gitleaks: OK
+[2026-07-06T05:21:31.013Z] Gitleaks: OK
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+Stage "Test" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Coverage Gate)
+Stage "Coverage Gate" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+Stage "Build" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube – Analysis)
+Stage "SonarQube – Analysis" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (SonarQube – Quality Gate)
+Stage "SonarQube – Quality Gate" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Snyk – Dependency Scan)
+Stage "Snyk – Dependency Scan" skipped due to when conditional
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker Hub – Build & Push Images)
+[Pipeline] sh
+[2026-07-06T05:21:32.962Z] + bash
+[2026-07-06T05:21:32.962Z] Selecting deployable Docker services for CHANGED_MODULES=common-library,backoffice-bff,cart,customer,inventory,location,media,order,payment-paypal,payment,product,promotion,rating,search,storefront-bff,tax,webhook,sampledata,recommendation,delivery
+[2026-07-06T05:21:32.962Z] Release tag v0.1.2: selecting all deployable services for atomic staging release.
+[2026-07-06T05:21:32.962Z] Deployable services:
+[2026-07-06T05:21:32.962Z] cart
+[2026-07-06T05:21:32.962Z] customer
+[2026-07-06T05:21:32.962Z] inventory
+[2026-07-06T05:21:32.962Z] location
+[2026-07-06T05:21:32.962Z] media
+[2026-07-06T05:21:32.962Z] order
+[2026-07-06T05:21:32.962Z] payment
+[2026-07-06T05:21:32.962Z] payment-paypal
+[2026-07-06T05:21:32.962Z] product
+[2026-07-06T05:21:32.962Z] search
+[2026-07-06T05:21:32.962Z] tax
+[2026-07-06T05:21:32.962Z] backoffice-bff
+[2026-07-06T05:21:32.962Z] storefront-bff
+[2026-07-06T05:21:32.962Z] backoffice-ui
+[2026-07-06T05:21:32.962Z] storefront-ui
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] readFile
+[Pipeline] withCredentials
+[2026-07-06T05:21:34.050Z] Masking supported pattern matches of $DOCKERHUB_TOKEN or $GITOPS_SSH_KEY
+[Pipeline] {
+[Pipeline] sh
+[2026-07-06T05:21:35.212Z] + bash
+[2026-07-06T05:21:36.531Z] Login Succeeded
+[2026-07-06T05:21:36.531Z] Cloning into 'yas-cd-release-src'...
+[2026-07-06T05:21:41.315Z] Release tag v0.1.2: dev overlay pins yas-cart:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:21:41.315Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-cart:587daae6f4e3 to docker.io/emanhthangngot/yas-cart:v0.1.2
+[2026-07-06T05:21:45.090Z] #1 [internal] pushing docker.io/emanhthangngot/yas-cart:v0.1.2
+[2026-07-06T05:21:45.091Z] #1 0.000 copying sha256:8b910f75dcf2c1cd19b1a675971edc15d4c1085ec234805e5df9ec2109ced484 from docker.io/emanhthangngot/yas-cart:587daae6f4e3 to docker.io/emanhthangngot/yas-cart:v0.1.2
+[2026-07-06T05:21:46.406Z] #1 1.788 pushing sha256:1e77dcd0fe981f685d3a6acf2caa64407006d4b66ba38bb42edb27d256d1a2c6 to docker.io/emanhthangngot/yas-cart:v0.1.2
+[2026-07-06T05:21:47.039Z] #1 DONE 2.1s
+[2026-07-06T05:21:47.039Z] Release tag v0.1.2: dev overlay pins yas-customer:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:21:47.039Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-customer:587daae6f4e3 to docker.io/emanhthangngot/yas-customer:v0.1.2
+[2026-07-06T05:21:50.813Z] #1 [internal] pushing docker.io/emanhthangngot/yas-customer:v0.1.2
+[2026-07-06T05:21:50.813Z] #1 0.000 copying sha256:a1574bf1262c58a72ff87cc54398a2ecd315430438fac918c582c0b09d120913 from docker.io/emanhthangngot/yas-customer:587daae6f4e3 to docker.io/emanhthangngot/yas-customer:v0.1.2
+[2026-07-06T05:21:52.128Z] #1 1.793 pushing sha256:d636e32f9f8a0336c6ceb003fb778e27a28533edff24b4a923df215114ab360c to docker.io/emanhthangngot/yas-customer:v0.1.2
+[2026-07-06T05:21:52.762Z] #1 DONE 2.1s
+[2026-07-06T05:21:52.762Z] Release tag v0.1.2: dev overlay pins yas-inventory:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:21:52.762Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-inventory:587daae6f4e3 to docker.io/emanhthangngot/yas-inventory:v0.1.2
+[2026-07-06T05:21:56.916Z] #1 [internal] pushing docker.io/emanhthangngot/yas-inventory:v0.1.2
+[2026-07-06T05:21:56.916Z] #1 0.000 copying sha256:d33cbf65d5719b38b48e5822edc6c7d9a311179eaa08d9136c19fd13f68de306 from docker.io/emanhthangngot/yas-inventory:587daae6f4e3 to docker.io/emanhthangngot/yas-inventory:v0.1.2
+[2026-07-06T05:21:58.975Z] #1 1.768 pushing sha256:490fe304054a02cf56caaf4565f169af5f23a8f5bec8017747a0b30473a9457e to docker.io/emanhthangngot/yas-inventory:v0.1.2
+[2026-07-06T05:21:58.975Z] #1 DONE 2.0s
+[2026-07-06T05:21:58.975Z] Release tag v0.1.2: dev overlay pins yas-location:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:21:58.975Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-location:587daae6f4e3 to docker.io/emanhthangngot/yas-location:v0.1.2
+[2026-07-06T05:22:02.747Z] #1 [internal] pushing docker.io/emanhthangngot/yas-location:v0.1.2
+[2026-07-06T05:22:02.747Z] #1 0.000 copying sha256:6c15fe0457e2a9b3f116675695c31a7580fdf77a165a49b010aac5506cc0d7b9 from docker.io/emanhthangngot/yas-location:587daae6f4e3 to docker.io/emanhthangngot/yas-location:v0.1.2
+[2026-07-06T05:22:04.806Z] #1 1.788 pushing sha256:cb05c9eaa7dd97b33b658bb71c29d609069ba6f137ab1fd0bb63b36607fd6433 to docker.io/emanhthangngot/yas-location:v0.1.2
+[2026-07-06T05:22:04.806Z] #1 DONE 2.1s
+[2026-07-06T05:22:04.806Z] Release tag v0.1.2: dev overlay pins yas-media:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:04.806Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-media:587daae6f4e3 to docker.io/emanhthangngot/yas-media:v0.1.2
+[2026-07-06T05:22:08.580Z] #1 [internal] pushing docker.io/emanhthangngot/yas-media:v0.1.2
+[2026-07-06T05:22:08.580Z] #1 0.000 copying sha256:3ab9a3a91c1adb25c16231f0df2b4206edcb0a0930d7d76999733c99980456d2 from docker.io/emanhthangngot/yas-media:587daae6f4e3 to docker.io/emanhthangngot/yas-media:v0.1.2
+[2026-07-06T05:22:10.640Z] #1 1.799 pushing sha256:11cff08b9fb4e1e53164a10c83aeeb9104ffd3b7b443f5753fee972f58ae3d98 to docker.io/emanhthangngot/yas-media:v0.1.2
+[2026-07-06T05:22:10.640Z] #1 DONE 2.1s
+[2026-07-06T05:22:10.640Z] Release tag v0.1.2: dev overlay pins yas-order:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:10.640Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-order:587daae6f4e3 to docker.io/emanhthangngot/yas-order:v0.1.2
+[2026-07-06T05:22:15.422Z] #1 [internal] pushing docker.io/emanhthangngot/yas-order:v0.1.2
+[2026-07-06T05:22:15.422Z] #1 0.000 copying sha256:0eb998355bdb84ec618371f9ceec9fa12f3f8026c37926bb73b10b73eafc8b75 from docker.io/emanhthangngot/yas-order:587daae6f4e3 to docker.io/emanhthangngot/yas-order:v0.1.2
+[2026-07-06T05:22:16.737Z] #1 1.793 pushing sha256:5a6d29de4d0afa065508326dae9b718003cc88b276d8c45a225309636222a6dc to docker.io/emanhthangngot/yas-order:v0.1.2
+[2026-07-06T05:22:17.369Z] #1 DONE 2.1s
+[2026-07-06T05:22:17.369Z] Release tag v0.1.2: dev overlay pins yas-payment:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:17.369Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-payment:587daae6f4e3 to docker.io/emanhthangngot/yas-payment:v0.1.2
+[2026-07-06T05:22:21.145Z] #1 [internal] pushing docker.io/emanhthangngot/yas-payment:v0.1.2
+[2026-07-06T05:22:21.145Z] #1 0.000 copying sha256:63eb99071189fc61d4656e56355f39831fc88e1c28476589a88508fd6719100b from docker.io/emanhthangngot/yas-payment:587daae6f4e3 to docker.io/emanhthangngot/yas-payment:v0.1.2
+[2026-07-06T05:22:22.462Z] #1 1.794 pushing sha256:7d367c853d20b9e894e394c8ae5386816874f31ffa572ea150a9c0296a4697a5 to docker.io/emanhthangngot/yas-payment:v0.1.2
+[2026-07-06T05:22:23.094Z] #1 DONE 2.1s
+[2026-07-06T05:22:23.094Z] Release tag v0.1.2: dev overlay pins yas-payment-paypal:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:23.094Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-payment-paypal:587daae6f4e3 to docker.io/emanhthangngot/yas-payment-paypal:v0.1.2
+[2026-07-06T05:22:26.870Z] #1 [internal] pushing docker.io/emanhthangngot/yas-payment-paypal:v0.1.2
+[2026-07-06T05:22:26.870Z] #1 0.000 copying sha256:a9f47ccdd2b49f7353506b6d07b7c6c027fb734442a2fa5b3954199226071a2d from docker.io/emanhthangngot/yas-payment-paypal:587daae6f4e3 to docker.io/emanhthangngot/yas-payment-paypal:v0.1.2
+[2026-07-06T05:22:28.186Z] #1 1.758 pushing sha256:4b5309d5059fdd20ea318d07d5402bfa7a46a2e3d437206fa4a7e9a79e8e22e7 to docker.io/emanhthangngot/yas-payment-paypal:v0.1.2
+[2026-07-06T05:22:28.818Z] #1 DONE 2.0s
+[2026-07-06T05:22:28.818Z] Release tag v0.1.2: dev overlay pins yas-product:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:28.818Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-product:587daae6f4e3 to docker.io/emanhthangngot/yas-product:v0.1.2
+[2026-07-06T05:22:32.592Z] #1 [internal] pushing docker.io/emanhthangngot/yas-product:v0.1.2
+[2026-07-06T05:22:32.592Z] #1 0.000 copying sha256:210cee1578b97ba215a7d5a58e301ae85effefa274412ebfea657d55f24b185e from docker.io/emanhthangngot/yas-product:587daae6f4e3 to docker.io/emanhthangngot/yas-product:v0.1.2
+[2026-07-06T05:22:34.649Z] #1 1.826 pushing sha256:641336222abcec4303c817eb893ccc2333b822e37c39cf731c494fd3a9817852 to docker.io/emanhthangngot/yas-product:v0.1.2
+[2026-07-06T05:22:34.649Z] #1 DONE 2.1s
+[2026-07-06T05:22:34.649Z] Release tag v0.1.2: dev overlay pins yas-search:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:34.649Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-search:587daae6f4e3 to docker.io/emanhthangngot/yas-search:v0.1.2
+[2026-07-06T05:22:38.422Z] #1 [internal] pushing docker.io/emanhthangngot/yas-search:v0.1.2
+[2026-07-06T05:22:38.422Z] #1 0.000 copying sha256:25ad15054fcff643648edcd9464d5e0b9f291c08203bebf023122b10435ee848 from docker.io/emanhthangngot/yas-search:587daae6f4e3 to docker.io/emanhthangngot/yas-search:v0.1.2
+[2026-07-06T05:22:40.481Z] #1 1.780 pushing sha256:01bd7b1406d8b23eb169f47221d0aad7e4930bbb534e46e152ea8ab3c9154c2f to docker.io/emanhthangngot/yas-search:v0.1.2
+[2026-07-06T05:22:40.481Z] #1 DONE 2.1s
+[2026-07-06T05:22:40.481Z] Release tag v0.1.2: dev overlay pins yas-tax:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:40.481Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-tax:587daae6f4e3 to docker.io/emanhthangngot/yas-tax:v0.1.2
+[2026-07-06T05:22:44.254Z] #1 [internal] pushing docker.io/emanhthangngot/yas-tax:v0.1.2
+[2026-07-06T05:22:44.254Z] #1 0.000 copying sha256:f14181488025bd519572bef49b8b92aa48d24e049e06b961980adff11775e6bf from docker.io/emanhthangngot/yas-tax:587daae6f4e3 to docker.io/emanhthangngot/yas-tax:v0.1.2
+[2026-07-06T05:22:46.311Z] #1 1.768 pushing sha256:0dc7be99edadd0a134e6f079b22cfc3091644ab2152b891ebaa178961afd06cf to docker.io/emanhthangngot/yas-tax:v0.1.2
+[2026-07-06T05:22:46.311Z] #1 DONE 2.0s
+[2026-07-06T05:22:46.311Z] Release tag v0.1.2: dev overlay pins yas-backoffice-bff:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:46.311Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-backoffice-bff:587daae6f4e3 to docker.io/emanhthangngot/yas-backoffice-bff:v0.1.2
+[2026-07-06T05:22:50.310Z] #1 [internal] pushing docker.io/emanhthangngot/yas-backoffice-bff:v0.1.2
+[2026-07-06T05:22:50.310Z] #1 0.000 copying sha256:205bb5acb25a4e72c3f34b168942684063bc77691648df36e7db3a57a79d0f57 from docker.io/emanhthangngot/yas-backoffice-bff:587daae6f4e3 to docker.io/emanhthangngot/yas-backoffice-bff:v0.1.2
+[2026-07-06T05:22:52.368Z] #1 1.781 pushing sha256:7f37f7043b4c651e8993592a20ef8e2f350408a5fd1d2c76ff821951f1a12800 to docker.io/emanhthangngot/yas-backoffice-bff:v0.1.2
+[2026-07-06T05:22:52.368Z] #1 DONE 2.1s
+[2026-07-06T05:22:52.368Z] Release tag v0.1.2: dev overlay pins yas-storefront-bff:587daae6f4e3 (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:52.368Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-storefront-bff:587daae6f4e3 to docker.io/emanhthangngot/yas-storefront-bff:v0.1.2
+[2026-07-06T05:22:56.141Z] #1 [internal] pushing docker.io/emanhthangngot/yas-storefront-bff:v0.1.2
+[2026-07-06T05:22:56.141Z] #1 0.000 copying sha256:8feb30b0bd9b8364a2b5c73eaa4406da5f74844649cc3a76d8965e5dc83237a9 from docker.io/emanhthangngot/yas-storefront-bff:587daae6f4e3 to docker.io/emanhthangngot/yas-storefront-bff:v0.1.2
+[2026-07-06T05:22:58.200Z] #1 1.788 pushing sha256:4a831e0078c52d82e449cd253ab732415970b4a160c6ef0d803c6f891aeae5bb to docker.io/emanhthangngot/yas-storefront-bff:v0.1.2
+[2026-07-06T05:22:58.200Z] #1 DONE 2.1s
+[2026-07-06T05:22:58.200Z] Release tag v0.1.2: dev overlay pins yas-backoffice:main (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:22:58.200Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-backoffice:main to docker.io/emanhthangngot/yas-backoffice:v0.1.2
+[2026-07-06T05:23:01.978Z] #1 [internal] pushing docker.io/emanhthangngot/yas-backoffice:v0.1.2
+[2026-07-06T05:23:01.978Z] #1 0.000 copying sha256:4164c3de04ba25d155374357950924f0180cc56e9e393c054fc30e0047ce0921 from docker.io/emanhthangngot/yas-backoffice:main to docker.io/emanhthangngot/yas-backoffice:v0.1.2
+[2026-07-06T05:23:01.978Z] #1 0.000 copying sha256:55e885bbf3133b5dff5f9c6d5d8e450dcbbc85c2832c6045ce66e48e7435840a from docker.io/emanhthangngot/yas-backoffice:main to docker.io/emanhthangngot/yas-backoffice:v0.1.2
+[2026-07-06T05:23:05.756Z] #1 3.790 pushing sha256:016d6ae8f2e39ea8403b2ab55de0ca15e23e3c6bcc3b29e294308f2810fb73c6 to docker.io/emanhthangngot/yas-backoffice:v0.1.2
+[2026-07-06T05:23:05.756Z] #1 DONE 4.1s
+[2026-07-06T05:23:05.756Z] Release tag v0.1.2: dev overlay pins yas-storefront:main (differs from tagged commit cb059449ce30); promoting the dev-declared tag.
+[2026-07-06T05:23:05.756Z] Release tag v0.1.2: promoting existing docker.io/emanhthangngot/yas-storefront:main to docker.io/emanhthangngot/yas-storefront:v0.1.2
+[2026-07-06T05:23:09.534Z] #1 [internal] pushing docker.io/emanhthangngot/yas-storefront:v0.1.2
+[2026-07-06T05:23:09.534Z] #1 0.000 copying sha256:310df3aa164c44c0aca1ff35315b1459f0279b1584d783dc7b5ace03bfede5b2 from docker.io/emanhthangngot/yas-storefront:main to docker.io/emanhthangngot/yas-storefront:v0.1.2
+[2026-07-06T05:23:09.534Z] #1 0.000 copying sha256:7696dd8e845be5a47af1be59caf98b6ea72620247d5cc03dc5576201e1c76f8c from docker.io/emanhthangngot/yas-storefront:main to docker.io/emanhthangngot/yas-storefront:v0.1.2
+[2026-07-06T05:23:13.310Z] #1 3.399 pushing sha256:79c25f6b675b79c55fc667699a243502e73ea96f112dc6e327bca4fb5f79675a to docker.io/emanhthangngot/yas-storefront:v0.1.2
+[2026-07-06T05:23:13.310Z] #1 DONE 3.7s
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (GitOps – Update CD Repo)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] readFile
+[Pipeline] withCredentials
+[2026-07-06T05:23:14.648Z] Masking supported pattern matches of $GITOPS_SSH_KEY
+[Pipeline] {
+[Pipeline] sh
+[2026-07-06T05:23:15.902Z] Cloning into 'yas-cd-work'...
+[2026-07-06T05:23:19.677Z] Already on 'main'
+[2026-07-06T05:23:19.677Z] Your branch is up to date with 'origin/main'.
+[2026-07-06T05:23:20.310Z] set dev to active
+[2026-07-06T05:23:20.310Z] set staging to active
+[2026-07-06T05:23:20.310Z] set developer to dormant
+[2026-07-06T05:23:20.310Z] validating overlay: dev
+[2026-07-06T05:23:24.084Z] validating overlay: staging
+[2026-07-06T05:23:27.858Z] validating overlay: developer
+[2026-07-06T05:23:30.749Z] validating operation overlay: operations/sampledata-seed/dev
+[2026-07-06T05:23:30.749Z] validating operation overlay: operations/sampledata-seed/staging
+[2026-07-06T05:23:30.749Z] staging immutability check passed: all staging image tags are release tags
+[2026-07-06T05:23:30.749Z] GitOps validation passed
+[2026-07-06T05:23:30.749Z] activated runtime mode: baseline
+[2026-07-06T05:23:30.749Z] promoted staging to v0.1.2
+[2026-07-06T05:23:30.749Z] GitOps desired state already matches staging/v0.1.2.
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[2026-07-06T05:23:31.522Z] [WS-CLEANUP] Deleting project workspace...
+[2026-07-06T05:23:31.522Z] [WS-CLEANUP] Deferred wipeout is used...
+[2026-07-06T05:23:31.722Z] [WS-CLEANUP] done
+[Pipeline] echo
+[2026-07-06T05:23:31.766Z] PASS v0.1.2 #3
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+
+GitHub has been notified of this commit’s build result
+
+Finished: SUCCESS
