@@ -20,9 +20,11 @@ data:
         health:
           probes:
             enabled: true
-      otlp:
+      opentelemetry:
         tracing:
-          endpoint: http://opentelemetry-collector.observability:4318/v1/traces
+          export:
+            otlp:
+              endpoint: http://opentelemetry-collector.observability:4318/v1/traces
       tracing:
         sampling:
           probability: 1.0
