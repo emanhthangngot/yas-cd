@@ -35,31 +35,31 @@ labels:
     includeSelectors: true
 images:
   - name: docker.io/emanhthangngot/yas-cart
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-customer
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-location
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-media
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-order
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-payment-paypal
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-product
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-search
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-backoffice-bff
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-storefront-bff
-    newTag: 9a26ceab9d5b
+    newTag: ac337abc022f
   - name: docker.io/emanhthangngot/yas-backoffice
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront
