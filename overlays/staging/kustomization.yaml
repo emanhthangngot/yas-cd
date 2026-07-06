@@ -17,35 +17,35 @@ labels:
     includeSelectors: true
 images:
   - name: docker.io/emanhthangngot/yas-cart
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-customer
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-location
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-media
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-order
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-payment-paypal
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-product
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-search
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-backoffice-bff
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-storefront-bff
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-backoffice
-    newTag: v0.0.0
+    newTag: v0.1.2
   - name: docker.io/emanhthangngot/yas-storefront
-    newTag: v0.0.0
+    newTag: v0.1.2
 patches:
   - target:
       kind: Deployment
