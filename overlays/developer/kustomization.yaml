@@ -31,7 +31,7 @@ images:
   - name: docker.io/emanhthangngot/yas-search
     newTag: main
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: 033fa258746b
+    newTag: main
   - name: docker.io/emanhthangngot/yas-backoffice-bff
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront-bff
@@ -43,7 +43,7 @@ images:
 patches:
   - target:
       kind: Deployment
-    path: replicas-active.yaml
+    path: replicas-dormant.yaml
   - target:
       kind: Deployment
       name: sampledata
