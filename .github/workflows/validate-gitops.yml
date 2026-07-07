@@ -23,8 +23,12 @@ jobs:
 
       - name: Install kustomize
         run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          # Pinned direct download: install_kustomize.sh queries the GitHub API
+          # anonymously and gets rate-limited on shared runners.
+          KUSTOMIZE_VERSION=v5.8.1
+          curl -fsSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xz kustomize
           sudo mv kustomize /usr/local/bin/kustomize
+          kustomize version
 
       - name: Validate GitOps render and policy
         run: scripts/validate-gitops.sh
