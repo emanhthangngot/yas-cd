@@ -80,108 +80,25 @@ helmCharts:
               requests:
                 storage: 1Gi
       extraInitContainers:
-        - name: seed-media-placeholders
-          image: busybox:1.36
+        # Copies the real sample images baked into the sampledata image
+        # (sampledata/Dockerfile: COPY images /opt/yas/sampledata/images --
+        # same source docker-compose bind-mounts into media's /images) onto
+        # the media PVC on every startup, so a pod restart can never leave
+        # stale/placeholder files behind and there is no runtime dependency
+        # on an external network fetch. The tag below is a placeholder;
+        # each overlay's `images:` transformer rewrites it to match the
+        # same sampledata build already pinned for that environment.
+        - name: seed-media-sample-images
+          image: docker.io/emanhthangngot/yas-sampledata:main
           command:
             - sh
             - -ec
             - |
-              # Download the real sample images from the app repo on every
-              # startup so a pod restart can never leave stale/placeholder
-              # files behind. Falls back to a 1x1 placeholder only if the
-              # download itself fails (e.g. no network), so the pod still
-              # starts and media URLs still resolve.
-              base_url="https://raw.githubusercontent.com/tzin1401/yas/main/sampledata/images"
-              placeholder_jpeg="/tmp/placeholder.jpg"
-              printf '%s' '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/ASP/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/ASP/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QH//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8QH//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8QH//Z' | base64 -d > "${placeholder_jpeg}"
-              while IFS= read -r path; do
-                path="$(echo "${path}" | sed 's/^[[:space:]]*//')"
-                mkdir -p "$(dirname "${path}")"
-                mkdir -p /images/by-name
-                rel_path="${path#/images/}"
-                if ! wget -q -O "${path}" "${base_url}/${rel_path}" || [ ! -s "${path}" ]; then
-                  echo "warn: falling back to placeholder for ${path}" >&2
-                  cp "${placeholder_jpeg}" "${path}"
-                fi
-                cp "${path}" "/images/by-name/$(basename "${path}")"
-              done <<'PATHS'
-              /images/sample/category/DELL_category.jpg
-              /images/sample/category/Samsung_category.jpg
-              /images/sample/category/iphone_category.png
-              /images/sample/category/laptop_category.jpg
-              /images/sample/category/phone_category.jpg
-              /images/sample/category/tablet_category.jpg
-              /images/sample/payment-provider/cod.png
-              /images/sample/payment-provider/paypal.png
-              /images/sample/product/dellIns/DELL_INS_1.jpg
-              /images/sample/product/dellIns/DELL_INS_2.jpg
-              /images/sample/product/dellIns/DELL_INS_3.jpg
-              /images/sample/product/dellIns/DELL_INS_4.jpg
-              /images/sample/product/dellIns/DELL_INS_Thumbnail.jpg
-              /images/sample/product/dellXPS/DELL_XPS_1.jpg
-              /images/sample/product/dellXPS/DELL_XPS_2.jpg
-              /images/sample/product/dellXPS/DELL_XPS_Thumbnail.jpg
-              /images/sample/product/galaxyTab/Galaxy_Tab_1.jpg
-              /images/sample/product/galaxyTab/Galaxy_Tab_2.jpg
-              /images/sample/product/galaxyTab/Galaxy_Tab_3.jpg
-              /images/sample/product/galaxyTab/Galaxy_Tab_4.jpg
-              /images/sample/product/galaxyTab/Galaxy_Tab_Thumbnail.jpg
-              /images/sample/product/ip15/iphone15_1.jpg
-              /images/sample/product/ip15/iphone15_2.jpg
-              /images/sample/product/ip15/iphone15_3.jpg
-              /images/sample/product/ip15/iphone15_4.jpg
-              /images/sample/product/ip15/iphone15_thumbnail.jpg
-              /images/sample/product/ip15plus/iphone15_Plus_1.jpg
-              /images/sample/product/ip15plus/iphone15_Plus_3.jpg
-              /images/sample/product/ip15plus/iphone15_Plus_4.jpg
-              /images/sample/product/ip15plus/iphone15_Plus_6.jpg
-              /images/sample/product/ip15plus/iphone15_Plus_thumbnail.jpg
-              /images/sample/product/ip15pro/15pro_1.jpg
-              /images/sample/product/ip15pro/15pro_2.jpg
-              /images/sample/product/ip15pro/15pro_3.jpg
-              /images/sample/product/ip15pro/15pro_4.jpg
-              /images/sample/product/ip15pro/15pro_thumbnail.jpg
-              /images/sample/product/ip15proMax/iphone15promax_1.jpg
-              /images/sample/product/ip15proMax/iphone15promax_3.jpg
-              /images/sample/product/ip15proMax/iphone15promax_4.jpg
-              /images/sample/product/ip15proMax/iphone15promax_5.jpg
-              /images/sample/product/ip15proMax/iphone15promax_thumbnail.jpg
-              /images/sample/product/ipad11/iPad_11_1.jpg
-              /images/sample/product/ipad11/iPad_11_2.jpg
-              /images/sample/product/ipad11/iPad_11_3.jpg
-              /images/sample/product/ipad11/iPad_11_4.jpg
-              /images/sample/product/ipad11/iPad_11_Thumbnail.jpg
-              /images/sample/product/ipad5/iPad_5th_1.jpg
-              /images/sample/product/ipad5/iPad_5th_2.jpg
-              /images/sample/product/ipad5/iPad_5th_3.jpg
-              /images/sample/product/ipad5/iPad_5th_4.jpg
-              /images/sample/product/ipad5/iPad_5th_thumbnail.jpg
-              /images/sample/product/macbook/Mac_1.jpg
-              /images/sample/product/macbook/Mac_2.jpg
-              /images/sample/product/macbook/Mac_3.jpg
-              /images/sample/product/macbook/Mac_4.jpg
-              /images/sample/product/macbook/Mac_Thumbnail.jpg
-              /images/sample/product/macbookAir/MacAir_1.jpg
-              /images/sample/product/macbookAir/MacAir_2.jpg
-              /images/sample/product/macbookAir/MacAir_4.jpg
-              /images/sample/product/macbookAir/MacAir_Thumbnail.jpg
-              /images/sample/product/macbookAirM3/MacAir_M3_1.jpg
-              /images/sample/product/macbookAirM3/MacAir_M3_2.jpg
-              /images/sample/product/macbookAirM3/MacAir_M3_3.jpg
-              /images/sample/product/macbookAirM3/MacAir_M3_Thumbnail.jpg
-              /images/sample/product/samsungZ/Sam-Z_1.jpg
-              /images/sample/product/samsungZ/Sam-Z_2.jpg
-              /images/sample/product/samsungZ/Sam-Z_3.jpg
-              /images/sample/product/samsungZ/Sam-Z_4.jpg
-              /images/sample/product/samsungZ/Sam-Z_5.jpg
-              /images/sample/product/samsungZ/Sam-Z_Thumbnail.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_1.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_2.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_3.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_4.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_5.jpg
-              /images/sample/product/samsungZFlip/Sam-Z_Flip_Thumbnail.jpg
-              PATHS
+              mkdir -p /images/by-name
+              cp -r /opt/yas/sampledata/images/sample /images/
+              find /opt/yas/sampledata/images/sample -type f -exec sh -c '
+                cp "$1" "/images/by-name/$(basename "$1")"
+              ' _ {} \;
           volumeMounts:
             - name: media-images
               mountPath: /images
