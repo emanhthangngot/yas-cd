@@ -1,3 +1,4 @@
+# cart: bff + order gọi vào (code: order→cart)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -17,6 +18,7 @@ spec:
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
+# customer: bff + order gọi vào (code: order→customer)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -36,6 +38,7 @@ spec:
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
+# inventory: bff + order gọi vào (code: order→inventory qua product)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -53,7 +56,10 @@ spec:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
+        - cluster.local/ns/dev/sa/order
 ---
+# location: bff + tax + customer + inventory gọi vào
+# (code: tax→location, customer→location, inventory→location)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -72,7 +78,11 @@ spec:
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/tax
+        - cluster.local/ns/dev/sa/customer
+        - cluster.local/ns/dev/sa/inventory
 ---
+# media: bff + product + payment gọi vào
+# (code: product→media, payment→media)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -91,7 +101,10 @@ spec:
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/product
+        - cluster.local/ns/dev/sa/payment
 ---
+# order: bff + payment gọi vào
+# (code: payment→order)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -109,7 +122,9 @@ spec:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
+        - cluster.local/ns/dev/sa/payment
 ---
+# payment: bff + order gọi vào (code: order→payment)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -129,6 +144,7 @@ spec:
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
+# payment-paypal: bff + payment gọi vào (code: payment→payment-paypal)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -148,6 +164,8 @@ spec:
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/payment
 ---
+# product: bff + cart + order + search + inventory gọi vào
+# (code: cart→product, order→product, search→product, inventory→product)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -165,8 +183,12 @@ spec:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
+        - cluster.local/ns/dev/sa/cart
         - cluster.local/ns/dev/sa/order
+        - cluster.local/ns/dev/sa/search
+        - cluster.local/ns/dev/sa/inventory
 ---
+# search: bff gọi vào
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -185,6 +207,7 @@ spec:
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
 ---
+# tax: bff + order gọi vào (code: order→tax)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
