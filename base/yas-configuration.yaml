@@ -37,7 +37,7 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              issuer-uri: http://identity/realms/Yas
+              jwk-set-uri: http://identity/realms/Yas/protocol/openid-connect/certs
       datasource:
         username: ${POSTGRESQL_USERNAME}
         password: ${POSTGRESQL_PASSWORD}
