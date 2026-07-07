@@ -17,8 +17,8 @@
 //    4. Validate + commit + push yas-cd/main -> ArgoCD tự sync
 //       app yas-developer (automated syncPolicy).
 //
-//  Truy cập sau khi sync: http://yas.developer.local:30846/
-//  (thêm "<GCP_VM_EXTERNAL_IP> yas.developer.local" vào /etc/hosts)
+//  Truy cập sau khi sync: http://storefront.developer.yas.local.com:30846/
+//  (thêm "<GCP_VM_EXTERNAL_IP> storefront.developer.yas.local.com" vào /etc/hosts)
 //
 //  Dọn preview: chạy job teardown_developer (Jenkinsfile.teardown-developer).
 //
@@ -182,10 +182,10 @@ pipeline {
         success {
             script {
                 // Link truy cập hiện ngay trên trang build (cần Markup Formatter = Safe HTML để render hyperlink).
-                currentBuild.description = '<a href="http://yas.developer.local:30846/">http://yas.developer.local:30846/</a> (thêm GCP_VM_IP yas.developer.local vào /etc/hosts)'
+                currentBuild.description = '<a href="http://storefront.developer.yas.local.com:30846/">http://storefront.developer.yas.local.com:30846/</a> (thêm GCP_VM_IP storefront.developer.yas.local.com vào /etc/hosts)'
             }
-            echo 'developer_build OK — đợi ArgoCD sync app yas-developer rồi truy cập: http://yas.developer.local:30846/'
-            echo 'Chưa có DNS: thêm "<GCP_VM_EXTERNAL_IP> yas.developer.local" vào /etc/hosts trên máy developer.'
+            echo 'developer_build OK — đợi ArgoCD sync app yas-developer rồi truy cập: http://storefront.developer.yas.local.com:30846/'
+            echo 'Chưa có DNS: thêm "<GCP_VM_EXTERNAL_IP> storefront.developer.yas.local.com" vào /etc/hosts trên máy developer.'
             echo 'Xong việc chạy job teardown_developer để trả cluster về baseline (dev + staging active).'
         }
         failure {
