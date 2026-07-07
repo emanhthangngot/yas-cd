@@ -81,13 +81,67 @@ git push origin "$GITOPS_BRANCH"
 
 ## CD Actions
 
-- `developer_build`: separate parameterized job for the course-required developer preview. It commits `overlays/developer` through GitOps, activates preview mode (`dev + developer`), and does not run `kubectl apply`.
-- `teardown_developer`: restore the baseline where `developer` is dormant and `dev`/`staging` are active.
+- `developer_build`: separate parameterized job for the course-required developer preview. One branch parameter per deployable service (default `main`); the developer fills in the feature branch only for the services they changed. The job resolves each branch to its 12-char commit SHA, verifies the CI-built image exists on Docker Hub (no rebuild), commits `overlays/developer` through GitOps, activates preview mode (`dev + developer`), and does not run `kubectl apply`. See `## developer_build` below.
+- `teardown_developer`: separate job (`Jenkinsfile.teardown-developer`) that restores the baseline where `developer` is dormant and `dev`/`staging` are active. See `## teardown_developer` below.
 - `deploy_dev`: update `overlays/dev` from successful `main` images.
 - `release_staging`: update `overlays/staging` only with `vX.Y.Z` image tags, then require explicit `argocd app sync yas-staging` approval.
 - `seed_sampledata`: one-shot ops job that prepares `operations/sampledata-seed/<env>` and manually syncs `yas-<env>-sampledata-seed`; it does not grant Kubernetes workload-create permissions to storefront services.
 - `rollback_environment`: revert overlay to a previous tag or GitOps commit.
 - `cluster_smoke_check`: run read-only `kubectl`, `argocd`, and curl checks.
+
+## `developer_build`
+
+Course-required developer preview flow. The Jenkins UI shows one branch field
+per service; fill the feature branch only for the services under test (example
+from the assignment: set `tax` to `dev_tax_service`, leave the rest as `main`).
+
+Recommended Jenkins setup:
+
+- Job name: `developer_build`
+- SCM: `git@github.com:emanhthangngot/yas-cd.git`
+- Branch: `main`
+- Jenkinsfile path: `Jenkinsfile.developer-build`
+- Agent label: `yas-build-worker`
+- Required credentials: `github-gitops-ssh`, `dockerhub-creds`
+- Agent tools: git, docker, yq v4, kustomize, helm
+
+Behavior:
+
+- Each non-`main` branch is resolved to its 12-char commit SHA via
+  `git ls-remote`; that SHA must already exist as a Docker Hub image tag
+  (pushed by `yas-ci-multibranch` when the branch was built). The job never
+  rebuilds source; if the image is missing it fails with instructions to run
+  CI on that branch first.
+- GitOps result: selected services run the preview SHA, all other services run
+  `main`, `developer` becomes active, `staging` goes dormant for capacity,
+  `dev` stays untouched. ArgoCD app `yas-developer` auto-syncs.
+- On success the build description shows the access URL
+  `http://yas.developer.local:30846/`. There is no DNS: each developer adds
+  `<GCP_VM_EXTERNAL_IP> yas.developer.local` to their local hosts file
+  (`/etc/hosts`, or `C:\Windows\System32\drivers\etc\hosts` on Windows).
+  To render the URL as a clickable hyperlink, set Manage Jenkins → Security →
+  Markup Formatter to "Safe HTML".
+
+## `teardown_developer`
+
+Deletes the developer preview deployment created by `developer_build`,
+restoring the baseline (developer dormant, dev + staging active) through a
+GitOps commit — no direct `kubectl delete`.
+
+Recommended Jenkins setup:
+
+- Job name: `teardown_developer`
+- SCM: `git@github.com:emanhthangngot/yas-cd.git`
+- Branch: `main`
+- Jenkinsfile path: `Jenkinsfile.teardown-developer`
+- Agent label: `yas-build-worker`
+- Required credentials: `github-gitops-ssh`
+- Agent tools: git, yq v4, kustomize, helm
+
+Parameters:
+
+- `CONFIRM`: exactly `developer-teardown` (guards against tearing down a
+  preview another developer is still using).
 
 ## `seed_sampledata`
 
