@@ -24,6 +24,57 @@ Runtime smoke & \path{17_app_reachable_dev.png}, \path{35_cd_demo_summary.md}, a
 \end{tabular}
 \end{table}
 
+\subsection{Ảnh Evidence Đã Đưa Vào Report}
+
+Các ảnh dưới đây đã được copy vào \path{latex-report/img} để PDF không chỉ trỏ tới
+file evidence bên ngoài:
+
+\begin{table}[H]
+\centering
+\caption{Ảnh evidence thật đang hiển thị trong PDF}
+\begin{tabular}{p{4.4cm} p{5.4cm} p{4cm}}
+\hline
+\textbf{Ảnh trong report} & \textbf{Nguồn gốc} & \textbf{Ý nghĩa} \\
+\hline
+\path{img/platform/01_gcp_vm_specs.png} & \path{evidence/01_gcp_vm_specs.png} & VM 32GB RAM dùng làm Jenkins agent và K3s node. \\
+\hline
+\path{img/platform/02_gcp_vm_ip_addr.png} & \path{evidence/02_gcp_vm_ip_addr.png} & External IP dùng cho NodePort demo. \\
+\hline
+\path{img/argocd/06_argocd_apps_overview.png} & \path{evidence/06_argocd_apps_overview.png} & ArgoCD apps overview. \\
+\hline
+\path{img/runtime/17_app_reachable_dev.png} & \path{evidence/17_app_reachable_dev.png} & Storefront dev reachable. \\
+\hline
+\path{img/argocd/24_argocd_outofsync_diff.png} & \path{evidence/24_argocd_outofsync_diff.png} & Staging release diff trước manual sync. \\
+\hline
+\path{img/developer/32_developer_reachable.png} & \path{evidence/32_developer_reachable.png} & Developer preview reachable. \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Ảnh Cần Chụp Bổ Sung Theo Ưu Tiên}
+
+\begin{table}[H]
+\centering
+\caption{Backlog ảnh cần bổ sung trước khi nộp}
+\begin{tabular}{p{2cm} p{4.3cm} p{7.2cm}}
+\hline
+\textbf{Ưu tiên} & \textbf{Ảnh cần chụp} & \textbf{Lý do} \\
+\hline
+P0 & Jenkins main build success và release \texttt{v0.1.2}. & Chứng minh pipeline chạy thật thay vì chỉ có log text. \\
+\hline
+P0 & ArgoCD detail cho \texttt{yas-dev}, \texttt{yas-staging}, \texttt{yas-developer}. & Chứng minh sync policy và health từng môi trường. \\
+\hline
+P0 & Docker Hub tags cho commit SHA và release tag. & Chứng minh branch/main/release image tagging đúng đề bài. \\
+\hline
+P1 & Kiali topology, mTLS \texttt{2/2}, allow/deny curl. & Củng cố phần nâng cao service mesh. \\
+\hline
+P1 & Prometheus targets và Grafana dashboard. & Chỉ khi có hai ảnh này mới nên claim observability runtime verified. \\
+\hline
+P2 & Teardown developer console và baseline sau teardown. & Làm rõ yêu cầu xóa preview trong đề bài. \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsection{Các Sự Cố Kỹ Thuật Và Giải Pháp Khắc Phục (Troubleshooting)}
 
 Trong quá trình triển khai hệ thống CD và GitOps cho ứng dụng YAS trên hạ tầng single-node K3s, nhóm đã gặp một số sự cố kỹ thuật và đã nghiên cứu, áp dụng các giải pháp khắc phục triệt để:

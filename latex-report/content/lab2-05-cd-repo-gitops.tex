@@ -37,6 +37,24 @@ customer, inventory, tax, media, search, storefront/backoffice BFF và UI, swagg
 sampledata. CD repo giữ thêm \texttt{location}, \texttt{payment},
 \texttt{payment-paypal} vì chúng là runtime dependency của tax/order flow.
 
+\begin{table}[H]
+\centering
+\caption{Service scope runtime theo CQ demo}
+\begin{tabular}{p{3.4cm} p{10cm}}
+\hline
+\textbf{Nhóm service} & \textbf{Danh sách và lý do} \\
+\hline
+Teacher-required & \texttt{product}, \texttt{cart}, \texttt{order}, \texttt{customer}, \texttt{inventory}, \texttt{tax}, \texttt{media}, \texttt{search}, storefront/backoffice BFF và UI, \texttt{swagger-ui}, \texttt{sampledata}. \\
+\hline
+Runtime dependency & \texttt{location} cho tax flow; \texttt{payment} và \texttt{payment-paypal} cho order/payment flow. \\
+\hline
+Disabled optional & \texttt{promotion}, \texttt{rating}, \texttt{recommendation}, \texttt{webhook}; giữ trong source/chart nhưng không bật mặc định để giảm tải VM đơn. \\
+\hline
+Run-once & \texttt{sampledata} không chạy liên tục; seed bằng operation riêng rồi đưa deployment về \texttt{0} replicas. \\
+\hline
+\end{tabular}
+\end{table}
+
 Các service optional như \texttt{promotion}, \texttt{rating}, \texttt{recommendation}
 và \texttt{webhook} không chạy trong baseline để giảm tải single-node, nhưng vẫn còn
 trong source và chart để mở rộng về sau.
@@ -70,4 +88,22 @@ Trước khi commit GitOps, nhóm dùng các script:
 \centering
 \reportimg{img/argocd/24_argocd_outofsync_diff.png}
 \caption{Staging release tạo diff trong ArgoCD trước khi operator sync thủ công}
+\end{figure}
+
+\subsection{Active Environment Policy}
+
+Vì GCP VM chỉ là single-node lab cluster, CD repo không cố chạy toàn bộ mọi profile cùng
+lúc. Policy hiện tại được encode trong overlays và runbook:
+
+\begin{itemize}
+    \item Baseline: \texttt{dev} active, \texttt{staging} active, \texttt{developer} dormant.
+    \item Khi chạy developer preview: \texttt{developer} active, \texttt{staging} dormant để tránh nhân đôi Java pods.
+    \item Sau teardown: \texttt{developer} quay về dormant, \texttt{dev + staging} trở lại baseline.
+    \item Sampledata luôn là seed operation có kiểm soát, không phải service chạy thường trực.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/argocd/dev_staging_developer_apps_detail.png}
+\caption{Scaffold ảnh detail ArgoCD cho \texttt{yas-dev}, \texttt{yas-staging}, \texttt{yas-developer}}
 \end{figure}

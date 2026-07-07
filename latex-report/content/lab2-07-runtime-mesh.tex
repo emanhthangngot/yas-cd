@@ -45,6 +45,30 @@ thái READY kỳ vọng là \texttt{2/2}. Mesh policy gồm:
     \item AuthorizationPolicy theo service identity để có allow/deny rõ ràng.
 \end{itemize}
 
+\begin{table}[H]
+\centering
+\caption{Service mesh requirement và implementation}
+\begin{tabular}{p{3.2cm} p{5.1cm} p{5.2cm}}
+\hline
+\textbf{Yêu cầu mesh} & \textbf{Triển khai trong CD repo} & \textbf{Evidence cần trình bày} \\
+\hline
+mTLS & \path{overlays/dev/istio/mtls.yaml} và \path{overlays/staging/istio/mtls.yaml} dùng \texttt{PeerAuthentication} STRICT và DestinationRule \texttt{ISTIO\_MUTUAL}. & Screenshot pod \texttt{READY 2/2}, manifest mTLS, Kiali security lock nếu có. \\
+\hline
+Retry & \path{virtual-services.yaml} khai báo retry cho critical services với \texttt{retryOn: 5xx,connect-failure,refused-stream}. & Manifest VirtualService và log/curl test retry. \\
+\hline
+Authorization & \path{authorization-policies.yaml} giới hạn service-to-service bằng service account/SPIFFE principal. & Curl allow/deny: \texttt{tax -> location} allowed, \texttt{cart -> location} denied 403. \\
+\hline
+Topology & Kiali quan sát graph traffic dev/staging. & Screenshot Kiali topology hiển thị storefront/BFF/backend path. \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/mesh/mtls_strict_pods_2of2.png}
+\caption{Scaffold ảnh pod có workload container và Istio sidecar \texttt{READY 2/2}}
+\end{figure}
+
 \subsection{AuthorizationPolicy Evidence}
 
 Kịch bản allow/deny dùng đường gọi \texttt{tax -> location}:
@@ -57,6 +81,24 @@ Kịch bản allow/deny dùng đường gọi \texttt{tax -> location}:
 HTTP 403 trong case denied là bằng chứng policy hoạt động ở mesh layer. HTTP 500 ở
 case allowed vẫn có giá trị vì nó chứng minh request đã qua được mesh và chạm vào
 Spring Boot application, lỗi còn lại thuộc application endpoint.
+
+\begin{figure}[H]
+\centering
+\reportimg{img/mesh/authorization_allow_tax_location.png}
+\caption{Scaffold ảnh curl allow: \texttt{tax} gọi \texttt{location}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/mesh/authorization_deny_cart_location.png}
+\caption{Scaffold ảnh curl deny: \texttt{cart} gọi \texttt{location} bị Envoy RBAC 403}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/mesh/retry_policy_evidence.png}
+\caption{Scaffold ảnh retry policy hoặc log retry cho service trong critical path}
+\end{figure}
 
 \subsection{Kiali Topology}
 

@@ -55,3 +55,37 @@ A4 & Bảo toàn CI gates Đồ án 1: Gitleaks, test, coverage, SonarQube; Snyk
 \end{itemize}
 
 Ranh giới quan trọng: app repo sinh ra image và trigger GitOps commit; CD repo là nguồn sự thật cho trạng thái cluster. Nhóm không dùng \texttt{kubectl set image} hay \texttt{kubectl apply} trực tiếp vào namespace do ArgoCD quản lý.
+
+\subsection{Traceability Từ Yêu Cầu Đề Bài Đến Evidence}
+
+Bảng dưới đây gom các yêu cầu quan trọng nhất của đề bài thành các mục có thể kiểm
+chứng. Khi bảo vệ, nhóm nên mở theo thứ tự này để người chấm thấy rõ mỗi yêu cầu
+được đáp ứng bởi phần nào trong hệ thống.
+
+\begin{table}[H]
+\centering
+\caption{Ma trận yêu cầu, triển khai và evidence}
+\begin{tabular}{p{3cm} p{4.5cm} p{5.8cm}}
+\hline
+\textbf{Yêu cầu} & \textbf{Triển khai} & \textbf{Evidence/đường dẫn} \\
+\hline
+Kubernetes cluster & K3s single-node trên GCP VM 32GB; workload và Jenkins agent cùng chạy trên VM này. & \path{img/platform/01_gcp_vm_specs.png}, \path{img/platform/02_gcp_vm_ip_addr.png}. \\
+\hline
+Branch image tag & Feature branch build image theo short commit SHA; Docker Hub là registry cuối. & App repo Jenkinsfile, \path{services.yaml}, Docker Hub tag screenshot cần bổ sung. \\
+\hline
+Dev auto deploy & \texttt{main} build thành công sẽ update \path{overlays/dev} bằng commit SHA. & GitOps commit \texttt{update dev image tags}, ArgoCD \texttt{yas-dev} screenshot. \\
+\hline
+Staging release & Git tag \texttt{vX.Y.Z} promote image từ dev overlay sang immutable release tag. & \path{21d_jenkins_v012_release_success.txt}, \path{img/argocd/24_argocd_outofsync_diff.png}. \\
+\hline
+Developer preview & CD repo có \texttt{Jenkinsfile.developer-build}; service branch được chọn bằng parameter. & \path{28_developer_build_console.txt}, \path{29_preview_commit.txt}, \path{img/developer/32_developer_reachable.png}. \\
+\hline
+Teardown preview & Job teardown reset developer overlay về dormant/default, không dùng \texttt{kubectl delete}. & \path{33_teardown_console.txt}. \\
+\hline
+ArgoCD nâng cao & ArgoCD quản lý \texttt{dev}, \texttt{staging}, \texttt{developer}, platform và sampledata seed app. & \path{img/argocd/06_argocd_apps_overview.png}, \path{07_validate_gitops_passed.txt}. \\
+\hline
+Service mesh & Istio mTLS, DestinationRule, VirtualService retry và AuthorizationPolicy allow/deny. & \path{overlays/dev/istio}, \path{overlays/staging/istio}, Kiali/curl screenshots cần bổ sung. \\
+\hline
+Observability & App expose Actuator/Prometheus, CD chart có ServiceMonitor, OpenTelemetry auto-instrumentation. & Prometheus/Grafana screenshots cần bổ sung; app repo \path{docker-compose.o11y.yml}. \\
+\hline
+\end{tabular}
+\end{table}

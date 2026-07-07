@@ -6,6 +6,33 @@ gates, build Docker image, push Docker Hub, rồi cập nhật CD repo bằng Gi
 Các nội dung dưới đây cần được đưa vào báo cáo vì chúng giải thích vì sao CD repo
 có thể deploy đúng image và đúng service.
 
+\subsection{Vai Trò Của App Repo Trong Kiến Trúc Split-Repo}
+
+App repo là nơi tạo artifact deployable, nhưng không phải nơi lưu trạng thái mong
+muốn cuối cùng của cluster. Contract giữa app repo và CD repo gồm ba dữ liệu:
+
+\begin{table}[H]
+\centering
+\caption{Contract app repo xuất sang CD flow}
+\begin{tabular}{p{3.2cm} p{5.2cm} p{5.4cm}}
+\hline
+\textbf{Dữ liệu} & \textbf{Nguồn trong app repo} & \textbf{Cách CD repo sử dụng} \\
+\hline
+Service catalog & \path{services.yaml} & Jenkins biết service nào deployable, image name, Dockerfile và dependency expansion. \\
+\hline
+Image tag & Branch/main/tag context trong Jenkinsfile & CD repo overlay nhận tag commit SHA hoặc release tag immutable. \\
+\hline
+CI verdict & Gitleaks, test, coverage, SonarQube, build result & Chỉ image đã qua quality gate mới được dùng làm nguồn deploy/promote. \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/jenkins/app_repo_pipeline_overview.png}
+\caption{Scaffold ảnh app repo Jenkins pipeline overview}
+\end{figure}
+
 \subsection{Jenkinsfile Chính: CI Gate Và CD Trigger}
 
 Jenkinsfile trên app repo \texttt{origin/main} dùng agent label \texttt{yas-build-worker}

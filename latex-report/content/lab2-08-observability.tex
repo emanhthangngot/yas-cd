@@ -4,6 +4,33 @@
 nhóm bổ sung phần observability để hoàn thiện khả năng vận hành. Nội dung này gồm
 hai lớp: instrumentation trong app repo và scrape/dashboard trong runtime.
 
+\subsection{Mục Tiêu Observability}
+
+Observability trong đồ án không chỉ để có dashboard đẹp, mà để trả lời ba câu hỏi
+vận hành:
+
+\begin{itemize}
+    \item Service còn sống không: health/readiness/liveness và pod status.
+    \item Service có phục vụ request không: HTTP request rate, latency, error rate.
+    \item JVM/Spring Boot có quá tải không: heap, thread, class count, GC và actuator metrics.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\begin{minipage}{0.92\textwidth}
+\centering
+\textbf{YAS Service Pods}\\
+Spring Boot Actuator + Micrometer + OpenTelemetry Java Agent\\[0.5em]
+$\Downarrow$ metrics/traces\\[0.2em]
+\textbf{ServiceMonitor / OpenTelemetry Collector}\\
+Prometheus scrape \path{/actuator/prometheus}; OTLP HTTP collector nhận traces/metrics\\[0.5em]
+$\Downarrow$\\[0.2em]
+\textbf{Prometheus + Grafana}\\
+Targets UP, datasource healthy, dashboard JVM/HTTP/service health
+\end{minipage}}
+\caption{Luồng observability từ service đến dashboard}
+\end{figure}
+
 \subsection{Instrumentation Trong App Repo}
 
 App repo \texttt{tzin1401/yas} đã được bổ sung các dependency dùng chung ở root
@@ -62,6 +89,28 @@ Phần này là nguồn thiết kế tốt để giải thích dashboard và Pro
 nhưng runtime K3s vẫn cần evidence riêng nếu nhóm muốn claim đã triển khai
 Prometheus/Grafana trên cluster.
 
+\subsection{Runtime Evidence Cho Observability}
+
+Để claim observability đã chạy trên K3s, báo cáo cần đủ bốn lớp evidence:
+
+\begin{table}[H]
+\centering
+\caption{Checklist runtime observability evidence}
+\begin{tabular}{p{3.2cm} p{5.2cm} p{5.4cm}}
+\hline
+\textbf{Lớp} & \textbf{Cần chứng minh} & \textbf{Ảnh/log nên có} \\
+\hline
+Kubernetes & Pod Prometheus/\allowbreak Grafana/\allowbreak collector chạy ổn định. & \texttt{kubectl get pods -n observability}, Grafana/Prometheus service. \\
+\hline
+Prometheus scrape & Target/service monitor cho YAS ở trạng thái UP. & \path{img/observability/prometheus_targets_yas.png}. \\
+\hline
+Grafana datasource & Datasource Prometheus healthy. & \path{img/observability/grafana_datasource_healthy.png}. \\
+\hline
+Dashboard & Dashboard có JVM/HTTP/service metrics của ít nhất một YAS backend. & \path{img/observability/grafana_yas_metrics_dashboard.png}. \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsection{Evidence Cần Bổ Sung}
 
 Hiện tại báo cáo có thể ghi chắc các phần sau:
@@ -89,6 +138,18 @@ Các evidence cần chụp trước khi nộp nếu muốn đánh dấu runtime 
 
 \begin{figure}[H]
 \centering
+\reportimg{img/observability/grafana_datasource_healthy.png}
+\caption{Scaffold ảnh Grafana datasource Prometheus healthy}
+\end{figure}
+
+\begin{figure}[H]
+\centering
 \reportimg{img/observability/grafana_yas_metrics_dashboard.png}
 \caption{Placeholder ảnh Grafana dashboard cần bổ sung}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/observability/otel_collector_pods.png}
+\caption{Scaffold ảnh OpenTelemetry Collector/Operator chạy trên cluster}
 \end{figure}
