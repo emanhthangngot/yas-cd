@@ -8,12 +8,18 @@ grafana:
   grafana.ini:
     database:
       type: sqlite3
+    # Cho phép xem CÔNG KHAI (chỉ Viewer — không sửa/không cần login).
+    # Admin vẫn login riêng qua /login.
+    auth.anonymous:
+      enabled: true
+      org_role: Viewer
+      hide_version: true
   ingress:
     enabled: true
     hosts:
-      - grafana.yas.local.com
+      - grafana.34.124.212.254.nip.io
     ingressClassName: nginx
-hostname: grafana.yas.local.com
+hostname: grafana.34.124.212.254.nip.io
 prometheus:
   prometheusSpec:
     enableRemoteWriteReceiver: true
