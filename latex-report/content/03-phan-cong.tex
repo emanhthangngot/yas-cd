@@ -1,0 +1,17 @@
+\section{Phân Công Công Việc}
+
+\begin{table}[H]
+\centering
+\caption{Phân công công việc các thành viên}
+\begin{tabular}{c p{12cm}}
+\hline
+\textbf{Thành viên} & \textbf{Nội dung thực hiện} \\
+\hline
+Lê Xuân Trí & Phụ trách hạ tầng GCP VM, K3s single-node, bootstrap ArgoCD từ CD repo, kiểm tra trạng thái cluster, thu thập evidence runtime và service mesh. Hoàn thành khi VM/cluster chạy ổn định, ArgoCD apps Healthy/Synced hoặc có giải thích lệch trạng thái, mesh evidence được ghi nhận. \\
+\hline
+Phạm Quang Vinh & Phụ trách Jenkins và image pipeline trong app repo \texttt{tzin1401/yas}: Jenkinsfile, Docker Hub build/push, binding credentials, chiến lược image tag và job cập nhật overlay trong CD repo. Hoàn thành khi CI/CD jobs chạy được, image tags đúng, deploy/rollback/smoke job logs được lưu làm evidence. \\
+\hline
+Nguyễn Lê Thế Vinh & Phụ trách GitOps, security và report trong CD repo \texttt{emanhthangngot/yas-cd}: base/overlays, ArgoCD applications, secret/RBAC audit, validate GitOps, tổng hợp báo cáo và evidence. Hoàn thành khi CD repo render được, YAML đúng service scope, staging dùng immutable tags, report hoàn chỉnh. \\
+\hline
+\end{tabular}
+\end{table}

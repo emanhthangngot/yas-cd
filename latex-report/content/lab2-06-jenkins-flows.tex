@@ -1,0 +1,76 @@
+\section{Các Luồng Jenkins CD}
+
+Đồ án có ba luồng CD chính: dev auto deploy, staging release có duyệt, và
+developer preview on-demand. Điểm chung là tất cả đều đi qua GitOps commit; không
+có job nào trực tiếp apply manifest vào namespace do ArgoCD quản lý.
+
+\subsection{Dev Auto Deploy}
+
+Khi app repo \texttt{main} thay đổi, Jenkins:
+
+\begin{enumerate}
+    \item Detect modules thay đổi và chạy CI gates.
+    \item Build/push Docker image cho service deployable với tag short commit SHA.
+    \item Push thêm tag tiện dụng \texttt{main} và \texttt{latest}.
+    \item Clone CD repo, chạy \path{scripts/update-image-tag.sh} \texttt{dev <service> <sha>}.
+    \item Commit \texttt{cd(lab2): update dev image tags [skip ci]} vào \texttt{yas-cd/main}.
+    \item ArgoCD \texttt{yas-dev} tự sync.
+\end{enumerate}
+
+Việc overlay dev dùng commit SHA thay vì \texttt{latest} giúp mỗi deploy có dấu vết
+rõ ràng và tránh tình trạng Kubernetes không rollout vì manifest không đổi.
+
+\subsection{Staging Release}
+
+Staging chỉ nhận release tag \texttt{vX.Y.Z}. Jenkins release tag build là
+promote-only:
+
+\begin{enumerate}
+    \item Tag \texttt{vX.Y.Z} trigger Jenkins multibranch/tag job.
+    \item Pipeline bỏ qua test/scan/build lại source vì source đã được gate-check bởi main build.
+    \item Jenkins đọc tag nguồn từng service từ \texttt{overlays/dev}.
+    \item Dùng \texttt{docker buildx imagetools create} retag image hiện có sang \texttt{vX.Y.Z}.
+    \item Chạy \path{scripts/promote-staging-release.sh} \texttt{vX.Y.Z}.
+    \item Commit staging overlay vào CD repo.
+    \item Operator review diff và sync \texttt{yas-staging} thủ công.
+\end{enumerate}
+
+\lstinputlisting[
+  caption={Operator sync staging sau khi release GitOps diff được tạo},
+  basicstyle=\ttfamily\scriptsize
+]{../evidence/19_staging_manual_sync_applied.txt}
+
+\subsection{Developer Preview}
+
+Yêu cầu đề bài có job \texttt{developer\_build} để developer nhập branch cho service
+muốn test. Nhóm tách job này sang CD repo để giữ main app pipeline đơn giản:
+
+\begin{itemize}
+    \item App repo feature branch chỉ build/push image commit SHA.
+    \item CD repo \path{Jenkinsfile.developer-build} resolve branch sang SHA và kiểm tra image đã tồn tại trên Docker Hub.
+    \item Job gọi \path{scripts/prepare-developer-preview.sh} \texttt{tax=<sha>} hoặc nhiều assignment khác.
+    \item \texttt{developer} active, \texttt{dev} vẫn active, \texttt{staging} dormant để tránh quá tải.
+    \item ArgoCD tự sync \texttt{yas-developer}; developer truy cập \url{http://storefront.developer.yas.local.com:30846/}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/developer/32_developer_reachable.png}
+\caption{Developer preview truy cập được qua NodePort 30846}
+\end{figure}
+
+\subsection{Teardown Developer}
+
+Job \texttt{teardown\_developer} chạy từ CD repo, yêu cầu confirm
+\texttt{developer-teardown}. Job reset overlay developer về tag \texttt{main},
+đưa \texttt{developer} về dormant và khôi phục baseline \texttt{dev + staging active}.
+Đây là cách đáp ứng yêu cầu xóa phần triển khai developer mà vẫn không dùng
+\texttt{kubectl delete} trực tiếp.
+
+\subsection{Bằng Chứng Demo 3 Luồng}
+
+Evidence tổng hợp cho ba luồng nằm trong \path{evidence/35_cd_demo_summary.md}:
+\texttt{dev} auto deploy, \texttt{staging} release \texttt{v0.1.2}, và
+\texttt{developer\_build}/teardown. Các log lỗi trước đó cũng được giữ lại để giải
+thích quá trình hardening release flow: \texttt{v0.1.0} bị gate chặn, \texttt{v0.1.1}
+lỗi buildx/mixed tag, \texttt{v0.1.2} thành công sau khi sửa promote source.

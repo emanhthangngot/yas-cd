@@ -1,0 +1,123 @@
+\section{Phân Tích Thay Đổi Trong App Repo \texttt{tzin1401/yas}}
+
+App repo không chỉ là source code gốc của YAS. Trong đồ án này, app repo đã được
+thay đổi để trở thành điểm xuất phát của CD: phát hiện module thay đổi, chạy CI
+gates, build Docker image, push Docker Hub, rồi cập nhật CD repo bằng GitOps.
+Các nội dung dưới đây cần được đưa vào báo cáo vì chúng giải thích vì sao CD repo
+có thể deploy đúng image và đúng service.
+
+\subsection{Jenkinsfile Chính: CI Gate Và CD Trigger}
+
+Jenkinsfile trên app repo \texttt{origin/main} dùng agent label \texttt{yas-build-worker}
+cho các bước nặng như test, build, scan và Docker. Pipeline chính có các nhóm stage:
+
+\begin{itemize}
+    \item Checkout, fetch \texttt{origin/main}, chmod Maven wrapper và kiểm tra tool.
+    \item Detect changed modules bằng \texttt{ci/detect-changed-modules.sh}.
+    \item Gitleaks, test, JaCoCo report, coverage gate và SonarQube.
+    \item Docker Hub build/push image cho các service deployable.
+    \item GitOps update: clone \texttt{emanhthangngot/yas-cd}, chỉnh overlay, commit và push vào \texttt{main}.
+\end{itemize}
+
+Một điểm phải ghi rõ: stage Snyk hiện đang bị tắt tạm thời bằng điều kiện
+\texttt{when \{ expression \{ false \} \}} để unblock CD validation. Vì vậy báo cáo
+không claim Snyk đang chạy ở bản app repo hiện tại; chỉ ghi đây là CI gate kế thừa
+từ Đồ án 1 và cần bật lại sau khi CD ổn định.
+
+\subsection{Chiến Lược Tag Image}
+
+\begin{table}[H]
+\centering
+\caption{Chiến lược image tag trong app repo}
+\begin{tabular}{p{3.2cm} p{5.2cm} p{5.2cm}}
+\hline
+\textbf{Nguồn trigger} & \textbf{Image tag được push} & \textbf{GitOps target} \\
+\hline
+Feature branch & Short commit SHA 12 ký tự & Không update GitOps trực tiếp; developer preview dùng job riêng \\
+\hline
+\texttt{main} & Short commit SHA, \texttt{main}, \texttt{latest} & Update \texttt{overlays/dev} bằng short commit SHA \\
+\hline
+\texttt{vX.Y.Z} tag & Retag image hiện có sang \texttt{vX.Y.Z} & Update \texttt{overlays/staging} bằng immutable release tag \\
+\hline
+\end{tabular}
+\end{table}
+
+Việc \texttt{dev} dùng commit SHA thay vì \texttt{main/latest} là thay đổi quan trọng:
+mỗi lần main build thành công đều tạo Deployment template diff thật, ArgoCD có lý do
+rollout pod mới, đồng thời rollback có thể truy ngược về tag bất biến.
+
+\subsection{Release Promote Từ Dev Overlay}
+
+Trong giai đoạn đầu, release tag cố promote mọi service từ cùng một tagged commit
+SHA. Cách này lỗi khi \texttt{dev} đang là trạng thái incremental: một số service
+đang ở SHA mới, một số service vẫn ở tag cũ. App repo đã sửa Jenkinsfile để đọc
+tag nguồn từng service từ \path{overlays/dev/kustomization.yaml} trong CD repo,
+sau đó dùng \texttt{docker buildx imagetools create} retag từng image sang release
+\texttt{vX.Y.Z}. Nhờ đó release \texttt{v0.1.2} promote thành công 15 service.
+
+\subsection{Service Catalog Trong App Repo}
+
+File \path{services.yaml} trong app repo là contract cho Jenkins:
+
+\begin{itemize}
+    \item Xác định service nào deployable, Dockerfile nằm ở đâu, imageName là gì.
+    \item Ghi demo role: teacher-required, runtime-dependency, optional, run-once.
+    \item Ghi dependencies để CI có thể mở rộng phạm vi build/test khi dependency thay đổi.
+\end{itemize}
+
+{\raggedright
+Các service deployable chính là \texttt{cart}, \texttt{customer}, \texttt{inventory},
+\texttt{location}, \texttt{media}, \texttt{order}, \texttt{payment},
+\texttt{payment}-\allowbreak\texttt{paypal}, \texttt{product}, \texttt{search}, \texttt{tax},
+\texttt{backoffice}-\allowbreak\texttt{bff}, \texttt{storefront}-\allowbreak\texttt{bff}, \texttt{backoffice}-\allowbreak\texttt{ui},
+\texttt{storefront}-\allowbreak\texttt{ui}. Các service \texttt{promotion}, \texttt{rating},
+\texttt{recommendation}, \texttt{webhook} được giữ trong source nhưng không thuộc
+runtime CQ mặc định. \texttt{sampledata} được xử lý theo cơ chế run-once, không
+chạy liên tục sau khi seed dữ liệu.\par}
+
+\subsection{Changed-Module Detection}
+
+Script \texttt{ci/detect-changed-modules.sh} giúp pipeline không rebuild toàn bộ
+monorepo khi chỉ đổi một module. Logic chính:
+
+\begin{itemize}
+    \item Nếu chỉ đổi docs/spec/GitOps metadata thì trả về \path{__skip_full_ci__}.
+    \item Nếu đổi Jenkinsfile, root \texttt{pom.xml}, \texttt{services.yaml}, Docker/K8s scripts thì chạy full path.
+    \item Nếu đổi một module, chọn module đó và các service phụ thuộc dựa trên \texttt{services.yaml}.
+\end{itemize}
+
+Phần này đáng đưa vào báo cáo vì nó giải thích vì sao CD có thể scale trên monorepo
+YAS lớn mà không tốn thời gian build mọi service trong mỗi commit.
+
+\subsection{Build Và Runtime Fixes}
+
+App repo cũng có các thay đổi hỗ trợ CD chạy ổn định:
+
+\begin{itemize}
+    \item Dockerfile của backend được chỉnh để copy đúng Spring Boot jar.
+    \item \texttt{payment-paypal} được đóng gói đúng executable jar/thin jar theo nhu cầu runtime.
+    \item Search integration tests được cô lập để tránh xung đột Testcontainers.
+    \item Payment, product, tax, location, rating, webhook bổ sung test để giữ coverage gate.
+\end{itemize}
+
+Những thay đổi này không phải phần GitOps, nhưng là điều kiện để image sinh từ app
+repo có thể boot được trên K3s.
+
+\subsection{Observability Instrumentation Trong App Repo}
+
+App repo đã bổ sung nền observability ở tầng ứng dụng:
+
+\begin{itemize}
+    \item Root \texttt{pom.xml} thêm \texttt{spring-boot-starter-actuator},
+    \texttt{micrometer-registry-prometheus} và \texttt{spring-boot-starter-opentelemetry}.
+    \item Nhiều service expose \path{/actuator/prometheus} qua
+    \path{management.endpoints.web.exposure.include=prometheus}.
+    \item SecurityConfig cho phép Prometheus scrape \texttt{/actuator/prometheus}
+    và health probes mà không cần login.
+    \item App repo có \texttt{docker-compose.o11y.yml}, Prometheus config, Grafana
+    datasource/dashboard, Loki, Tempo và OpenTelemetry Collector cho local observability.
+\end{itemize}
+
+Vì vậy chương Observability của báo cáo phải phân biệt hai phần: app repo đã có
+instrumentation; CD/K8s cần runtime evidence Prometheus/Grafana để chứng minh scrape
+và dashboard hoạt động trên cluster.

@@ -1,0 +1,64 @@
+\documentclass[12pt]{article}
+
+\usepackage{hcmus-report-template}
+
+% Disable indentation on new paragraphs
+\setlength{\parindent}{0pt}
+
+% Line spacing 1.5
+\renewcommand{\baselinestretch}{1.5}
+
+% Graphic path
+\graphicspath{{img/}}
+
+% Define course name, report name and report title.
+\newcommand{\coursename}{DevOps}
+\newcommand{\reportname}{Xây dựng hệ thống CD, GitOps, Service Mesh và Observability cho YAS}
+\newcommand{\reporttitle}{Báo Cáo Đồ Án 2: Xây Dựng Hệ Thống CD}
+
+\newcommand{\studentname}{%
+  Lê Xuân Trí (23120099)\\%
+  Phạm Quang Vinh (23120202)\\%
+  Nguyễn Lê Thế Vinh (23120190)%
+}
+\newcommand{\teachername}{Giáo viên hướng dẫn}
+
+% Header
+\lhead{\reporttitle}
+\rhead{%
+  Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\%
+  \coursename%
+}
+
+% Footer
+\lfoot{}
+
+% ============ DOCUMENT ============
+\begin{document}
+
+\pagenumbering{roman}
+\input{content/title.tex}
+
+\tableofcontents
+\pagebreak
+\listoffigures
+\pagebreak
+\listoftables
+\pagebreak
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{content/01-thong-tin-nhom.tex}
+\input{content/03-phan-cong.tex}
+\input{content/lab2-02-checklist.tex}
+\input{content/lab2-03-kien-truc.tex}
+\input{content/lab2-04-app-repo.tex}
+\input{content/lab2-05-cd-repo-gitops.tex}
+\input{content/lab2-06-jenkins-flows.tex}
+\input{content/lab2-07-runtime-mesh.tex}
+\input{content/lab2-08-observability.tex}
+\input{content/lab2-09-evidence-known-issues.tex}
+\input{content/lab2-10-glossary.tex}
+
+\end{document}

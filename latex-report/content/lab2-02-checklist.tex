@@ -1,0 +1,57 @@
+\section{Checklist Yêu Cầu Đồ Án 2}
+
+Báo cáo này bám theo đề bài Đồ án 2: xây dựng hệ thống CD cho YAS, có Jenkins,
+Docker Hub, Kubernetes, ArgoCD, Service Mesh và phần Observability bổ sung. Phần
+CI của Đồ án 1 không bị thay thế; nó được giữ lại như lớp kiểm soát chất lượng
+trước khi image được đưa vào CD.
+
+\begin{table}[H]
+\centering
+\caption{Đối chiếu yêu cầu bắt buộc của Đồ án 2}
+\begin{tabular}{c p{9.5cm} p{3cm}}
+\hline
+\textbf{\#} & \textbf{Yêu cầu} & \textbf{Trạng thái} \\
+\hline
+1 & Kubernetes cluster cho YAS trên GCP VM chạy K3s, dùng NodePort để demo ứng dụng. & Đã có evidence \\
+\hline
+2 & Mỗi branch/service thay đổi tạo Docker image tag theo commit SHA và push lên Docker Hub. & Đã triển khai trong app repo \\
+\hline
+3 & Main branch tự deploy vào môi trường \texttt{dev}. & Đã triển khai qua Jenkins + GitOps + ArgoCD \\
+\hline
+4 & Release tag \texttt{vX.Y.Z} deploy vào \texttt{staging}. & Đã chạy thành công với \texttt{v0.1.2} \\
+\hline
+5 & Job \texttt{developer\_build} cho phép chọn branch từng service để preview. & Đã triển khai trong CD repo \\
+\hline
+6 & Job teardown để xóa developer preview. & Đã triển khai trong CD repo \\
+\hline
+7 & Không deploy trực tiếp bằng \texttt{kubectl}; Jenkins chỉ cập nhật GitOps repo, ArgoCD sync cluster. & Đã áp dụng \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Yêu cầu nâng cao và phần bổ sung}
+\begin{tabular}{c p{9.5cm} p{3cm}}
+\hline
+\textbf{\#} & \textbf{Nội dung} & \textbf{Trạng thái} \\
+\hline
+A1 & ArgoCD quản lý \texttt{dev}, \texttt{staging}, \texttt{developer}, platform và sampledata seed app. & Đã có evidence \\
+\hline
+A2 & Service Mesh với Istio: mTLS, retry policy, AuthorizationPolicy allow/deny, Kiali topology. & Đã có evidence chính; Kiali screenshot cần bổ sung nếu thiếu \\
+\hline
+A3 & Observability Prometheus/Grafana: app expose metrics, CD chart có ServiceMonitor contract. & Instrumentation đã có; runtime screenshot cần bổ sung \\
+\hline
+A4 & Bảo toàn CI gates Đồ án 1: Gitleaks, test, coverage, SonarQube; Snyk ghi nhận caveat hiện tại. & Đã giữ, Snyk tạm tắt \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Hai Repository Trong Phạm Vi Báo Cáo}
+
+\begin{itemize}
+    \item App/CI repo: \url{https://github.com/tzin1401/yas.git}. Repository này chứa source code YAS, Jenkinsfile chính, \texttt{services.yaml}, Dockerfile, CI scripts, test, và phần instrumentation cho Prometheus/OpenTelemetry.
+    \item CD/GitOps repo: \url{https://github.com/emanhthangngot/yas-cd.git}. Repository này chứa desired state cho Kubernetes: \texttt{base/}, \texttt{overlays/}, \texttt{argocd/}, \texttt{charts/}, Jenkins job GitOps nhẹ và evidence.
+\end{itemize}
+
+Ranh giới quan trọng: app repo sinh ra image và trigger GitOps commit; CD repo là nguồn sự thật cho trạng thái cluster. Nhóm không dùng \texttt{kubectl set image} hay \texttt{kubectl apply} trực tiếp vào namespace do ArgoCD quản lý.

@@ -1,0 +1,94 @@
+\section{Observability Với Prometheus Và Grafana}
+
+Đề bài gốc ghi không bắt buộc triển khai Grafana/Prometheus cho phần cơ bản, nhưng
+nhóm bổ sung phần observability để hoàn thiện khả năng vận hành. Nội dung này gồm
+hai lớp: instrumentation trong app repo và scrape/dashboard trong runtime.
+
+\subsection{Instrumentation Trong App Repo}
+
+App repo \texttt{tzin1401/yas} đã được bổ sung các dependency dùng chung ở root
+\texttt{pom.xml}:
+
+\begin{itemize}
+    \item \texttt{spring-boot-starter-actuator}: mở health/metrics endpoint.
+    \item \texttt{micrometer-registry-prometheus}: xuất metric theo format Prometheus.
+    \item \texttt{spring-boot-starter-opentelemetry}: export trace qua OTLP.
+\end{itemize}
+
+Các service Spring Boot expose \texttt{/actuator/prometheus} và \texttt{/actuator/health/**}.
+SecurityConfig cho phép hai endpoint này để Prometheus scrape không bị chặn bởi
+authentication. Đây là thay đổi quan trọng ở app repo và phải được trình bày trong
+báo cáo, vì Prometheus/Grafana không thể có dữ liệu nếu ứng dụng không xuất metric.
+
+\subsection{Tự Động Tiêm Agent OpenTelemetry (Auto-Instrumentation)}
+
+Để tối ưu hóa luồng đo lường trên môi trường \texttt{dev} mà không cần build lại các Docker image của ứng dụng, nhóm đã triển khai giải pháp tự động tiêm OpenTelemetry Java Agent thông qua \texttt{OpenTelemetry Operator}:
+
+\begin{itemize}\sloppy
+    \item Cơ chế hoạt động: OpenTelemetry Operator theo dõi tài nguyên của namespace. Khi phát hiện các Deployment được chỉ định trong tệp patch \path{otel-inject-patch.yaml} có khai báo annotation \path{instrumentation.opentelemetry.io/inject-java: "yas"}, Operator sẽ tự động chèn một \texttt{initContainer} để sao chép tệp JAR của OTel agent vào thư mục chạy, đồng thời tự động cấu hình các biến môi trường \path{JAVA_TOOL_OPTIONS} và \path{OTEL_*} tương ứng trên Pod.
+    \item Khai báo Instrumentation CR: Nhóm định nghĩa tài nguyên \path{Instrumentation} trong \path{observability/instrumentation.yaml} trỏ về endpoint của OpenTelemetry Collector chạy tại địa chỉ \path{http://opentelemetry-collector.observability:4318} sử dụng giao thức \path{http/protobuf}.
+    \item Khớp chuẩn SemConv: Tác nhân OpenTelemetry được cấu hình xuất dữ liệu đo lường định dạng OTLP trực tiếp, tự động sinh các metric JVM tiêu chuẩn (như \texttt{jvm\_class\_count}, \texttt{jvm\_thread\_count}, \texttt{http\_server\_request\_duration\_seconds}) trùng khớp hoàn toàn với bảng điều khiển mẫu \path{observability\_dashboard.json} của ứng dụng YAS.
+\end{itemize}
+
+
+\subsection{Scrape Contract Trong CD Repo}
+
+Backend Helm chart trong CD repo có template \path{ServiceMonitor} khi
+\path{serviceMonitor.enabled=true}. Contract scrape:
+
+\begin{itemize}
+    \item Kind: \texttt{ServiceMonitor}.
+    \item Label: \texttt{release=prometheus}.
+    \item Endpoint path: \texttt{/actuator/prometheus}.
+    \item Port: \texttt{metric}, tương ứng management port của service.
+\end{itemize}
+
+CD repo cũng cấu hình application config để expose \texttt{prometheus,health} và
+đặt management server port riêng. Như vậy app repo cung cấp metric, CD repo cung
+cấp cách Prometheus operator phát hiện và scrape service.
+
+\subsection{Local Observability Assets Từ App Repo}
+
+App repo có sẵn local LGTM stack:
+
+\begin{itemize}
+    \item \path{docker-compose.o11y.yml}: OpenTelemetry Collector, Prometheus, Grafana, Loki, Tempo.
+    \item \path{docker/prometheus/prometheus.yml}: scrape Prometheus/self và collector.
+    \item \path{docker/grafana/provisioning/datasources}: datasource Prometheus/Loki/Tempo.
+    \item \path{docker/grafana/provisioning/dashboards}: dashboard observability và Prometheus.
+\end{itemize}
+
+Phần này là nguồn thiết kế tốt để giải thích dashboard và PromQL trong báo cáo,
+nhưng runtime K3s vẫn cần evidence riêng nếu nhóm muốn claim đã triển khai
+Prometheus/Grafana trên cluster.
+
+\subsection{Evidence Cần Bổ Sung}
+
+Hiện tại báo cáo có thể ghi chắc các phần sau:
+
+\begin{itemize}
+    \item App repo đã có Actuator, Prometheus registry và OpenTelemetry dependency.
+    \item Service config/security cho phép endpoint \texttt{/actuator/prometheus}.
+    \item CD chart có ServiceMonitor contract.
+\end{itemize}
+
+Các evidence cần chụp trước khi nộp nếu muốn đánh dấu runtime verified:
+
+\begin{itemize}
+    \item Prometheus UI: Targets hoặc ServiceMonitor target ở trạng thái UP.
+    \item Grafana UI: datasource Prometheus healthy.
+    \item Grafana dashboard: JVM memory, HTTP request rate, service status hoặc pod/service metrics.
+    \item Optional: Tempo trace hoặc Kiali/Grafana correlation nếu đã bật OTLP collector trên K3s.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/observability/prometheus_targets_yas.png}
+\caption{Placeholder ảnh Prometheus targets cần bổ sung}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/observability/grafana_yas_metrics_dashboard.png}
+\caption{Placeholder ảnh Grafana dashboard cần bổ sung}
+\end{figure}

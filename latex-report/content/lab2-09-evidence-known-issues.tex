@@ -1,0 +1,77 @@
+\section{Evidence Tổng Hợp Và Known Issues}
+
+\subsection{Evidence Đã Có}
+
+\begin{table}[H]
+\centering
+\caption{Nhóm evidence hiện có}
+\begin{tabular}{p{4cm} p{10cm}}
+\hline
+\textbf{Nhóm} & \textbf{Evidence tiêu biểu} \\
+\hline
+Hạ tầng & \path{01_gcp_vm_specs.png}, \path{02_gcp_vm_ip_addr.png}, tool gate và PVC/database output trong \path{.agents/evidence/README.md}. \\
+\hline
+ArgoCD/GitOps & \path{06_argocd_apps_overview.png}, \path{07_validate_gitops_passed.txt}, \path{11_gitops_structure_review.txt}. \\
+\hline
+Staging release & \path{21_jenkins_v010_gate_blocked.txt}, \path{21b_jenkins_v011_buildx_missing.txt}, \path{21c_jenkins_v011_mixed_tag_promote_fail.txt}, \path{21d_jenkins_v012_release_success.txt}. \\
+\hline
+Developer preview & \path{28_developer_build_console.txt}, \path{29_preview_commit.txt}, \path{31_developer_up_staging_down.txt}, \path{32_developer_reachable.png}, \path{33_teardown_console.txt}. \\
+\hline
+Security & \path{12_gitleaks_yas_cd.json}, \path{13_gitleaks_yas_app_repo.redacted.json}, \path{14_gitleaks_triage_summary.md}, \path{15_port_exposure_check.txt}. \\
+\hline
+Runtime smoke & \path{17_app_reachable_dev.png}, \path{35_cd_demo_summary.md}, app/API/Keycloak smoke output trong \path{.agents/evidence/README.md}. \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Các Sự Cố Kỹ Thuật Và Giải Pháp Khắc Phục (Troubleshooting)}
+
+Trong quá trình triển khai hệ thống CD và GitOps cho ứng dụng YAS trên hạ tầng single-node K3s, nhóm đã gặp một số sự cố kỹ thuật và đã nghiên cứu, áp dụng các giải pháp khắc phục triệt để:
+
+\begin{enumerate}\sloppy
+    \item Lỗi Kustomize thiếu Helm và Load Restrictor trong ArgoCD:
+    Khi ArgoCD dịch \texttt{kustomization.}\allowbreak\texttt{yaml} trong thư mục \path{base/}, hệ thống báo lỗi không thể sử dụng \texttt{HelmChartInflation-}\allowbreak\texttt{Generator} do thiếu cờ \path{--enable-helm}, đồng thời chặn việc tham chiếu đến thư mục chart nằm ngoài thư mục base (lỗi bảo mật Load Restrictor).
+    Nhóm đã giải quyết bằng cách cấu hình lại ConfigMap \path{argocd-cm} trong namespace \path{argocd}:
+    \begin{lstlisting}[language=bash]
+kubectl patch configmap argocd-cm -n argocd -p '{"data": {"kustomize.buildOptions": "--enable-helm --load-restrictor=LoadRestrictionsNone"}}'
+kubectl rollout restart deployment argocd-repo-server -n argocd
+    \end{lstlisting}
+
+    \item Lỗi kẹt ứng dụng ArgoCD ở trạng thái Progressing do IP Ingress:
+    Trên môi trường K3s single-node không có cloud load balancer, dịch vụ Ingress controller luôn ở trạng thái \path{<pending>} để nhận External IP. Điều này khiến ArgoCD coi Ingress ở trạng thái \path{Progressing} vô thời hạn.
+    Nhóm đã patch tham số của controller từ \path{--publish-service} sang \texttt{--report-node-}\allowbreak\texttt{internal-ip-address} để controller báo cáo trực tiếp IP của node:
+    \begin{lstlisting}[language=bash]
+kubectl patch deploy ingress-nginx-controller -n ingress-nginx --type=json -p '[{"op":"replace","path":"/spec/template/spec/containers/0/args/1","value":"--report-node-internal-ip-address"}]'
+    \end{lstlisting}
+    Giải pháp này giúp các Ingress nhận được địa chỉ IP node và các ứng dụng ArgoCD chuyển sang trạng thái \texttt{Healthy} thành công.
+
+    \item Lỗi Envoy RBAC 403 Forbidden do sai cấu hình Gateway Route:
+    Sau khi bật AuthorizationPolicy để kiểm soát kết nối, mọi request đến API qua NodePort đều bị chặn HTTP 403. Truy vết Envoy logs cho thấy request đến từ ServiceAccount \path{default} của \path{nginx-api-gateway} thay vì \path{storefront-bff}. Nguyên nhân do Spring Cloud Gateway đổi cấu hình từ \path{spring.cloud.gateway.routes} sang cấu hình WebFlux \path{spring.cloud.gateway.server.webflux.routes}, khiến cấu hình route cũ bị bỏ qua âm thầm và traffic đi vòng qua api-gateway cũ.
+    Nhóm đã sửa đổi script \path{sync-gateway-routes.sh} để đồng bộ định dạng cấu hình mới nhất, cập nhật assertion kiểm tra và khởi động lại BFF để nhận ConfigMap mới.
+
+    \item Lỗi quá tải kết nối cơ sở dữ liệu PostgreSQL:
+    Với hạ tầng hạn chế của cụm lab single-node, việc khởi động đồng thời nhiều Spring Boot microservices thực hiện Liquibase migration khiến PostgreSQL hết connection khả dụng, trả về lỗi \texttt{too many clients already}.
+    Nhóm đã giảm cấu hình kết nối trong ConfigMap chung: đặt \path{maximum-pool-size: 2} và \path{minimum-idle: 0} cho Hikari CP, đồng thời tăng tham số \texttt{max\_connections} của container PostgreSQL lên 500 để đáp ứng tải khởi động.
+
+    \item Các dịch vụ khởi động chậm bị Liveness Probe khởi động lại liên tục:
+    Khi nhiều dịch vụ chạy Liquibase/JPA đồng thời trên 1 node VM, CPU bị quá tải tạm thời khiến cổng actuator metric phản hồi chậm hơn thời gian thăm dò của liveness probe. Hậu quả là container bị Kubernetes tiêu diệt liên tục (Exit Code 137).
+    Nhóm đã cấu hình thêm \path{startupProbe} cho biểu đồ Helm chart backend, cho phép tăng thời gian chờ khởi động lần đầu lên tối đa 5 phút trước khi liveness/readiness probe bắt đầu giám sát định kỳ.
+\end{enumerate}
+
+\subsection{Known Issues Và Cách Trình Bày Trung Thực}
+
+\begin{itemize}
+    \item Snyk tạm tắt trong Jenkinsfile hiện tại: báo cáo chỉ ghi Gitleaks, test, coverage và SonarQube đang nằm trong path chính; Snyk là gate kế thừa cần bật lại sau khi CD ổn định.
+    \item Payment staging Liquibase checksum: release \texttt{v0.1.2} đã promote/deploy đúng image, nhưng service payment có lỗi migration checksum khi restart trên DB bền. Đây là vấn đề runtime/application migration, không phải lỗi GitOps release flow.
+    \item Plaintext lab secrets: CD repo còn placeholder Kubernetes Secret dạng lab value; cần ghi đây là lab-only và production nên chuyển sang SealedSecrets/External Secrets.
+    \item Observability runtime: app instrumentation và ServiceMonitor contract đã có, nhưng nếu chưa chụp Prometheus/Grafana trên K3s thì không đánh dấu runtime verified.
+    \item Kiali topology screenshot: mesh policy evidence đã có; ảnh topology cuối cùng cần bổ sung nếu chưa nằm trong report.
+\end{itemize}
+
+\subsection{Kết Luận}
+
+Hệ thống hiện đã đáp ứng trọng tâm Đồ án 2: Jenkins sinh image từ app repo, Docker
+Hub lưu tag theo commit/release, CD repo quản lý desired state, ArgoCD sync cluster,
+dev/staging/developer có chính sách rõ ràng, và service mesh đã có evidence mTLS,
+retry, allow/deny. Phần observability đã có nền ở source và chart; bước còn lại là
+chụp evidence runtime Prometheus/Grafana để hoàn thiện báo cáo trước khi nộp.

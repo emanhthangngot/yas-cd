@@ -1,0 +1,72 @@
+\section{Runtime Verification Và Service Mesh}
+
+\subsection{Platform Readiness}
+
+Platform stack gồm PostgreSQL, Redis, Kafka, Elasticsearch và Keycloak. Các service
+YAS ở \texttt{dev} và \texttt{staging} dùng chung platform nhưng tách database theo
+environment. Evidence hiện có xác nhận node, storage class, PVC và database đã sẵn sàng.
+
+\begin{figure}[H]
+\centering
+\reportimg{img/platform/02_gcp_vm_ip_addr.png}
+\caption{External IP của GCP VM dùng cho NodePort demo}
+\end{figure}
+
+\subsection{External Access}
+
+Runtime access chính dùng Nginx ingress NodePort \texttt{30846} thông qua cơ chế phân phối Multi-Host Ingress, định tuyến bằng trường Host header. Các tên miền dùng chung cũ (\texttt{yas.<env>.local}) đã được loại bỏ hoàn toàn để phân tách luồng nghiệp vụ giữa storefront, backoffice, swagger và identity. Developer hoặc giảng viên thêm host mapping vào tệp hosts:
+
+\begin{lstlisting}[language=bash, caption={Cấu hình tệp hosts phân giải tên miền mới}]
+34.124.212.254 storefront.dev.yas.local.com backoffice.dev.yas.local.com swagger.dev.yas.local.com identity.dev.yas.local.com
+34.124.212.254 storefront.staging.yas.local.com backoffice.staging.yas.local.com swagger.staging.yas.local.com identity.staging.yas.local.com
+34.124.212.254 storefront.developer.yas.local.com backoffice.developer.yas.local.com swagger.developer.yas.local.com identity.developer.yas.local.com
+\end{lstlisting}
+
+Storefront dev/staging đã được smoke test qua \texttt{curl} theo tên miền \path{storefront.<env>.yas.local.com}: HTML trả 200, product
+API trả seeded iPhone data, media thumbnail trả \texttt{image/jpeg}, và Keycloak
+login/register render đúng host cùng NodePort.
+
+\begin{figure}[H]
+\centering
+\reportimg{img/runtime/17_app_reachable_dev.png}
+\caption{Storefront dev reachable qua NodePort}
+\end{figure}
+
+\subsection{Service Mesh Scope}
+
+Mesh được áp dụng cho \texttt{dev} và \texttt{staging}, không chỉ một namespace demo
+tách biệt. Các pod ứng dụng có workload container và \texttt{istio-proxy}, do đó trạng
+thái READY kỳ vọng là \texttt{2/2}. Mesh policy gồm:
+
+\begin{itemize}
+    \item PeerAuthentication cho STRICT mTLS ở backend path.
+    \item DestinationRule cho traffic mesh.
+    \item VirtualService cho retry/fault evidence.
+    \item AuthorizationPolicy theo service identity để có allow/deny rõ ràng.
+\end{itemize}
+
+\subsection{AuthorizationPolicy Evidence}
+
+Kịch bản allow/deny dùng đường gọi \texttt{tax -> location}:
+
+\begin{itemize}
+    \item Gọi từ \texttt{tax} sang \texttt{location}: request đi qua mesh và đến application layer.
+    \item Gọi từ \texttt{cart} sang \texttt{location}: bị chặn HTTP 403 bởi Istio AuthorizationPolicy.
+\end{itemize}
+
+HTTP 403 trong case denied là bằng chứng policy hoạt động ở mesh layer. HTTP 500 ở
+case allowed vẫn có giá trị vì nó chứng minh request đã qua được mesh và chạm vào
+Spring Boot application, lỗi còn lại thuộc application endpoint.
+
+\subsection{Kiali Topology}
+
+Kiali được dùng để quan sát topology service mesh. Nếu chưa có ảnh cuối cùng trong
+\path{latex-report/img/mesh/}, báo cáo cần để placeholder rõ: chụp Kiali topology
+cho \texttt{dev} hoặc \texttt{staging}, hiển thị luồng storefront/BFF/backend và
+sidecar traffic.
+
+\begin{figure}[H]
+\centering
+\reportimg{img/mesh/kiali_topology_dev_staging.png}
+\caption{Placeholder ảnh Kiali topology cần bổ sung trước khi nộp}
+\end{figure}
