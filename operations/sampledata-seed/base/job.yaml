@@ -85,6 +85,15 @@ spec:
             - -ec
           args:
             - |
+              if [ ! -d /opt/yas/sampledata/images/sample ]; then
+                echo "missing sample images in yas-sampledata image" >&2
+                exit 1
+              fi
+
+              mkdir -p /images/sample /images/by-name
+              cp -R /opt/yas/sampledata/images/sample/. /images/sample/
+              find /images/sample -type f -exec cp {} /images/by-name/ \;
+
               java -jar /app.jar &
               app_pid="$!"
               trap 'kill "$app_pid" 2>/dev/null || true' EXIT
@@ -114,6 +123,8 @@ spec:
           volumeMounts:
             - mountPath: /opt/yas/config
               name: yas-configuration
+            - mountPath: /images
+              name: media-images
           resources:
             requests:
               cpu: 100m
@@ -125,3 +136,6 @@ spec:
         - name: yas-configuration
           configMap:
             name: yas-configuration-configmap
+        - name: media-images
+          persistentVolumeClaim:
+            claimName: media-images
