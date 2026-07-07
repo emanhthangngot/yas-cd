@@ -47,10 +47,10 @@ request() {
   local output_file="$3"
   curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    --resolve "storefront.${env_name}.yas.local.com:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -o "$output_file" \
     -w "%{http_code}" \
-    "http://yas.${env_name}.local:${APP_NODEPORT}${path}"
+    "http://storefront.${env_name}.yas.local.com:${APP_NODEPORT}${path}"
 }
 
 request_headers() {
@@ -59,11 +59,11 @@ request_headers() {
   local output_file="$3"
   curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    --resolve "storefront.${env_name}.yas.local.com:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -D "$output_file" \
     -o /dev/null \
     -w "%{http_code}" \
-    "http://yas.${env_name}.local:${APP_NODEPORT}${path}"
+    "http://storefront.${env_name}.yas.local.com:${APP_NODEPORT}${path}"
 }
 
 expect_status() {
@@ -98,11 +98,11 @@ for env_name in "${environments[@]}"; do
     echo "${env_name} keycloak authorization redirect does not use storefront-bff client_id" >&2
     exit 1
   fi
-  if ! grep -Eiq "location: .*redirect_uri=.*yas\\.${env_name}\\.local.*login.*keycloak" "$auth_headers"; then
+  if ! grep -Eiq "location: .*redirect_uri=.*storefront\\.${env_name}\\.yas\\.local\\.com.*login.*keycloak" "$auth_headers"; then
     echo "${env_name} keycloak authorization redirect does not return to /login/oauth2/code/keycloak" >&2
     exit 1
   fi
-  if [ "$APP_NODEPORT" != "80" ] && ! grep -Eiq "location: .*redirect_uri=.*yas\\.${env_name}\\.local:${APP_NODEPORT}/login/oauth2/code/keycloak" "$auth_headers"; then
+  if [ "$APP_NODEPORT" != "80" ] && ! grep -Eiq "location: .*redirect_uri=.*storefront\\.${env_name}\\.yas\\.local\\.com:${APP_NODEPORT}/login/oauth2/code/keycloak" "$auth_headers"; then
     echo "${env_name} keycloak authorization redirect does not include NodePort ${APP_NODEPORT} in redirect_uri" >&2
     exit 1
   fi
@@ -112,7 +112,7 @@ for env_name in "${environments[@]}"; do
   keycloak_cookies="$tmpdir/${env_name}-keycloak.cookies"
   keycloak_status="$(curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    --resolve "storefront.${env_name}.yas.local.com:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -c "$keycloak_cookies" \
     -o "$keycloak_body" \
     -w "%{http_code}" \
@@ -131,12 +131,12 @@ for env_name in "${environments[@]}"; do
   registration_body="$tmpdir/${env_name}-keycloak-registration.html"
   registration_status="$(curl -sS \
     --max-time "$CURL_TIMEOUT" \
-    --resolve "yas.${env_name}.local:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
+    --resolve "storefront.${env_name}.yas.local.com:${APP_NODEPORT}:${GCP_VM_EXTERNAL_IP}" \
     -b "$keycloak_cookies" \
     -c "$keycloak_cookies" \
     -o "$registration_body" \
     -w "%{http_code}" \
-    "http://yas.${env_name}.local:${APP_NODEPORT}${registration_path}")"
+    "http://storefront.${env_name}.yas.local.com:${APP_NODEPORT}${registration_path}")"
   expect_status "$registration_status" '^2[0-9][0-9]$' "${env_name} keycloak registration page"
   if ! grep -q 'Register' "$registration_body" || ! grep -q 'Username' "$registration_body" || ! grep -q 'Email' "$registration_body"; then
     echo "${env_name} keycloak registration page did not render the expected registration form" >&2

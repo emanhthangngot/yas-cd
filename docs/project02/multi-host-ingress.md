@@ -2,7 +2,11 @@
 
 Per-app hostnames on the single GCP VM IP + ingress-nginx NodePort 30846,
 routed by Host header. The legacy hosts (`yas.dev.local`, `yas.staging.local`,
-`yas.developer.local`) keep working in parallel; smoke scripts are unchanged.
+`yas.developer.local`) have been REMOVED: the BFF OAuth endpoints are pinned to
+the per-app hosts (login lands on `storefront.<env>.yas.local.com` /
+`backoffice.<env>.yas.local.com`) and `scripts/smoke-runtime-storefront.sh`
+targets `storefront.<env>.yas.local.com`. Drop the legacy names from hosts
+files.
 
 ## Hosts
 

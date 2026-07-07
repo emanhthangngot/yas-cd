@@ -116,8 +116,8 @@ Behavior:
   `main`, `developer` becomes active, `staging` goes dormant for capacity,
   `dev` stays untouched. ArgoCD app `yas-developer` auto-syncs.
 - On success the build description shows the access URL
-  `http://yas.developer.local:30846/`. There is no DNS: each developer adds
-  `<GCP_VM_EXTERNAL_IP> yas.developer.local` to their local hosts file
+  `http://storefront.developer.yas.local.com:30846/`. There is no DNS: each developer adds
+  `<GCP_VM_EXTERNAL_IP> storefront.developer.yas.local.com` to their local hosts file
   (`/etc/hosts`, or `C:\Windows\System32\drivers\etc\hosts` on Windows).
   To render the URL as a clickable hyperlink, set Manage Jenkins → Security →
   Markup Formatter to "Safe HTML".
