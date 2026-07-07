@@ -38,13 +38,19 @@ securityContext: {}
 
 # Keep relative URLs (no hard-coded host): swagger-ui is now reachable at
 # multiple per-app hostnames (swagger.<env>.yas.local.com), and only
-# `/swagger-ui` + `/api` are routed for those hosts (see overlays/*/ingress.yaml).
+# `/` + `/api` are routed for those hosts (see overlays/*/ingress.yaml).
 # A relative path resolves against whichever host served this page, so it
 # works the same everywhere without per-env templating.
 # Only services.yaml deploy:true backends are listed (rating/promotion are
 # deploy:false -- not running in this cluster, so their docs 404 regardless
 # of URL style).
-baseUrl: /swagger-ui
+#
+# baseUrl is "/" (not "/swagger-ui"): that path prefix was needed back when
+# swagger-ui shared one host with storefront/backoffice-ui, so the PATH had
+# to disambiguate it. It now has its own dedicated host
+# (swagger.<env>.yas.local.com), so the host alone already disambiguates it
+# and the extra path segment was just leftover cruft.
+baseUrl: /
 urls: "[{ url: '/api/product/v3/api-docs', name: 'Product' },
       { url: '/api/media/v3/api-docs', name: 'Media' },
       { url: '/api/customer/v3/api-docs', name: 'Customer' },
