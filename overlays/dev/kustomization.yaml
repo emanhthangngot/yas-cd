@@ -10,7 +10,12 @@ resources:
   - istio/virtual-services.yaml
   - istio/authorization-policies.yaml
   - limitrange.yaml
+  - observability/instrumentation.yaml
 patches:
+  - path: otel-inject-patch.yaml
+    target:
+      kind: Deployment
+      name: "^(cart|customer|inventory|location|media|order|payment|payment-paypal|product|search|tax|sampledata|backoffice-bff|storefront-bff)$"
   - path: payment-liquibase-clear-checksums-patch.yaml
     target:
       kind: Deployment

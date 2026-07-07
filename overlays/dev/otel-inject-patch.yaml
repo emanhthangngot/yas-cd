@@ -1,0 +1,12 @@
+# Thêm annotation để OTel Operator tiêm Java agent vào mọi backend Spring.
+# Áp qua target selector (kind=Deployment, name khớp danh sách backend) trong
+# kustomization.yaml — metadata.name dưới đây chỉ là placeholder, bị target ghi đè.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-inject-placeholder
+spec:
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "yas"
