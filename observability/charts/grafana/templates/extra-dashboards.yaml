@@ -1,0 +1,43 @@
+# Provision thêm 2 dashboard của YAS (giống sample): prometheus + otel-collector.
+# Cùng cơ chế observability: ConfigMap chứa JSON + GrafanaDashboard CR (configMapRef).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-dashboard-json
+data:
+  prometheus-dashboard.json: |
+{{ .Files.Get "dashboards/prometheus-dashboard.json" | indent 4 }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: prometheus-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  configMapRef:
+    name: prometheus-dashboard-json
+    key: prometheus-dashboard.json
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-dashboard-json
+data:
+  opentelemetry-collector.json: |
+{{ .Files.Get "dashboards/opentelemetry-collector.json" | indent 4 }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: otel-collector-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  # Dashboard này tham chiếu datasource theo tên "Prometheus" (có sẵn từ
+  # kube-prometheus-stack), nên không cần remap uid.
+  configMapRef:
+    name: otel-collector-dashboard-json
+    key: opentelemetry-collector.json
