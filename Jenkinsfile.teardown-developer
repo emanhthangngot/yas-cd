@@ -1,0 +1,98 @@
+// ============================================================
+//  YAS Lab 2 CD – teardown_developer job
+//  Xóa phần triển khai developer preview (job developer_build):
+//  scripts/teardown-developer.sh đưa mọi image của overlays/developer
+//  về tag main, developer về dormant (0 replicas), dev + staging
+//  trở lại active. Toàn bộ qua GitOps commit — không kubectl delete.
+//
+//  Jenkins job setup: Pipeline from SCM = yas-cd/main,
+//  Script Path = Jenkinsfile.teardown-developer, agent yas-build-worker.
+//  Agent cần: git, yq v4, kustomize, helm (validate-gitops).
+// ============================================================
+
+pipeline {
+    agent {
+        label 'yas-build-worker'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 15, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        string(
+            name: 'CONFIRM',
+            defaultValue: '',
+            description: 'Gõ đúng "developer-teardown" để xác nhận xóa developer preview (tránh bấm nhầm khi developer khác đang test).'
+        )
+    }
+
+    environment {
+        GITOPS_BRANCH         = 'main'
+        GITOPS_CREDENTIALS_ID = 'github-gitops-ssh'
+    }
+
+    stages {
+
+        stage('Guard') {
+            steps {
+                script {
+                    if (params.CONFIRM != 'developer-teardown') {
+                        error "CONFIRM phải là 'developer-teardown' (nhận được: '${params.CONFIRM}')"
+                    }
+                }
+            }
+        }
+
+        stage('GitOps – Teardown Developer Preview') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: "${env.GITOPS_CREDENTIALS_ID}",
+                    keyFileVariable: 'GITOPS_SSH_KEY'
+                )]) {
+                    sh '''#!/usr/bin/env bash
+                        set -euo pipefail
+                        export GIT_SSH_COMMAND="ssh -i ${GITOPS_SSH_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+
+                        rm -rf yas-cd-work
+                        git clone git@github.com:emanhthangngot/yas-cd.git yas-cd-work
+                        cd yas-cd-work
+                        git checkout "$GITOPS_BRANCH"
+
+                        scripts/teardown-developer.sh
+                        scripts/validate-gitops.sh
+
+                        git status --short
+                        if git diff --quiet; then
+                            echo "Developer preview đã ở trạng thái dormant — không có gì để teardown."
+                            exit 0
+                        fi
+
+                        git config user.name "jenkins-cd"
+                        git config user.email "jenkins-cd@local"
+                        git add overlays
+                        git commit -m "cd(lab2): teardown developer preview [skip ci]"
+                        git pull --rebase origin "$GITOPS_BRANCH"
+                        git push origin "$GITOPS_BRANCH"
+                        echo "Pushed. ArgoCD sẽ đưa developer về 0 replicas và khôi phục dev + staging."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'teardown_developer OK — developer namespace về dormant, dev + staging active.'
+        }
+        failure {
+            echo 'teardown_developer FAILED — xem log stage đỏ; GitOps chưa bị thay đổi nếu fail trước bước push.'
+        }
+    }
+}
