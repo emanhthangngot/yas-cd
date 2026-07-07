@@ -7,8 +7,11 @@ replicaCount: 1
 image:
   repository: swaggerapi/swagger-ui
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "v4.16.0"
+  # v4.x only recognizes "openapi: 3.0.n" / "swagger: 2.0" as valid version
+  # fields and refuses to render anything else ("Unable to render this
+  # definition"). product (Spring Boot 4 / springdoc) now emits
+  # "openapi: 3.1.0", which needs Swagger UI v5+.
+  tag: "v5.32.7"
 
 imagePullSecrets: []
 nameOverride: ""
