@@ -86,14 +86,24 @@ helmCharts:
             - sh
             - -ec
             - |
+              # Download the real sample images from the app repo on every
+              # startup so a pod restart can never leave stale/placeholder
+              # files behind. Falls back to a 1x1 placeholder only if the
+              # download itself fails (e.g. no network), so the pod still
+              # starts and media URLs still resolve.
+              base_url="https://raw.githubusercontent.com/tzin1401/yas/main/sampledata/images"
               placeholder_jpeg="/tmp/placeholder.jpg"
               printf '%s' '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/ASP/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/ASP/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QH//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8QH//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8QH//Z' | base64 -d > "${placeholder_jpeg}"
               while IFS= read -r path; do
                 path="$(echo "${path}" | sed 's/^[[:space:]]*//')"
                 mkdir -p "$(dirname "${path}")"
                 mkdir -p /images/by-name
-                cp "${placeholder_jpeg}" "${path}"
-                cp "${placeholder_jpeg}" "/images/by-name/$(basename "${path}")"
+                rel_path="${path#/images/}"
+                if ! wget -q -O "${path}" "${base_url}/${rel_path}" || [ ! -s "${path}" ]; then
+                  echo "warn: falling back to placeholder for ${path}" >&2
+                  cp "${placeholder_jpeg}" "${path}"
+                fi
+                cp "${path}" "/images/by-name/$(basename "${path}")"
               done <<'PATHS'
               /images/sample/category/DELL_category.jpg
               /images/sample/category/Samsung_category.jpg
