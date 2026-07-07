@@ -1,0 +1,7 @@
+# Values LIVE của release `promtail` (promtail 6.17.1). Bắn thẳng loki-gateway.
+config:
+  clients:
+    - url: http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push
+  snippets:
+    pipelineStages:
+      - docker: {}

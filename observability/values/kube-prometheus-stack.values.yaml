@@ -1,0 +1,26 @@
+# Values LIVE của release `prometheus` (kube-prometheus-stack 87.10.1).
+# Lưu ý: giữ type: sqlite3 (fix đã dò — postgres/SSL gãy); các key postgres bên dưới
+# bị Grafana bỏ qua khi type=sqlite3, giữ lại cho khớp bản chạy thật.
+grafana:
+  adminPassword: admin
+  adminUser: admin
+  assertNoLeakedSecrets: false
+  grafana.ini:
+    database:
+      host: postgresql.postgres:5432
+      name: grafana
+      password: admin
+      ssl_mode: require
+      type: sqlite3
+      user: yasadminuser
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.yas.local.com
+    ingressClassName: nginx
+hostname: grafana.yas.local.com
+prometheus:
+  prometheusSpec:
+    enableRemoteWriteReceiver: true
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false

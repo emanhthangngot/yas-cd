@@ -1,0 +1,23 @@
+# P2: provision observability dashboard mẫu (import tay trước đây) bằng code.
+# ConfigMap chứa JSON gốc + GrafanaDashboard CR tham chiếu qua configMapRef →
+# grafana-operator tự nạp vào prometheus-grafana. Datasource dùng uid "prometheus"
+# (kube-prometheus-stack đặt sẵn) nên không cần remap.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: observability-dashboard-json
+data:
+  observability_dashboard.json: |
+{{ .Files.Get "dashboards/observability_dashboard.json" | indent 4 }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: observability-dashboard
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  configMapRef:
+    name: observability-dashboard-json
+    key: observability_dashboard.json
