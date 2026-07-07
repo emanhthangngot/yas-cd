@@ -156,10 +156,10 @@ services:
     chart: k8s/charts/sampledata
     imageName: yas-sampledata
     type: backend
-    deploy: false
+    deploy: true
     demoRole: teacher-required-run-once
     runOnce: true
-    exclusionReason: "Seed data service should not run continuously after data is initialized."
+    deploymentNote: "Build and publish the seed image, but keep the runtime Deployment at 0 replicas; data is loaded by the one-shot seed Job."
     dependencies: [postgres, backend-services]
   - name: recommendation
     path: recommendation

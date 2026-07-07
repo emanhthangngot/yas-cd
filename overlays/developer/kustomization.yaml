@@ -32,6 +32,8 @@ images:
     newTag: main
   - name: docker.io/emanhthangngot/yas-tax
     newTag: main
+  - name: docker.io/emanhthangngot/yas-sampledata
+    newTag: main
   - name: docker.io/emanhthangngot/yas-backoffice-bff
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront-bff
