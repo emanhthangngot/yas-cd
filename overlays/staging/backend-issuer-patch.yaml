@@ -1,0 +1,16 @@
+# Backend resourceserver must validate against the SAME canonical issuer
+# both BFFs now use (identity.staging.yas.local.com, see istio/keycloak-oauth-patch.yaml).
+# Env var wins over the packaged/additional-location issuer-uri value, and
+# Spring's issuer-uri-based decoder does a live OIDC discovery HTTP call to
+# this host, so backend pods need it resolvable too (hostAliases).
+- op: add
+  path: /spec/template/spec/hostAliases
+  value:
+    - ip: "10.43.97.201"
+      hostnames:
+        - "identity.staging.yas.local.com"
+- op: add
+  path: /spec/template/spec/containers/0/env/-
+  value:
+    name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+    value: http://identity.staging.yas.local.com:30846/realms/Yas

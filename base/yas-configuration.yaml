@@ -15,7 +15,7 @@ data:
       endpoints:
         web:
           exposure:
-            include: prometheus,health,env
+            include: prometheus,health
       endpoint:
         health:
           probes:
@@ -37,20 +37,13 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              # Packaged in the app image (product + common-library
-              # application.properties): issuer-uri=http://identity/realms/Yas.
-              # Spring prioritizes issuer-uri over jwk-set-uri when both
-              # resolve to a value, so the packaged value must be blanked
-              # here for jwk-set-uri below to take effect. A YAML `null`
-              # does NOT do this: Boot's YAML loader omits null-valued keys
-              # from the property source entirely, so binding falls through
-              # to the lower-priority packaged value instead of overriding
-              # it. An explicit empty string is a real value at this
-              # (higher-priority) source, and Boot's autoconfiguration
-              # treats a blank issuer-uri as "not configured" (StringUtils.hasText),
-              # which is what actually lets jwk-set-uri take over.
-              issuer-uri: ""
-              jwk-set-uri: http://identity/realms/Yas/protocol/openid-connect/certs
+              # Real per-environment value (must match what the unified BFF
+              # OAuth host actually stamps as `iss`) is set via the
+              # SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI env var
+              # in each overlay's backend-issuer-patch.yaml, which overrides
+              # this file's value (env vars outrank config-data files,
+              # including this packaged-vs-additional-location one).
+              issuer-uri: http://identity/realms/Yas
       datasource:
         username: ${POSTGRESQL_USERNAME}
         password: ${POSTGRESQL_PASSWORD}
@@ -89,8 +82,6 @@ data:
           <pattern>%d %-5level [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
       </appender>
-      <logger name="org.springframework.security" level="TRACE" />
-      <logger name="org.springframework.boot.autoconfigure.security" level="TRACE" />
       <root level="INFO">
         <appender-ref ref="STDOUT" />
       </root>
