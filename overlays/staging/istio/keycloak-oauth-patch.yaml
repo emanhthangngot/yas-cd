@@ -6,25 +6,26 @@ spec:
   template:
     metadata:
       annotations:
-        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-01"
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-02"
     spec:
       hostAliases:
         - ip: "10.43.97.201"
           hostnames:
             - "backoffice.staging.yas.local.com"
+            - "identity.staging.yas.local.com"
       containers:
         - name: backoffice-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://backoffice.staging.yas.local.com:30846/realms/Yas
+              value: http://identity/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
-              value: http://backoffice.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
+              value: http://identity.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
-              value: http://backoffice.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/token
+              value: http://identity/realms/Yas/protocol/openid-connect/token
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
-              value: http://backoffice.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/certs
+              value: http://identity/realms/Yas/protocol/openid-connect/certs
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
-              value: http://backoffice.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/userinfo
+              value: http://identity/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
               value: http://backoffice.staging.yas.local.com:30846/login/oauth2/code/api-client
             - name: SERVER_FORWARD_HEADERS_STRATEGY
@@ -38,25 +39,26 @@ spec:
   template:
     metadata:
       annotations:
-        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-01"
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-02"
     spec:
       hostAliases:
         - ip: "10.43.97.201"
           hostnames:
             - "storefront.staging.yas.local.com"
+            - "identity.staging.yas.local.com"
       containers:
         - name: storefront-bff
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
-              value: http://storefront.staging.yas.local.com:30846/realms/Yas
+              value: http://identity/realms/Yas
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
-              value: http://storefront.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
+              value: http://identity.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
-              value: http://storefront.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/token
+              value: http://identity/realms/Yas/protocol/openid-connect/token
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
-              value: http://storefront.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/certs
+              value: http://identity/realms/Yas/protocol/openid-connect/certs
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
-              value: http://storefront.staging.yas.local.com:30846/realms/Yas/protocol/openid-connect/userinfo
+              value: http://identity/realms/Yas/protocol/openid-connect/userinfo
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
               value: http://storefront.staging.yas.local.com:30846/login/oauth2/code/keycloak
             - name: SERVER_FORWARD_HEADERS_STRATEGY
