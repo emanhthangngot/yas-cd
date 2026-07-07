@@ -15,7 +15,7 @@ data:
       endpoints:
         web:
           exposure:
-            include: prometheus,health
+            include: prometheus,health,env
       endpoint:
         health:
           probes:
