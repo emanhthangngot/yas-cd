@@ -39,10 +39,17 @@ data:
             jwt:
               # Packaged in the app image (product + common-library
               # application.properties): issuer-uri=http://identity/realms/Yas.
-              # Spring prioritizes issuer-uri over jwk-set-uri when both are
-              # present, so the packaged value must be explicitly nulled here
-              # for jwk-set-uri below to actually take effect.
-              issuer-uri: null
+              # Spring prioritizes issuer-uri over jwk-set-uri when both
+              # resolve to a value, so the packaged value must be blanked
+              # here for jwk-set-uri below to take effect. A YAML `null`
+              # does NOT do this: Boot's YAML loader omits null-valued keys
+              # from the property source entirely, so binding falls through
+              # to the lower-priority packaged value instead of overriding
+              # it. An explicit empty string is a real value at this
+              # (higher-priority) source, and Boot's autoconfiguration
+              # treats a blank issuer-uri as "not configured" (StringUtils.hasText),
+              # which is what actually lets jwk-set-uri take over.
+              issuer-uri: ""
               jwk-set-uri: http://identity/realms/Yas/protocol/openid-connect/certs
       datasource:
         username: ${POSTGRESQL_USERNAME}
