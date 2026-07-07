@@ -572,20 +572,27 @@ data:
         {
           "id": "26490047-2a91-4938-9324-371523ad1e14",
           "clientId": "backoffice-bff",
-          "surrogateAuthRequired": false,
-          "enabled": true,
-          "alwaysDisplayInConsole": false,
-          "clientAuthenticatorType": "client-secret",
-          "secret": "lab-backoffice-bff-client-secret",
-          "redirectUris": [
-            "http://backoffice.yas.local.com/*",
-            "http://localhost:3000/*",
-            "http://localhost:8087/*",
-            "http://backoffice.dev.yas.local.com:30846/*",
-            "http://backoffice.staging.yas.local.com:30846/*",
-            "http://backoffice.developer.yas.local.com:30846/*"
-          ],
-          "webOrigins": [],
+           "surrogateAuthRequired": false,
+           "enabled": true,
+           "alwaysDisplayInConsole": false,
+           "clientAuthenticatorType": "client-secret",
+           "secret": "lab-backoffice-bff-client-secret",
+           "redirectUris": [
+             "http://backoffice.yas.local.com/*",
+             "http://localhost:3000/*",
+             "http://localhost:8087/*",
+             "http://backoffice.dev.yas.local.com:30846/*",
+             "http://backoffice.staging.yas.local.com:30846/*",
+             "http://backoffice.developer.yas.local.com:30846/*"
+           ],
+           "webOrigins": [
+             "http://backoffice.yas.local.com",
+             "http://localhost:3000",
+             "http://localhost:8087",
+             "http://backoffice.dev.yas.local.com:30846",
+             "http://backoffice.staging.yas.local.com:30846",
+             "http://backoffice.developer.yas.local.com:30846"
+           ],
           "notBefore": 0,
           "bearerOnly": false,
           "consentRequired": false,
@@ -917,19 +924,25 @@ data:
         {
           "id": "4f64c142-0545-44bb-9446-2a18b9c9effd",
           "clientId": "storefront-bff",
-          "surrogateAuthRequired": false,
-          "enabled": true,
-          "alwaysDisplayInConsole": false,
-          "clientAuthenticatorType": "client-secret",
-          "secret": "lab-storefront-bff-client-secret",
-          "redirectUris": [
-            "http://storefront.yas.local.com/*",
-            "http://localhost:8087/*",
-            "http://storefront.dev.yas.local.com:30846/*",
-            "http://storefront.staging.yas.local.com:30846/*",
-            "http://storefront.developer.yas.local.com:30846/*"
-          ],
-          "webOrigins": [],
+           "surrogateAuthRequired": false,
+           "enabled": true,
+           "alwaysDisplayInConsole": false,
+           "clientAuthenticatorType": "client-secret",
+           "secret": "lab-storefront-bff-client-secret",
+           "redirectUris": [
+             "http://storefront.yas.local.com/*",
+             "http://localhost:8087/*",
+             "http://storefront.dev.yas.local.com:30846/*",
+             "http://storefront.staging.yas.local.com:30846/*",
+             "http://storefront.developer.yas.local.com:30846/*"
+           ],
+           "webOrigins": [
+             "http://storefront.yas.local.com",
+             "http://localhost:8087",
+             "http://storefront.dev.yas.local.com:30846",
+             "http://storefront.staging.yas.local.com:30846",
+             "http://storefront.developer.yas.local.com:30846"
+           ],
           "notBefore": 0,
           "bearerOnly": false,
           "consentRequired": false,
