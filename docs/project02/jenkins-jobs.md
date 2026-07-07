@@ -101,7 +101,7 @@ Recommended Jenkins setup:
 - SCM: `git@github.com:emanhthangngot/yas-cd.git`
 - Branch: `main`
 - Jenkinsfile path: `Jenkinsfile.developer-build`
-- Agent label: `yas-build-worker`
+- Agent label: `gcp-build-agent` (lightweight GitOps job; the GCP VM is always online and has git, docker, yq, kustomize, helm preinstalled — `yas-build-worker` laptops are reserved for heavy CI builds)
 - Required credentials: `github-gitops-ssh`, `dockerhub-creds`
 - Agent tools: git, docker, yq v4, kustomize, helm
 
@@ -134,7 +134,7 @@ Recommended Jenkins setup:
 - SCM: `git@github.com:emanhthangngot/yas-cd.git`
 - Branch: `main`
 - Jenkinsfile path: `Jenkinsfile.teardown-developer`
-- Agent label: `yas-build-worker`
+- Agent label: `gcp-build-agent` (lightweight GitOps job; the GCP VM is always online and has git, docker, yq, kustomize, helm preinstalled — `yas-build-worker` laptops are reserved for heavy CI builds)
 - Required credentials: `github-gitops-ssh`
 - Agent tools: git, yq v4, kustomize, helm
 

@@ -6,13 +6,14 @@
 //  trở lại active. Toàn bộ qua GitOps commit — không kubectl delete.
 //
 //  Jenkins job setup: Pipeline from SCM = yas-cd/main,
-//  Script Path = Jenkinsfile.teardown-developer, agent yas-build-worker.
-//  Agent cần: git, yq v4, kustomize, helm (validate-gitops).
+//  Script Path = Jenkinsfile.teardown-developer, agent gcp-build-agent
+//  (job GitOps nhẹ — chạy trên GCP VM vì VM luôn online và có sẵn
+//  git, yq v4, kustomize, helm).
 // ============================================================
 
 pipeline {
     agent {
-        label 'yas-build-worker'
+        label 'gcp-build-agent'
     }
 
     options {
