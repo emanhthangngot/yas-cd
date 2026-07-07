@@ -126,3 +126,242 @@ spec:
                 name: identity
                 port:
                   number: 80
+---
+# Per-app hostnames (<app>.dev.yas.local.com) — same GCP IP + NodePort 30846,
+# routed by Host header. No DNS: clients add hosts-file entries to the VM IP.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-hosts-media
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /media/$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: storefront.dev.yas.local.com
+      http:
+        paths:
+          - path: /api/media(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+    - host: backoffice.dev.yas.local.com
+      http:
+        paths:
+          - path: /api/media(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-hosts-apps
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: storefront.dev.yas.local.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /authentication
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /logout
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-ui
+                port:
+                  number: 3000
+    - host: backoffice.dev.yas.local.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 80
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 80
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 80
+          - path: /authentication
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 80
+          - path: /logout
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-ui
+                port:
+                  number: 3000
+    - host: swagger.dev.yas.local.com
+      http:
+        paths:
+          - path: /swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: swagger-ui
+                port:
+                  number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 80
+---
+# Keycloak same-origin paths per host. upstream-vhost pins the Host header so
+# Keycloak (hostname-strict=false) generates URLs for the host being served —
+# one Ingress per host because the annotation is per-Ingress.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-keycloak-storefront-host
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-vhost: storefront.dev.yas.local.com:30846
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: storefront.dev.yas.local.com
+      http:
+        paths:
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-keycloak-backoffice-host
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-vhost: backoffice.dev.yas.local.com:30846
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: backoffice.dev.yas.local.com
+      http:
+        paths:
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-keycloak-identity-host
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-vhost: identity.dev.yas.local.com:30846
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: identity.dev.yas.local.com
+      http:
+        paths:
+          - path: /realms
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /resources
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: identity
+                port:
+                  number: 80

@@ -585,7 +585,10 @@ data:
             "http://yas.dev.local:30846/*",
             "http://yas.staging.local/*",
             "http://yas.staging.local:30846/*",
-            "http://yas.developer.local/*"
+            "http://yas.developer.local/*",
+            "http://backoffice.dev.yas.local.com:30846/*",
+            "http://backoffice.staging.yas.local.com:30846/*",
+            "http://backoffice.developer.yas.local.com:30846/*"
           ],
           "webOrigins": [],
           "notBefore": 0,
@@ -931,7 +934,10 @@ data:
             "http://yas.dev.local:30846/*",
             "http://yas.staging.local/*",
             "http://yas.staging.local:30846/*",
-            "http://yas.developer.local/*"
+            "http://yas.developer.local/*",
+            "http://storefront.dev.yas.local.com:30846/*",
+            "http://storefront.staging.yas.local.com:30846/*",
+            "http://storefront.developer.yas.local.com:30846/*"
           ],
           "webOrigins": [],
           "notBefore": 0,
