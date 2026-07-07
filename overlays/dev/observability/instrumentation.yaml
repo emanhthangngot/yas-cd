@@ -1,0 +1,29 @@
+# OpenTelemetry auto-instrumentation cho backend Spring (dev).
+# OTel Operator đọc annotation `instrumentation.opentelemetry.io/inject-java`
+# trên pod → tiêm Java agent (initContainer copy JAR + JAVA_TOOL_OPTIONS + OTEL_* env)
+# mà KHÔNG cần build lại image. Agent sinh metrics/traces theo tên semconv
+# (jvm_class_count, jvm_thread_count, jvm_gc_duration_seconds,
+# http_server_request_duration_seconds) khớp dashboard mẫu YAS.
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: yas
+spec:
+  exporter:
+    # Dùng cổng HTTP 4318 (đường đã kiểm chứng qua được Istio tới observability)
+    endpoint: http://opentelemetry-collector.observability:4318
+  env:
+    - name: OTEL_EXPORTER_OTLP_PROTOCOL
+      value: http/protobuf
+  propagators:
+    - tracecontext
+    - baggage
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1.0"
+  java:
+    env:
+      - name: OTEL_METRICS_EXPORTER
+        value: otlp
+      - name: OTEL_LOGS_EXPORTER
+        value: none
