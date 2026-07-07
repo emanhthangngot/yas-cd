@@ -16,6 +16,7 @@ spec:
       chart: kube-prometheus-stack
       targetRevision: 87.10.1
       helm:
+        releaseName: prometheus
         valueFiles:
           - $values/observability/values/kube-prometheus-stack.values.yaml
     - repoURL: git@github.com:emanhthangngot/yas-cd.git
@@ -41,6 +42,7 @@ spec:
       chart: loki
       targetRevision: 7.0.0
       helm:
+        releaseName: loki
         valueFiles:
           - $values/observability/values/loki.values.yaml
     - repoURL: git@github.com:emanhthangngot/yas-cd.git
@@ -66,6 +68,7 @@ spec:
       chart: tempo
       targetRevision: 1.24.4
       helm:
+        releaseName: tempo
         valueFiles:
           - $values/observability/values/tempo.values.yaml
     - repoURL: git@github.com:emanhthangngot/yas-cd.git
@@ -91,6 +94,7 @@ spec:
       chart: promtail
       targetRevision: 6.17.1
       helm:
+        releaseName: promtail
         valueFiles:
           - $values/observability/values/promtail.values.yaml
     - repoURL: git@github.com:emanhthangngot/yas-cd.git
@@ -137,6 +141,16 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
+  # OTel Operator tự thêm field mặc định vào CR (field-manager "manager")
+  # → bỏ qua để ArgoCD không báo OutOfSync giả.
+  ignoreDifferences:
+    - group: opentelemetry.io
+      kind: OpenTelemetryCollector
+      managedFieldsManagers:
+        - manager
+      # Operator normalize lại chuỗi spec.config → bỏ qua để không báo drift giả.
+      jqPathExpressions:
+        - .spec.config
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
