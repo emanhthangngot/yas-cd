@@ -1,0 +1,13 @@
+# Backend resourceserver must validate against the same canonical issuer
+# both BFFs use in this overlay.
+- op: add
+  path: /spec/template/spec/hostAliases
+  value:
+    - ip: "10.43.97.201"
+      hostnames:
+        - "identity.developer.yas.local.com"
+- op: add
+  path: /spec/template/spec/containers/0/env/-
+  value:
+    name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+    value: http://identity.developer.yas.local.com:30846/realms/Yas

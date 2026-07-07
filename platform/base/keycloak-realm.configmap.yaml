@@ -1140,6 +1140,34 @@ data:
           ]
         }
       ],
+      "users": [
+        {
+          "id": "6249ae7e-844e-4ed7-9b66-02013a98ba2e",
+          "createdTimestamp": 1663154002788,
+          "username": "service-account-customer-management",
+          "enabled": true,
+          "totp": false,
+          "emailVerified": false,
+          "serviceAccountClientId": "customer-management",
+          "disableableCredentialTypes": [],
+          "requiredActions": [],
+          "realmRoles": [
+            "default-roles-yas"
+          ],
+          "clientRoles": {
+            "realm-management": [
+              "view-users",
+              "manage-realm",
+              "manage-users"
+            ],
+            "customer-management": [
+              "uma_protection"
+            ]
+          },
+          "notBefore": 0,
+          "groups": []
+        }
+      ],
       "clientScopes": [
         {
           "id": "65c94f63-6035-4d6c-af24-1f14e3b94a38",
