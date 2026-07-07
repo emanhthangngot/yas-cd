@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice-bff
+spec:
+  template:
+    metadata:
+      annotations:
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-03"
+    spec:
+      hostAliases:
+        - ip: "10.43.97.201"
+          hostnames:
+            - "identity.developer.yas.local.com"
+      containers:
+        - name: backoffice-bff
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/token
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/certs
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/userinfo
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
+              value: http://backoffice.developer.yas.local.com:30846/login/oauth2/code/api-client
+            - name: SERVER_FORWARD_HEADERS_STRATEGY
+              value: framework
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefront-bff
+spec:
+  template:
+    metadata:
+      annotations:
+        yas.nashtechglobal.com/oauth-callback-config-revision: "2026-07-07-03"
+    spec:
+      hostAliases:
+        - ip: "10.43.97.201"
+          hostnames:
+            - "identity.developer.yas.local.com"
+      containers:
+        - name: storefront-bff
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/auth
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/token
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/certs
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_USER_INFO_URI
+              value: http://identity.developer.yas.local.com:30846/realms/Yas/protocol/openid-connect/userinfo
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
+              value: http://storefront.developer.yas.local.com:30846/login/oauth2/code/keycloak
+            - name: SERVER_FORWARD_HEADERS_STRATEGY
+              value: framework

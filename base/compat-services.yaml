@@ -144,6 +144,14 @@ data:
       }
     }
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-api-gateway
+  labels:
+    app.kubernetes.io/part-of: yas
+    app.kubernetes.io/name: nginx-api-gateway
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -161,6 +169,7 @@ spec:
       labels:
         app.kubernetes.io/name: nginx-api-gateway
     spec:
+      serviceAccountName: nginx-api-gateway
       containers:
         - name: nginx
           image: nginx:1.27-alpine

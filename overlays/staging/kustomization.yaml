@@ -72,3 +72,4 @@ patches:
     target:
       kind: Deployment
       name: "^(cart|customer|inventory|location|media|order|payment|payment-paypal|product|search|tax)$"
+  - path: payment-paypal-public-url-patch.yaml

@@ -385,6 +385,9 @@ helmCharts:
         tag: main
       nameOverride: storefront-ui
       fullnameOverride: storefront-ui
+      extraEnvs:
+        - name: API_BASE_PATH
+          value: http://storefront-bff/api
   - name: swagger-ui
     releaseName: swagger-ui
     valuesInline:

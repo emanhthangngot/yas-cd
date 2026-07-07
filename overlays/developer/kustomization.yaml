@@ -43,6 +43,13 @@ images:
   - name: docker.io/emanhthangngot/yas-storefront
     newTag: main
 patches:
+  - path: backend-issuer-patch.yaml
+    target:
+      kind: Deployment
+      name: "^(cart|customer|inventory|location|media|order|payment|payment-paypal|product|search|tax)$"
+  - path: istio/keycloak-oauth-patch.yaml
+  - path: redis-patch.yaml
+  - path: payment-paypal-public-url-patch.yaml
   - target:
       kind: Deployment
     path: replicas-dormant.yaml

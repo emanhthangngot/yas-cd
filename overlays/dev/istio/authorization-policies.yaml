@@ -14,6 +14,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
 apiVersion: security.istio.io/v1beta1
@@ -32,6 +33,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
 apiVersion: security.istio.io/v1beta1
@@ -50,6 +52,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -67,6 +70,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/tax
 ---
 apiVersion: security.istio.io/v1beta1
@@ -85,6 +89,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/product
 ---
 apiVersion: security.istio.io/v1beta1
@@ -103,6 +108,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -120,6 +126,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
 apiVersion: security.istio.io/v1beta1
@@ -138,6 +145,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/payment
 ---
 apiVersion: security.istio.io/v1beta1
@@ -156,6 +164,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
 ---
 apiVersion: security.istio.io/v1beta1
@@ -174,6 +183,7 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -191,4 +201,5 @@ spec:
         principals:
         - cluster.local/ns/dev/sa/backoffice-bff
         - cluster.local/ns/dev/sa/storefront-bff
+        - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
