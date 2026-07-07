@@ -80,22 +80,35 @@ helmCharts:
               requests:
                 storage: 1Gi
       extraInitContainers:
-        # Copies the real sample images baked into the sampledata image
-        # (sampledata/Dockerfile: COPY images /opt/yas/sampledata/images --
-        # same source docker-compose bind-mounts into media's /images) onto
-        # the media PVC on every startup, so a pod restart can never leave
-        # stale/placeholder files behind and there is no runtime dependency
-        # on an external network fetch. The tag below is a placeholder;
-        # each overlay's `images:` transformer rewrites it to match the
-        # same sampledata build already pinned for that environment.
+        # One-time seed of the real sample images onto the media PVC, which
+        # is persistent storage: once these files are written, they survive
+        # every future pod restart on their own -- no need to touch
+        # sampledata's image again after that. This intentionally does NOT
+        # re-copy/overwrite on every startup (that was the original bug:
+        # the old placeholder-seed step clobbered any real files on every
+        # restart). Uses sampledata's image as the one-time source (its
+        # Dockerfile bakes in the same images docker-compose used to
+        # bind-mount into media's /images), but only for the very first
+        # seed on a fresh PVC -- degrades gracefully (skips, logs a
+        # warning) if that source is ever missing on a later rebuild,
+        # since by then a real environment will already have real files
+        # on its PVC and won't need it.
         - name: seed-media-sample-images
           image: docker.io/emanhthangngot/yas-sampledata:main
           command:
             - sh
-            - -ec
+            - -c
             - |
               mkdir -p /images/by-name
-              cp -r /opt/yas/sampledata/images/sample /images/
+              if [ -f /images/sample/product/ip15/iphone15_thumbnail.jpg ]; then
+                echo "sample images already present on the PVC; skipping seed"
+                exit 0
+              fi
+              if [ ! -d /opt/yas/sampledata/images/sample ]; then
+                echo "warn: /opt/yas/sampledata/images/sample not found in this sampledata build; PVC has no sample images yet" >&2
+                exit 0
+              fi
+              cp -r /opt/yas/sampledata/images/sample /images/ || echo "warn: copy failed, continuing without sample images" >&2
               find /opt/yas/sampledata/images/sample -type f -exec sh -c '
                 cp "$1" "/images/by-name/$(basename "$1")"
               ' _ {} \;
