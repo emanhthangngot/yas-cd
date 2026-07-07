@@ -1,0 +1,3 @@
+# Grafana external -> prometheus-grafana; admin creds lấy từ secret prometheus-grafana
+# (do kube-prometheus-stack tạo). Không tự ship secret (repo .gitignore *.secret.yaml).
+hostname: grafana.yas.local.com

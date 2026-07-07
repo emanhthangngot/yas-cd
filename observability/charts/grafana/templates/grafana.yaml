@@ -1,0 +1,18 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    dashboards: "grafana"
+spec:
+  # Grafana external = Grafana của kube-prometheus-stack (prometheus-grafana).
+  # Dùng luôn secret admin do stack đó tạo → KHÔNG ship secret trong repo
+  # (repo .gitignore *.secret.yaml theo nguyên tắc không commit secret).
+  external:
+    url: http://prometheus-grafana
+    adminUser:
+      name: prometheus-grafana
+      key: admin-user
+    adminPassword:
+      name: prometheus-grafana
+      key: admin-password

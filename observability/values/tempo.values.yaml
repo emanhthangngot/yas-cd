@@ -1,0 +1,5 @@
+# Values LIVE của release `tempo` (tempo 1.24.4).
+tempo:
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: http://prometheus-kube-prometheus-prometheus:9090/api/v1/write

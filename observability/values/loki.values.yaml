@@ -1,0 +1,26 @@
+# Values LIVE của release `loki` (loki 7.0.0). useTestSchema=true là fix đã dò.
+backend:
+  replicas: 1
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  limits_config:
+    ingestion_burst_size_mb: 128
+    ingestion_rate_mb: 64
+  useTestSchema: true
+minio:
+  enabled: true
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+read:
+  replicas: 1
+storage:
+  type: filesystem
+test:
+  enabled: false
+write:
+  replicas: 1

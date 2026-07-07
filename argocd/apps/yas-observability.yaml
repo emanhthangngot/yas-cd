@@ -1,0 +1,143 @@
+# P4: GitOps hoá cả stack observability. Mỗi release thành 1 ArgoCD Application.
+# CHỦ Ý: syncPolicy KHÔNG bật automated — sync tay từng app khi "nhận nuôi" stack
+# đang chạy (tránh restart bất ngờ). ServerSideApply=true để adopt resource sẵn có.
+# Prerequisite (giữ cài tay, không quản qua đây): cert-manager, grafana-operator,
+# otel-operator (chúng cài CRD; adopt CRD rủi ro nên để nguyên).
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-prometheus
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 87.10.1
+      helm:
+        valueFiles:
+          - $values/observability/values/kube-prometheus-stack.values.yaml
+    - repoURL: git@github.com:emanhthangngot/yas-cd.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-loki
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: loki
+      targetRevision: 7.0.0
+      helm:
+        valueFiles:
+          - $values/observability/values/loki.values.yaml
+    - repoURL: git@github.com:emanhthangngot/yas-cd.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-tempo
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: tempo
+      targetRevision: 1.24.4
+      helm:
+        valueFiles:
+          - $values/observability/values/tempo.values.yaml
+    - repoURL: git@github.com:emanhthangngot/yas-cd.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-promtail
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: promtail
+      targetRevision: 6.17.1
+      helm:
+        valueFiles:
+          - $values/observability/values/promtail.values.yaml
+    - repoURL: git@github.com:emanhthangngot/yas-cd.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
+    targetRevision: main
+    path: observability/charts/grafana
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-observability-otel-collector
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
+    targetRevision: main
+    path: observability/charts/opentelemetry
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
