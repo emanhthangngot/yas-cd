@@ -23,13 +23,15 @@
 //  Dọn preview: chạy job teardown_developer (Jenkinsfile.teardown-developer).
 //
 //  Jenkins job setup: Pipeline from SCM = yas-cd/main,
-//  Script Path = Jenkinsfile.developer-build, agent yas-build-worker.
-//  Agent cần: git, docker, yq v4, kustomize, helm (validate-gitops).
+//  Script Path = Jenkinsfile.developer-build, agent gcp-build-agent
+//  (job GitOps nhẹ, không build source — chạy trên GCP VM vì VM luôn
+//  online và có sẵn git, docker, yq v4, kustomize, helm; label
+//  yas-build-worker chỉ dành cho CI build nặng).
 // ============================================================
 
 pipeline {
     agent {
-        label 'yas-build-worker'
+        label 'gcp-build-agent'
     }
 
     options {
