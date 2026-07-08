@@ -46,33 +46,33 @@ labels:
     includeSelectors: true
 images:
   - name: docker.io/emanhthangngot/yas-cart
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-customer
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-location
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-media
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-order
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-payment-paypal
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-product
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-search
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-tax
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-sampledata
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-backoffice-bff
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-storefront-bff
-    newTag: 09b02ebb854f
+    newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-backoffice
     newTag: main
   - name: docker.io/emanhthangngot/yas-storefront
