@@ -89,7 +89,8 @@ if [ "$active_environments" != "$expected_active_environments" ]; then
   exit 1
 fi
 
-for seed_overlay in operations/sampledata-seed/dev operations/sampledata-seed/staging; do
+for seed_overlay in operations/sampledata-seed/dev operations/sampledata-seed/staging \
+  operations/debezium-connector-register/dev operations/debezium-connector-register/staging; do
   echo "validating operation overlay: ${seed_overlay}"
   kustomize build --load-restrictor=LoadRestrictionsNone "$seed_overlay" >/dev/null
 done
