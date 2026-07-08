@@ -13,3 +13,10 @@ spec:
             # same Elasticsearch-backed search index.
             - name: PRODUCT_TOPIC_NAME
               value: dev_dbproduct.public.product
+            # Env-specific Elasticsearch index and Kafka consumer group id
+            # (both were hardcoded pre-yas#70), so dev and staging no longer
+            # overwrite each other's documents or share one consumer group.
+            - name: PRODUCT_INDEX_NAME
+              value: dev_product
+            - name: PRODUCT_CONSUMER_GROUP_ID
+              value: dev-product-sync-search
