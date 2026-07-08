@@ -64,7 +64,7 @@ images:
   - name: docker.io/emanhthangngot/yas-product
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-search
-    newTag: 2b1b7a4a45f4
+    newTag: 8b1a23222044
   - name: docker.io/emanhthangngot/yas-tax
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-sampledata
