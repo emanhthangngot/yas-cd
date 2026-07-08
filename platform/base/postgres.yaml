@@ -70,6 +70,11 @@ spec:
           args:
             - -c
             - max_connections=500
+            # Required for Debezium's Postgres CDC connector (logical
+            # replication slots); max_replication_slots/max_wal_senders
+            # already default to 10, which is enough headroom.
+            - -c
+            - wal_level=logical
           ports:
             - name: postgresql
               containerPort: 5432

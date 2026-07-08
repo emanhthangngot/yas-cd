@@ -14,9 +14,16 @@ The applications track `git@github.com:emanhthangngot/yas-cd.git`, branch `main`
 - `overlays/developer`
 - `operations/sampledata-seed/dev` (manual sync only)
 - `operations/sampledata-seed/staging` (manual sync only)
+- `operations/debezium-connector-register/dev` (manual sync only)
+- `operations/debezium-connector-register/staging` (manual sync only)
 
 Do not point ArgoCD at the app repo `tzin1401/yas`.
 
-The sampledata seed applications intentionally do not enable automated sync.
-They are one-shot operational jobs and should be synced only by the
-`seed_sampledata` Jenkins job or an operator during the initial demo setup.
+The sampledata seed and debezium connector-register applications intentionally
+do not enable automated sync. They are one-shot operational jobs: sampledata
+seed should run only via the `seed_sampledata` Jenkins job or an operator
+during initial demo setup; the debezium connector-register job registers the
+`product` table's CDC connector against the shared Kafka Connect worker
+(`platform/base/debezium-connect.yaml`) so `search` gets Postgres change
+events for its Elasticsearch index — sync it once after `platform/base` is
+up, and again only if the connector config or Kafka Connect worker changes.

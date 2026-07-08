@@ -38,6 +38,7 @@ patches:
   - path: db-url-patch.yaml
   - path: redis-patch.yaml
   - path: payment-paypal-public-url-patch.yaml
+  - path: search-topic-patch.yaml
 labels:
   - pairs:
       app.kubernetes.io/part-of: yas

@@ -6,6 +6,7 @@ resources:
   - postgres.yaml
   - redis.yaml
   - kafka.yaml
+  - debezium-connect.yaml
   - elasticsearch.yaml
   - keycloak-realm.configmap.yaml
   - keycloak.yaml
