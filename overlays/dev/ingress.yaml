@@ -6,14 +6,14 @@ metadata:
   name: yas-hosts-media
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /media/$2
+    nginx.ingress.kubernetes.io/rewrite-target: /media$1
 spec:
   ingressClassName: nginx
   rules:
     - host: storefront.dev.yas.local.com
       http:
         paths:
-          - path: /api/media(/|$)(.*)
+          - path: /api/media(/medias/[0-9]+/file/.*)
             pathType: ImplementationSpecific
             backend:
               service:
@@ -23,7 +23,7 @@ spec:
     - host: backoffice.dev.yas.local.com
       http:
         paths:
-          - path: /api/media(/|$)(.*)
+          - path: /api/media(/medias/[0-9]+/file/.*)
             pathType: ImplementationSpecific
             backend:
               service:
