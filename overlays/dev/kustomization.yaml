@@ -74,6 +74,6 @@ images:
   - name: docker.io/emanhthangngot/yas-storefront-bff
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-backoffice
-    newTag: main
+    newTag: 8e97544a7445
   - name: docker.io/emanhthangngot/yas-storefront
     newTag: main
