@@ -51,15 +51,15 @@ images:
   - name: docker.io/emanhthangngot/yas-customer
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: 2b1b7a4a45f4
+    newTag: 3af493ab50e9
   - name: docker.io/emanhthangngot/yas-location
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-media
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-order
-    newTag: c14b452005c3
+    newTag: 3af493ab50e9
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: 2b1b7a4a45f4
+    newTag: 3af493ab50e9
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: 2b1b7a4a45f4
   - name: docker.io/emanhthangngot/yas-product
@@ -77,4 +77,4 @@ images:
   - name: docker.io/emanhthangngot/yas-backoffice
     newTag: 2575fb1054f2
   - name: docker.io/emanhthangngot/yas-storefront
-    newTag: main
+    newTag: 3af493ab50e9
