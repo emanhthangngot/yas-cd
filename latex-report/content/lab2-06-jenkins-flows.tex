@@ -23,13 +23,13 @@ rõ ràng và tránh tình trạng Kubernetes không rollout vì manifest không
 \begin{figure}[H]
 \centering
 \reportimg{img/jenkins/main_build_success.png}
-\caption{Scaffold ảnh Jenkins main build chạy qua CI gates và Docker push}
+\caption{Jenkins main build chạy qua CI gates, Docker push và GitOps update}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/dockerhub/dev_commit_sha_tags.png}
-\caption{Scaffold ảnh Docker Hub hiển thị image tag theo commit SHA cho dev}
+\caption{Docker Hub hiển thị image tag theo commit SHA cho dev}
 \end{figure}
 
 \subsection{Staging Release}
@@ -54,8 +54,8 @@ promote-only:
 
 \begin{figure}[H]
 \centering
-\reportimg{img/jenkins/release_v012_success.png}
-\caption{Scaffold ảnh Jenkins release tag \texttt{v0.1.2} promote thành công}
+\reportimg{img/jenkins/release_v013_success.png}
+\caption{Jenkins release tag \texttt{v0.1.3} promote thành công}
 \end{figure}
 
 \begin{figure}[H]
@@ -77,7 +77,7 @@ promote-only:
 \hline
 \texttt{v0.1.1} lần 2 & Fail do mixed dev tags. & Không thể giả định mọi service trong dev cùng một SHA. \\
 \hline
-\texttt{v0.1.2} & Thành công. & Promote theo tag nguồn từng service đọc từ dev overlay; release tag là promote-only. \\
+\texttt{v0.1.3} & Thành công. & Promote theo tag nguồn từng service đọc từ dev overlay; release tag là promote-only. \\
 \hline
 \end{tabular}
 \end{table}
@@ -130,7 +130,7 @@ Job \texttt{teardown\_developer} chạy từ CD repo, yêu cầu confirm
 \subsection{Bằng Chứng Demo 3 Luồng}
 
 Evidence tổng hợp cho ba luồng nằm trong \path{evidence/35_cd_demo_summary.md}:
-\texttt{dev} auto deploy, \texttt{staging} release \texttt{v0.1.2}, và
+\texttt{dev} auto deploy, \texttt{staging} release \texttt{v0.1.3}, và
 \texttt{developer\_build}/teardown. Các log lỗi trước đó cũng được giữ lại để giải
 thích quá trình hardening release flow: \texttt{v0.1.0} bị gate chặn, \texttt{v0.1.1}
-lỗi buildx/mixed tag, \texttt{v0.1.2} thành công sau khi sửa promote source.
+lỗi buildx/mixed tag, \texttt{v0.1.3} thành công sau khi sửa promote source.

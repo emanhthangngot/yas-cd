@@ -18,6 +18,22 @@ Developer push branch/tag -> Jenkins app repo pipeline
 
 \subsection{Hạ Tầng Triển Khai}
 
+Hạ tầng thực tế của nhóm tách rõ CI và CD/runtime. Jenkins Controller chạy trên
+AWS EC2 tại địa chỉ \texttt{3.27.92.213}; các bước CI nặng trong Jenkinsfile
+chạy trên ba laptop agent \texttt{Agent-Tri}, \texttt{Agent-QVinh},
+\texttt{Agent-TVinh} với label \texttt{yas-build-worker}. Máy GCP
+\texttt{gcp-ci-cd-agent} không dùng làm Jenkins build agent trong kiến trúc
+báo cáo; máy này dành cho CD/runtime, gồm K3s single-node, ArgoCD, ingress,
+service mesh và workload YAS. Cấu hình VM GCP là 40 GB RAM và 150 GB
+persistent disk.
+
+Ở lớp network, Google Cloud firewall mở các port phục vụ demo và vận hành:
+\texttt{8083} cho Jenkins UI, \texttt{6443} cho Kubernetes API server,
+\texttt{30000-32767} cho NodePort/Ingress demo, \texttt{50000} cho Jenkins
+inbound agent và \texttt{22} cho SSH quản trị. Các rule này là điều kiện để máy
+ngoài có thể truy cập Jenkins, ArgoCD/app qua NodePort và để agent kết nối về
+controller.
+
 \begin{table}[H]
 \centering
 \caption{Các thành phần hạ tầng chính}
@@ -25,11 +41,11 @@ Developer push branch/tag -> Jenkins app repo pipeline
 \hline
 \textbf{Thành phần} & \textbf{Vai trò} \\
 \hline
-Jenkins Controller & Chạy trên AWS EC2, điều phối pipeline và lưu log build. \\
+Jenkins Controller & Chạy trên AWS EC2 \texttt{3.27.92.213}, điều phối pipeline và lưu log build. \\
 \hline
-Jenkins Agents & App repo CI nặng chạy trên label \texttt{yas-build-worker}; GitOps jobs nhẹ trong CD repo chạy trên \texttt{gcp-build-agent}. \\
+Jenkins Agents & Ba laptop agent \texttt{Agent-Tri}, \texttt{Agent-QVinh}, \texttt{Agent-TVinh}; app repo Jenkinsfile dùng label \texttt{yas-build-worker} để chạy test, coverage, scan, Docker build/push và GitOps update. \\
 \hline
-GCP VM & Máy \texttt{gcp-ci-cd-agent} chạy K3s single-node, Jenkins agent, ArgoCD và workload demo. \\
+GCP VM & Máy \texttt{gcp-ci-cd-agent} chạy CD/runtime: K3s single-node, ArgoCD, ingress, mesh và workload demo; cấu hình 40 GB RAM, 150 GB persistent disk. \\
 \hline
 K3s & Kubernetes runtime cho \texttt{dev}, \texttt{staging}, \texttt{developer}, platform services và mesh. \\
 \hline
@@ -46,7 +62,7 @@ Prometheus/Grafana & Observability bổ sung: app expose metric, Prometheus scra
 
 \subsection{Runtime Policy Trên Single-Node}
 
-Do toàn bộ hệ thống chạy trên một VM duy nhất, nhóm không giữ ba môi trường full-stack
+Do toàn bộ CD/runtime chạy trên một VM duy nhất, nhóm không giữ ba môi trường full-stack
 cùng active. Baseline là:
 
 \begin{itemize}
@@ -59,7 +75,13 @@ cùng active. Baseline là:
 \begin{figure}[H]
 \centering
 \reportimg{img/platform/01_gcp_vm_specs.png}
-\caption{GCP VM 32 GB RAM dùng làm Jenkins agent và K3s node}
+\caption{GCP VM dùng cho CD/runtime K3s-ArgoCD, cấu hình 40 GB RAM và 150 GB disk}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/platform/03_gcp_firewall_rules.png}
+\caption{Google Cloud firewall rules mở Jenkins, K3s API, NodePort demo, Jenkins agent và SSH}
 \end{figure}
 
 \begin{figure}[H]

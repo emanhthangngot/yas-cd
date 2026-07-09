@@ -12,7 +12,7 @@ Cả 3 luồng CD theo yêu cầu đề bài đã chạy thật, có log/commit 
   - `v0.1.0` → FAIL: gate GitOps chặn do tag đóng nhầm commit cũ (services.yaml 20 vs overlay 15). Evidence: `21_jenkins_v010_gate_blocked.txt`
   - `v0.1.1` (lần 1) → FAIL: agent thiếu `docker buildx`. Evidence: `21b_jenkins_v011_buildx_missing.txt`
   - `v0.1.1` (lần 2) → FAIL: promote đòi mọi service cùng 1 SHA nhưng dev trộn tag (13 SHA + 2 UI ở `main`). Evidence: `21c_jenkins_v011_mixed_tag_promote_fail.txt`
-  - `v0.1.2` → **SUCCESS**: sau 2 cải tiến Jenkinsfile (promote theo tag dev-overlay từng service; skip test/scan trên tag build). 15/15 service promote trong ~2 phút, staging chạy `:v0.1.2`. Evidence: `21d_jenkins_v012_release_success.txt`, `24_argocd_outofsync_diff.png`
+  - `v0.1.3` → **SUCCESS**: sau 2 cải tiến Jenkinsfile (promote theo tag dev-overlay từng service; skip test/scan trên tag build). Jenkins tag pipeline chạy thành công và staging nhận release tag `:v0.1.3`. Evidence: `21e_jenkins_v013_release_success.txt`, `latex-report/img/jenkins/release_v013_success.png`, `24_argocd_outofsync_diff.png`
 - 2 cải tiến đã merge (PR trên `tzin1401/yas`):
   1. `promote release images from dev overlay tags, not tagged-commit SHA` — sửa gốc lỗi mixed-tag.
   2. `skip test/scan gates on release-tag builds (promote-only)` — release chỉ verify+promote+GitOps, gate CI được thừa kế từ build main đã publish image nguồn (provenance).
@@ -24,4 +24,4 @@ Cả 3 luồng CD theo yêu cầu đề bài đã chạy thật, có log/commit 
 - Xác nhận runtime: `kubectl top nodes` 49% CPU / 51% RAM khi dev+developer song song — chứng minh single-node đủ tải nhờ active_limit=2.
 
 ## Known issue (không thuộc luồng CD)
-- Service `payment` crash khi staging restart: `liquibase ValidationFailedException` (checksum mismatch trong `staging_payment` DB do image cũ migrate trước đó). Đây là lỗi runtime/app-level, KHÔNG ảnh hưởng luồng CD — image `v0.1.2` vẫn pull & deploy đúng; storefront vẫn truy cập được. Production reality check: cần migration idempotent / cơ chế clear-checksums khi đổi image version trên DB bền.
+- Service `payment` crash khi staging restart: `liquibase ValidationFailedException` (checksum mismatch trong `staging_payment` DB do image cũ migrate trước đó). Đây là lỗi runtime/app-level, KHÔNG ảnh hưởng luồng CD — image `v0.1.3` vẫn pull & deploy đúng; storefront vẫn truy cập được. Production reality check: cần migration idempotent / cơ chế clear-checksums khi đổi image version trên DB bền.

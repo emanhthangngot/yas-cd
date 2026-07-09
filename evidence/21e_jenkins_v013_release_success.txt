@@ -1,0 +1,22 @@
+Jenkins release tag v0.1.3 completed successfully.
+
+Evidence source:
+- Job: yas-ci-pipeline / v0.1.3 / #1
+- Result: PASS v0.1.3 #1
+- Screenshot copied to latex-report/img/jenkins/release_v013_success.png
+
+Observed stages:
+- Checkout SCM
+- Checkout
+- Detect Changed Modules
+- Validate Non-Code Changes
+- Gitleaks Secret Scan
+- Test
+- Coverage Gate
+- Build
+- SonarQube Analysis
+- SonarQube Quality Gate
+- Snyk Dependency Scan
+- Docker Hub Build and Push Images
+- GitOps Update CD Repo
+- Post Actions

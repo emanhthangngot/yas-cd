@@ -9,11 +9,11 @@
 \hline
 \textbf{Nhóm} & \textbf{Evidence tiêu biểu} \\
 \hline
-Hạ tầng & \path{01_gcp_vm_specs.png}, \path{02_gcp_vm_ip_addr.png}, tool gate và PVC/database output trong \path{.agents/evidence/README.md}. \\
+Hạ tầng & \path{01_gcp_vm_specs.png}, \path{02_gcp_vm_ip_addr.png}, \path{03_gcp_firewall_rules.png}, tool gate và PVC/database output trong \path{.agents/evidence/README.md}. \\
 \hline
 ArgoCD/GitOps & \path{06_argocd_apps_overview.png}, \path{07_validate_gitops_passed.txt}, \path{11_gitops_structure_review.txt}. \\
 \hline
-Staging release & \path{21_jenkins_v010_gate_blocked.txt}, \path{21b_jenkins_v011_buildx_missing.txt}, \path{21c_jenkins_v011_mixed_tag_promote_fail.txt}, \path{21d_jenkins_v012_release_success.txt}. \\
+Staging release & \path{21_jenkins_v010_gate_blocked.txt}, \path{21b_jenkins_v011_buildx_missing.txt}, \path{21c_jenkins_v011_mixed_tag_promote_fail.txt}, \path{21e_jenkins_v013_release_success.txt}. \\
 \hline
 Developer preview & \path{28_developer_build_console.txt}, \path{29_preview_commit.txt}, \path{31_developer_up_staging_down.txt}, \path{32_developer_reachable.png}, \path{33_teardown_console.txt}. \\
 \hline
@@ -36,9 +36,19 @@ file evidence bên ngoài:
 \hline
 \textbf{Ảnh trong report} & \textbf{Nguồn gốc} & \textbf{Ý nghĩa} \\
 \hline
-\path{img/platform/01_gcp_vm_specs.png} & \path{evidence/01_gcp_vm_specs.png} & VM 32GB RAM dùng làm Jenkins agent và K3s node. \\
+\path{img/platform/01_gcp_vm_specs.png} & \path{evidence/01_gcp_vm_specs.png} & VM GCP dùng cho CD/runtime K3s-ArgoCD, 40GB RAM và 150GB disk. \\
 \hline
 \path{img/platform/02_gcp_vm_ip_addr.png} & \path{evidence/02_gcp_vm_ip_addr.png} & External IP dùng cho NodePort demo. \\
+\hline
+\path{img/platform/03_gcp_firewall_rules.png} & Screenshot Google Cloud & Firewall rules mở Jenkins, K3s API, NodePort, Jenkins agent và SSH. \\
+\hline
+\path{img/jenkins/app_repo_pipeline_overview.png} & Screenshot Jenkins UI & Jenkins job overview cho app repo pipeline. \\
+\hline
+\path{img/jenkins/main_build_success.png} & Screenshot Jenkins UI & Main build chạy thành công qua CI/CD stages. \\
+\hline
+\path{img/jenkins/release_v013_success.png} & Screenshot Jenkins UI & Release tag \texttt{v0.1.3} chạy thành công. \\
+\hline
+\path{img/dockerhub/dev_commit_sha_tags.png} & Screenshot Docker Hub & Docker image có tag theo commit SHA. \\
 \hline
 \path{img/argocd/06_argocd_apps_overview.png} & \path{evidence/06_argocd_apps_overview.png} & ArgoCD apps overview. \\
 \hline
@@ -60,11 +70,11 @@ file evidence bên ngoài:
 \hline
 \textbf{Ưu tiên} & \textbf{Ảnh cần chụp} & \textbf{Lý do} \\
 \hline
-P0 & Jenkins main build success và release \texttt{v0.1.2}. & Chứng minh pipeline chạy thật thay vì chỉ có log text. \\
+P0 & Jenkins release \texttt{v0.1.3}. & Đã có ảnh Jenkins tag pipeline chạy thành công. \\
 \hline
 P0 & ArgoCD detail cho \texttt{yas-dev}, \texttt{yas-staging}, \texttt{yas-developer}. & Chứng minh sync policy và health từng môi trường. \\
 \hline
-P0 & Docker Hub tags cho commit SHA và release tag. & Chứng minh branch/main/release image tagging đúng đề bài. \\
+P0 & Docker Hub release tag. & Commit SHA tag đã có ảnh; còn cần release tag nếu muốn chứng minh đủ branch/main/release image tagging. \\
 \hline
 P1 & Kiali topology, mTLS \texttt{2/2}, allow/deny curl. & Củng cố phần nâng cao service mesh. \\
 \hline
@@ -113,7 +123,7 @@ kubectl patch deploy ingress-nginx-controller -n ingress-nginx --type=json -p '[
 
 \begin{itemize}
     \item Snyk tạm tắt trong Jenkinsfile hiện tại: báo cáo chỉ ghi Gitleaks, test, coverage và SonarQube đang nằm trong path chính; Snyk là gate kế thừa cần bật lại sau khi CD ổn định.
-    \item Payment staging Liquibase checksum: release \texttt{v0.1.2} đã promote/deploy đúng image, nhưng service payment có lỗi migration checksum khi restart trên DB bền. Đây là vấn đề runtime/application migration, không phải lỗi GitOps release flow.
+    \item Payment staging Liquibase checksum: release \texttt{v0.1.3} đã promote/deploy đúng image, nhưng service payment có lỗi migration checksum khi restart trên DB bền. Đây là vấn đề runtime/application migration, không phải lỗi GitOps release flow.
     \item Plaintext lab secrets: CD repo còn placeholder Kubernetes Secret dạng lab value; cần ghi đây là lab-only và production nên chuyển sang SealedSecrets/External Secrets.
     \item Observability runtime: app instrumentation và ServiceMonitor contract đã có, nhưng nếu chưa chụp Prometheus/Grafana trên K3s thì không đánh dấu runtime verified.
     \item Kiali topology screenshot: mesh policy evidence đã có; ảnh topology cuối cùng cần bổ sung nếu chưa nằm trong report.

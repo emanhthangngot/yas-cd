@@ -30,7 +30,7 @@ CI verdict & Gitleaks, test, coverage, SonarQube, build result & Chỉ image đ�
 \begin{figure}[H]
 \centering
 \reportimg{img/jenkins/app_repo_pipeline_overview.png}
-\caption{Scaffold ảnh app repo Jenkins pipeline overview}
+\caption{Jenkins app repo pipeline overview}
 \end{figure}
 
 \subsection{Jenkinsfile Chính: CI Gate Và CD Trigger}
@@ -80,7 +80,7 @@ SHA. Cách này lỗi khi \texttt{dev} đang là trạng thái incremental: mộ
 đang ở SHA mới, một số service vẫn ở tag cũ. App repo đã sửa Jenkinsfile để đọc
 tag nguồn từng service từ \path{overlays/dev/kustomization.yaml} trong CD repo,
 sau đó dùng \texttt{docker buildx imagetools create} retag từng image sang release
-\texttt{vX.Y.Z}. Nhờ đó release \texttt{v0.1.2} promote thành công 15 service.
+\texttt{vX.Y.Z}. Nhờ đó release \texttt{v0.1.3} promote thành công qua Jenkins tag pipeline.
 
 \subsection{Service Catalog Trong App Repo}
 

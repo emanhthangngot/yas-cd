@@ -3,7 +3,7 @@
 \usepackage{float}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
-\usepackage[export]{adjustbox}  % scale-down large images, keep small ones as-is
+\usepackage{tikz}
 \usepackage{setspace}
 \usepackage[colorlinks=true,linkcolor=blue, citecolor=red]{hyperref}
 \usepackage{url}
@@ -14,7 +14,7 @@
 % buildable and show the intended scaffold path directly in the PDF.
 \newcommand{\reportimg}[1]{%
   \IfFileExists{#1}{%
-    \includegraphics[max width=0.92\textwidth, max height=0.45\textheight, keepaspectratio]{#1}%
+    \includegraphics[width=0.92\textwidth,height=0.45\textheight,keepaspectratio]{#1}%
   }{%
     \fbox{\parbox[c][0.22\textheight][c]{0.86\textwidth}{%
       \centering \textbf{Scaffold ảnh cần bổ sung}\\[0.4em]%
