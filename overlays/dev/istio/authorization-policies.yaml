@@ -226,3 +226,15 @@ spec:
         - cluster.local/ns/dev/sa/storefront-bff
         - cluster.local/ns/dev/sa/nginx-api-gateway
         - cluster.local/ns/dev/sa/order
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-metrics-scrape
+  namespace: dev
+spec:
+  action: ALLOW
+  rules:
+  - to:
+    - operation:
+        ports: ["8090"]
