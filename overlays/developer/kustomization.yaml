@@ -27,7 +27,7 @@ images:
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: main
   - name: docker.io/emanhthangngot/yas-product
-    newTag: 053335c74c0a
+    newTag: main
   - name: docker.io/emanhthangngot/yas-search
     newTag: main
   - name: docker.io/emanhthangngot/yas-tax
@@ -39,9 +39,9 @@ images:
   - name: docker.io/emanhthangngot/yas-storefront-bff
     newTag: main
   - name: docker.io/emanhthangngot/yas-backoffice
-    newTag: main
+    newTag: 4ed506bfb336
   - name: docker.io/emanhthangngot/yas-storefront
-    newTag: main
+    newTag: 4ed506bfb336
 patches:
   - path: backend-issuer-patch.yaml
     target:
