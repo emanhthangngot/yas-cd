@@ -6,9 +6,6 @@ metadata:
 spec:
   mtls:
     mode: STRICT
-  portLevelMtls:
-    "8090":
-      mode: PERMISSIVE
 ---
 apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
