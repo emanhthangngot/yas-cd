@@ -27,7 +27,7 @@ images:
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: main
   - name: docker.io/emanhthangngot/yas-product
-    newTag: main
+    newTag: 053335c74c0a
   - name: docker.io/emanhthangngot/yas-search
     newTag: main
   - name: docker.io/emanhthangngot/yas-tax
@@ -53,7 +53,7 @@ patches:
   - path: payment-application-public-url-patch.yaml
   - target:
       kind: Deployment
-    path: replicas-dormant.yaml
+    path: replicas-active.yaml
   - target:
       kind: Deployment
       name: sampledata
