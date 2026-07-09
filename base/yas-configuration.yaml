@@ -179,6 +179,16 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: payment-application-configmap
+data:
+  payment-application.yaml: |
+    yas:
+      public:
+        url: http://storefront-ui:3000/complete-payment
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: search-application-configmap
 data:
   search-application.yaml: |

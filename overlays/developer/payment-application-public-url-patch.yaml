@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-application-configmap
+data:
+  payment-application.yaml: |
+    yas:
+      public:
+        url: http://storefront.developer.yas.local.com:30846/complete-payment
