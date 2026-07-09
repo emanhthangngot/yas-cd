@@ -39,9 +39,9 @@ images:
   - name: docker.io/emanhthangngot/yas-storefront-bff
     newTag: main
   - name: docker.io/emanhthangngot/yas-backoffice
-    newTag: 4ed506bfb336
+    newTag: main
   - name: docker.io/emanhthangngot/yas-storefront
-    newTag: 4ed506bfb336
+    newTag: main
 patches:
   - path: backend-issuer-patch.yaml
     target:
@@ -53,7 +53,7 @@ patches:
   - path: payment-application-public-url-patch.yaml
   - target:
       kind: Deployment
-    path: replicas-active.yaml
+    path: replicas-dormant.yaml
   - target:
       kind: Deployment
       name: sampledata
