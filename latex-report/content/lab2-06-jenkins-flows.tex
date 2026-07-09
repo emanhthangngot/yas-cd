@@ -129,8 +129,43 @@ Job \texttt{teardown\_developer} chạy từ CD repo, yêu cầu confirm
 
 \subsection{Bằng Chứng Demo 3 Luồng}
 
-Evidence tổng hợp cho ba luồng nằm trong \path{evidence/35_cd_demo_summary.md}:
-\texttt{dev} auto deploy, \texttt{staging} release \texttt{v0.1.3}, và
-\texttt{developer\_build}/teardown. Các log lỗi trước đó cũng được giữ lại để giải
-thích quá trình hardening release flow: \texttt{v0.1.0} bị gate chặn, \texttt{v0.1.1}
-lỗi buildx/mixed tag, \texttt{v0.1.3} thành công sau khi sửa promote source.
+Ba luồng demo đều đã chạy thật và có evidence tương ứng. Bảng dưới đây gom lại
+đường đi, cơ chế sync và bằng chứng chính để người đọc không phải suy luận từ
+các hình rời rạc ở những phần trước.
+
+\begin{table}[H]
+\centering
+\caption{Tổng hợp evidence cho ba luồng CD demo}
+\begin{tabular}{|p{2.8cm}|p{5.2cm}|p{5.8cm}|}
+\hline
+\textbf{Luồng} & \textbf{Cơ chế chạy} & \textbf{Evidence trong report} \\
+\hline
+Dev auto deploy & Push/merge vào \texttt{main} app repo, Jenkins build image commit-SHA, commit overlay \texttt{dev}, ArgoCD \texttt{yas-dev} auto-sync. & Hình Jenkins main build, Docker Hub commit SHA tag, ArgoCD apps overview và Storefront dev reachable. \\
+\hline
+Staging release & Git tag \texttt{v0.1.3}, Jenkins promote image có sẵn sang release tag, commit overlay \texttt{staging}, operator manual-sync. & Hình Jenkins release tag \texttt{v0.1.3}, ArgoCD staging diff/manual sync và release hardening table. \\
+\hline
+Developer preview/teardown & Job \texttt{developer\_build} bật môi trường \texttt{developer} theo branch/service; job \texttt{teardown\_developer} đưa developer về dormant và khôi phục \texttt{dev + staging}. & Hình developer reachable, ArgoCD developer synced, console teardown success. \\
+\hline
+\end{tabular}
+\end{table}
+
+Tóm tắt evidence trong \path{evidence/35_cd_demo_summary.md}:
+
+\begin{itemize}
+    \item Dev auto deploy: merge vào \texttt{main} tạo image commit-SHA, Jenkins commit \texttt{cd(lab2): update dev image tags [skip ci]} vào CD repo và ArgoCD tự sync \texttt{yas-dev}.
+    \item Staging release: tag \texttt{v0.1.3} chạy Jenkins promote-only thành công; staging dùng release tag immutable và cần operator sync thủ công.
+    \item Developer preview: job \texttt{developer\_build} bật \texttt{yas-developer} theo branch/service; job \texttt{teardown\_developer} đưa developer về dormant và khôi phục baseline \texttt{dev + staging}.
+    \item Các lỗi release cũ \texttt{v0.1.0}/\texttt{v0.1.1} được giữ làm evidence hardening: GitOps gate, thiếu buildx và lỗi mixed dev tags.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/argocd/dev_staging_developer_apps_detail.png}
+\caption{ArgoCD hiển thị các application chính của dev, staging và developer sau demo}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\reportimg{img/jenkins/teardown_developer_success.png}
+\caption{Job teardown\_developer chạy thành công và trả môi trường developer về dormant}
+\end{figure}
