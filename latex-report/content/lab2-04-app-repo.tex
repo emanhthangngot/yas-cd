@@ -14,7 +14,7 @@ muốn cuối cùng của cluster. Contract giữa app repo và CD repo gồm ba
 \begin{table}[H]
 \centering
 \caption{Contract app repo xuất sang CD flow}
-\begin{tabular}{p{3.2cm} p{5.2cm} p{5.4cm}}
+\begin{tabular}{|p{3.2cm}|p{5.2cm}|p{5.4cm}|}
 \hline
 \textbf{Dữ liệu} & \textbf{Nguồn trong app repo} & \textbf{Cách CD repo sử dụng} \\
 \hline
@@ -30,7 +30,7 @@ CI verdict & Gitleaks, test, coverage, SonarQube, build result & Chỉ image đ�
 \begin{figure}[H]
 \centering
 \reportimg{img/jenkins/app_repo_pipeline_overview.png}
-\caption{Jenkins app repo pipeline overview}
+\caption{Giao diện tổng quan các stage trong pipeline CI của App Repo}
 \end{figure}
 
 \subsection{Jenkinsfile Chính: CI Gate Và CD Trigger}
@@ -56,7 +56,7 @@ từ Đồ án 1 và cần bật lại sau khi CD ổn định.
 \begin{table}[H]
 \centering
 \caption{Chiến lược image tag trong app repo}
-\begin{tabular}{p{3.2cm} p{5.2cm} p{5.2cm}}
+\begin{tabular}{|p{3.2cm}|p{5.2cm}|p{5.2cm}|}
 \hline
 \textbf{Nguồn trigger} & \textbf{Image tag được push} & \textbf{GitOps target} \\
 \hline

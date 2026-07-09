@@ -96,7 +96,7 @@ Prometheus/Grafana trên cluster.
 \begin{table}[H]
 \centering
 \caption{Checklist runtime observability evidence}
-\begin{tabular}{p{3.2cm} p{5.2cm} p{5.4cm}}
+\begin{tabular}{|p{3.2cm}|p{5.2cm}|p{5.4cm}|}
 \hline
 \textbf{Lớp} & \textbf{Cần chứng minh} & \textbf{Ảnh/log nên có} \\
 \hline
@@ -133,23 +133,23 @@ Các evidence cần chụp trước khi nộp nếu muốn đánh dấu runtime 
 \begin{figure}[H]
 \centering
 \reportimg{img/observability/prometheus_targets_yas.png}
-\caption{Placeholder ảnh Prometheus targets cần bổ sung}
+\caption{Giao diện Targets của Prometheus hiển thị danh sách các metrics endpoint của YAS ở trạng thái UP}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/observability/grafana_datasource_healthy.png}
-\caption{Scaffold ảnh Grafana datasource Prometheus healthy}
+\caption{Cấu hình kết nối thành công (Healthy) tới Prometheus Datasource trong Grafana}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/observability/grafana_yas_metrics_dashboard.png}
-\caption{Placeholder ảnh Grafana dashboard cần bổ sung}
+\caption{Giao diện Grafana Dashboard theo dõi các chỉ số tài nguyên, request rate và latency của YAS}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/observability/otel_collector_pods.png}
-\caption{Scaffold ảnh OpenTelemetry Collector/Operator chạy trên cluster}
+\caption{Trạng thái các Pod OpenTelemetry Collector và Operator hoạt động trong namespace observability}
 \end{figure}

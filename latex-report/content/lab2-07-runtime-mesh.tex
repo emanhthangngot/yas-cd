@@ -48,7 +48,7 @@ thái READY kỳ vọng là \texttt{2/2}. Mesh policy gồm:
 \begin{table}[H]
 \centering
 \caption{Service mesh requirement và implementation}
-\begin{tabular}{p{3.2cm} p{5.1cm} p{5.2cm}}
+\begin{tabular}{|p{3.2cm}|p{5.1cm}|p{5.2cm}|}
 \hline
 \textbf{Yêu cầu mesh} & \textbf{Triển khai trong CD repo} & \textbf{Evidence cần trình bày} \\
 \hline
@@ -66,7 +66,7 @@ Topology & Kiali quan sát graph traffic dev/staging. & Screenshot Kiali topolog
 \begin{figure}[H]
 \centering
 \reportimg{img/mesh/mtls_strict_pods_2of2.png}
-\caption{Scaffold ảnh pod có workload container và Istio sidecar \texttt{READY 2/2}}
+\caption{Trạng thái các Pod trong namespace dev hoạt động với 2/2 Container (chứa Envoy sidecar)}
 \end{figure}
 
 \subsection{AuthorizationPolicy Evidence}
@@ -85,19 +85,19 @@ Spring Boot application, lỗi còn lại thuộc application endpoint.
 \begin{figure}[H]
 \centering
 \reportimg{img/mesh/authorization_allow_tax_location.png}
-\caption{Scaffold ảnh curl allow: \texttt{tax} gọi \texttt{location}}
+\caption{Bằng chứng kết nối thành công (Allowed) từ tax service sang location service}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/mesh/authorization_deny_cart_location.png}
-\caption{Scaffold ảnh curl deny: \texttt{cart} gọi \texttt{location} bị Envoy RBAC 403}
+\caption{Bằng chứng kết nối bị chặn (Denied HTTP 403) từ cart service sang location service bởi Envoy RBAC}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \reportimg{img/mesh/retry_policy_evidence.png}
-\caption{Scaffold ảnh retry policy hoặc log retry cho service trong critical path}
+\caption{Minh chứng log Envoy thực hiện cơ chế Retry tự động (3 lần) khi service đích gặp lỗi}
 \end{figure}
 
 \subsection{Kiali Topology}
@@ -110,5 +110,5 @@ sidecar traffic.
 \begin{figure}[H]
 \centering
 \reportimg{img/mesh/kiali_topology_dev_staging.png}
-\caption{Placeholder ảnh Kiali topology cần bổ sung trước khi nộp}
+\caption{Sơ đồ Graph Topology các service trong mesh quan sát được trên giao diện Kiali}
 \end{figure}

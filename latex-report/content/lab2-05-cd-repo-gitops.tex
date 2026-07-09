@@ -9,7 +9,7 @@ Jenkins chỉ commit thay đổi vào CD repo, sau đó ArgoCD reconcile.
 \begin{table}[H]
 \centering
 \caption{Vai trò các thư mục GitOps chính}
-\begin{tabular}{p{4cm} p{10cm}}
+\begin{tabular}{|p{4cm}|p{10cm}|}
 \hline
 \textbf{Đường dẫn} & \textbf{Vai trò} \\
 \hline
@@ -40,7 +40,7 @@ sampledata. CD repo giữ thêm \texttt{location}, \texttt{payment},
 \begin{table}[H]
 \centering
 \caption{Service scope runtime theo CQ demo}
-\begin{tabular}{p{3.4cm} p{10cm}}
+\begin{tabular}{|p{3.4cm}|p{10cm}|}
 \hline
 \textbf{Nhóm service} & \textbf{Danh sách và lý do} \\
 \hline
@@ -105,5 +105,5 @@ lúc. Policy hiện tại được encode trong overlays và runbook:
 \begin{figure}[H]
 \centering
 \reportimg{img/argocd/dev_staging_developer_apps_detail.png}
-\caption{Scaffold ảnh detail ArgoCD cho \texttt{yas-dev}, \texttt{yas-staging}, \texttt{yas-developer}}
+\caption{Giao diện chi tiết danh sách ứng dụng ArgoCD hiển thị trạng thái các môi trường dev, staging và developer}
 \end{figure}
