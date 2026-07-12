@@ -57,9 +57,9 @@ images:
   - name: docker.io/emanhthangngot/yas-media
     newTag: ce0f1ae2d684
   - name: docker.io/emanhthangngot/yas-order
-    newTag: a4379fb34b04
+    newTag: 2e13db21a12a
   - name: docker.io/emanhthangngot/yas-payment
-    newTag: a50e8927e328
+    newTag: 2e13db21a12a
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: a50e8927e328
   - name: docker.io/emanhthangngot/yas-product
