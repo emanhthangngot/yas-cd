@@ -51,7 +51,7 @@ images:
   - name: docker.io/emanhthangngot/yas-customer
     newTag: a4379fb34b04
   - name: docker.io/emanhthangngot/yas-inventory
-    newTag: a50e8927e328
+    newTag: 91f23f2861e8
   - name: docker.io/emanhthangngot/yas-location
     newTag: a0e3654129e2
   - name: docker.io/emanhthangngot/yas-media
