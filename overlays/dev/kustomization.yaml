@@ -71,7 +71,7 @@ images:
   - name: docker.io/emanhthangngot/yas-sampledata
     newTag: a50e8927e328
   - name: docker.io/emanhthangngot/yas-backoffice-bff
-    newTag: a50e8927e328
+    newTag: 256d69a55c8e
   - name: docker.io/emanhthangngot/yas-storefront-bff
     newTag: a50e8927e328
   - name: docker.io/emanhthangngot/yas-backoffice
