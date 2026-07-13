@@ -57,13 +57,13 @@ images:
   - name: docker.io/emanhthangngot/yas-media
     newTag: c70c36d7e4dd
   - name: docker.io/emanhthangngot/yas-order
-    newTag: c70c36d7e4dd
+    newTag: 2857f0b7ac1b
   - name: docker.io/emanhthangngot/yas-payment
     newTag: c70c36d7e4dd
   - name: docker.io/emanhthangngot/yas-payment-paypal
     newTag: c70c36d7e4dd
   - name: docker.io/emanhthangngot/yas-product
-    newTag: c70c36d7e4dd
+    newTag: 2857f0b7ac1b
   - name: docker.io/emanhthangngot/yas-search
     newTag: c70c36d7e4dd
   - name: docker.io/emanhthangngot/yas-tax
