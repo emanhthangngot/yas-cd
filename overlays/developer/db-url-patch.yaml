@@ -1,0 +1,185 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+spec:
+  template:
+    spec:
+      containers:
+        - name: cart
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_cart
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer
+spec:
+  template:
+    spec:
+      containers:
+        - name: customer
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_customer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+spec:
+  template:
+    spec:
+      containers:
+        - name: inventory
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_inventory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: location
+spec:
+  template:
+    spec:
+      containers:
+        - name: location
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_location
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media
+spec:
+  template:
+    spec:
+      containers:
+        - name: media
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_media
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+spec:
+  template:
+    spec:
+      containers:
+        - name: order
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_order
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+spec:
+  template:
+    spec:
+      containers:
+        - name: payment
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_payment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-paypal
+spec:
+  template:
+    spec:
+      containers:
+        - name: payment-paypal
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_payment-paypal
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product
+spec:
+  template:
+    spec:
+      containers:
+        - name: product
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_product
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search
+spec:
+  template:
+    spec:
+      containers:
+        - name: search
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_search
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tax
+spec:
+  template:
+    spec:
+      containers:
+        - name: tax
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_tax
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sampledata
+spec:
+  template:
+    spec:
+      containers:
+        - name: sampledata
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_sampledata
+            - name: SPRING_DATASOURCE_PRODUCT_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_product
+            - name: SPRING_DATASOURCE_MEDIA_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_media
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backoffice-bff
+spec:
+  template:
+    spec:
+      containers:
+        - name: backoffice-bff
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_backoffice-bff
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefront-bff
+spec:
+  template:
+    spec:
+      containers:
+        - name: storefront-bff
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/developer_storefront-bff

@@ -48,9 +48,11 @@ patches:
       kind: Deployment
       name: "^(cart|customer|inventory|location|media|order|payment|payment-paypal|product|search|tax)$"
   - path: istio/keycloak-oauth-patch.yaml
+  - path: db-url-patch.yaml
   - path: redis-patch.yaml
   - path: payment-paypal-public-url-patch.yaml
   - path: payment-application-public-url-patch.yaml
+  - path: search-topic-patch.yaml
   - target:
       kind: Deployment
     path: replicas-dormant.yaml
