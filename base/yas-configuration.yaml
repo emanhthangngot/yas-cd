@@ -79,7 +79,9 @@ data:
     <configuration>
       <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-          <pattern>%d %-5level [%thread] %logger{36} - %msg%n</pattern>
+          <!-- trace_id/span_id do OTel Java agent bơm vào MDC (snake_case).
+               Bắt buộc có trong log line để Grafana filterByTraceID khớp được. -->
+          <pattern>%d %-5level [%thread] [trace_id=%X{trace_id:-} span_id=%X{span_id:-}] %logger{36} - %msg%n</pattern>
         </encoder>
       </appender>
       <root level="INFO">

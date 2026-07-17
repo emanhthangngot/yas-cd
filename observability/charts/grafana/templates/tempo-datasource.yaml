@@ -16,6 +16,17 @@ spec:
       httpMethod: GET
       tracesToLogsV2:
         datasourceUid: loki
+        # Span có thể chỉ dài vài trăm µs; không nới cửa sổ thì Grafana query Loki
+        # đúng bằng khoảng span => luôn "No logs found".
+        spanStartTimeShift: '-5m'
+        spanEndTimeShift: '5m'
+        # Map resource attribute service.name (Tempo) -> label service_name (Loki).
+        tags:
+          - key: 'service.name'
+            value: 'service_name'
+        # Lọc log theo trace ID: Grafana thêm |= "<traceID>" vào query, khớp nhờ
+        # trace_id đã có trong log line (logback pattern ở base/yas-configuration.yaml).
+        filterByTraceID: true
       serviceMap:
         datasourceUid: prometheus
       nodeGraph:
