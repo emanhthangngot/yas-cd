@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-developer-debezium-connector-register
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:emanhthangngot/yas-cd.git
+    targetRevision: main
+    path: operations/debezium-connector-register/developer
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: developer
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=false

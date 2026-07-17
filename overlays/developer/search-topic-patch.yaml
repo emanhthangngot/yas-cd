@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search
+spec:
+  template:
+    spec:
+      containers:
+        - name: search
+          env:
+            # Must match topic.prefix in operations/debezium-connector-register/developer.
+            # Env-specific to keep developer CDC events from mixing in the
+            # same Elasticsearch-backed search index as dev/staging.
+            - name: PRODUCT_TOPIC_NAME
+              value: developer_dbproduct.public.product
+            # Env-specific Elasticsearch index and Kafka consumer group id
+            # (both were hardcoded pre-yas#70), so developer no longer
+            # overwrites dev/staging documents or shares one consumer group.
+            - name: PRODUCT_INDEX_NAME
+              value: developer_product
+            - name: PRODUCT_CONSUMER_GROUP_ID
+              value: developer-product-sync-search
