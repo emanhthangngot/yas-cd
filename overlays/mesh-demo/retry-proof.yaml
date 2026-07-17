@@ -45,6 +45,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: retry-proof-ok
+        app.kubernetes.io/component: retry-proof-backend
         app.kubernetes.io/part-of: yas-mesh-demo
     spec:
       containers:
@@ -79,6 +80,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: retry-proof-fail
+        app.kubernetes.io/component: retry-proof-backend
         app.kubernetes.io/part-of: yas-mesh-demo
     spec:
       containers:
@@ -131,6 +133,22 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: retry-proof-backend
+  namespace: mesh-demo
+  labels:
+    app.kubernetes.io/name: retry-proof-backend
+    app.kubernetes.io/part-of: yas-mesh-demo
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/component: retry-proof-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: retry-proof-direct
   namespace: mesh-demo
   labels:
@@ -172,15 +190,9 @@ spec:
   http:
     - route:
         - destination:
-            host: retry-proof-ok.mesh-demo.svc.cluster.local
+            host: retry-proof-backend.mesh-demo.svc.cluster.local
             port:
               number: 80
-          weight: 50
-        - destination:
-            host: retry-proof-fail.mesh-demo.svc.cluster.local
-            port:
-              number: 80
-          weight: 50
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -194,15 +206,9 @@ spec:
   http:
     - route:
         - destination:
-            host: retry-proof-ok.mesh-demo.svc.cluster.local
+            host: retry-proof-backend.mesh-demo.svc.cluster.local
             port:
               number: 80
-          weight: 50
-        - destination:
-            host: retry-proof-fail.mesh-demo.svc.cluster.local
-            port:
-              number: 80
-          weight: 50
       retries:
         attempts: 3
         perTryTimeout: 2s
