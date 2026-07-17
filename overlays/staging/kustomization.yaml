@@ -51,7 +51,7 @@ images:
 patches:
   - target:
       kind: Deployment
-    path: replicas-active.yaml
+    path: replicas-dormant.yaml
   - target:
       kind: Deployment
     path: cpu-throttle.yaml
