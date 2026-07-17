@@ -135,6 +135,8 @@ spec:
             host: retry-proof-backend.mesh-demo.svc.cluster.local
             port:
               number: 80
+      retries:
+        attempts: 0
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
