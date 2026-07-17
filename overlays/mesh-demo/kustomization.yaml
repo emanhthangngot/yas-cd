@@ -5,6 +5,7 @@ namespace: mesh-demo
 resources:
   - namespace.yaml
   - istio.yaml
+  - retry-proof.yaml
   - ../../base/yas-configuration.yaml
 
 helmGlobals:
